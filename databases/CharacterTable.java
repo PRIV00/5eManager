@@ -15,48 +15,93 @@ public class CharacterTable extends Table implements Searchable, Modifiable {
     CharacterTable(String fileName) {
         super(fileName,
                 "CREATE TABLE IF NOT EXISTS Characters (\n" +
-                " characterID INTEGER PRIMARY KEY, \n" +
-                " name TEXT, \n" +
-                " title TEXT, \n" +
-                " description TEXT, \n" +
-                " strength INTEGER, \n" +
-                " dexterity INTEGER, \n" +
-                " constitution INTEGER, \n" +
-                " intelligence INTEGER, \n" +
-                " wisdom INTEGER, \n" +
-                " charisma INTEGER, \n" +
-                " locationID integer, \n" +
-                " FOREIGN KEY(locationID) REFERENCES Locations(locationID) \n" +
-                ")");
+                        " characterID INTEGER PRIMARY KEY, \n" +
+                        " name TEXT, \n" +
+                        " look TEXT, \n" +
+                        " title TEXT, \n" +
+                        " race TEXT, \n" +
+                        " voice TEXT, \n" +
+                        " personality TEXT, \n" +
+                        " desires TEXT, \n" +
+                        " fears TEXT, \n" +
+                        " background TEXT, \n" +
+                        " knowledge TEXT, \n" +
+                        " opinion TEXT, \n" +
+                        " descriptor TEXT, \n" +
+                        " armorClass INTEGER, \n" +
+                        " armor TEXT, \n" +
+                        " hitPointMax INTEGER, \n" +
+                        " hitPointCurrent INTEGER, \n" +
+                        " speed INTEGER, \n" +
+                        " strength INTEGER, \n" +
+                        " dexterity INTEGER, \n" +
+                        " constitution INTEGER, \n" +
+                        " intelligence INTEGER, \n" +
+                        " wisdom INTEGER, \n" +
+                        " charisma INTEGER, \n" +
+                        " strSave INTEGER, \n" +
+                        " dexSave INTEGER, \n" +
+                        " conSave INTEGER, \n" +
+                        " intSave INTEGER, \n" +
+                        " wisSave INTEGER, \n" +
+                        " chaSave INTEGER, \n" +
+                        " senses INTEGER, \n" +
+                        " languages INTEGER, \n" +
+                        " locationID INTEGER, \n" +
+                        " FOREIGN KEY(locationID) REFERENCES Locations(locationID) \n" +
+                        ")");
     }
 
     /**
-     * Overrides Modifiable's method. Takes a Character object and uses its data to insert a new row into the Characters
+     * Overrides Modifiable's method. Takes a models.Character object and uses its data to insert a new row into the Characters
      * table.
      *
-     * @param characterData models.Character object to retrieve the data from for the row entry.
+     * @param characterData Character object to retrieve the data from for the row entry.
      * @throws SQLException sql throw.
      */
     @Override
     public void insertData(DataModel characterData) throws SQLException {
         connect();
-        String sql = "INSERT OR IGNORE INTO Characters(name, title, description, strength, dexterity, constitution, " +
-                "intelligence, wisdom, charisma, locationID) \n" +
-                "VALUES(?,?,?,?,?,?,?,?,?,?)";
+        String sql = "INSERT OR IGNORE INTO Characters(name, look, title, race, voice, personality, desires, fears, background, " +
+                "knowledge, opinion, descriptor, armorClass, armor, hitPointMax, hitPointCurrent, speed, strength, dexterity, constitution, " +
+                "intelligence, wisdom, charisma, strSave, dexSave, conSave, intSave, wisSave, chaSave, senses, languages, locationID) \n" +
+                "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
         Character character = (Character) characterData;
 
         try (PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)){
             pstmt.setString(1, character.getName());
-            pstmt.setString(2, character.getTitle());
-            pstmt.setString(3, character.getDescription());
+            pstmt.setString(2, character.getLook());
+            pstmt.setString(3, character.getTitle());
+            pstmt.setString(4, character.getRace());
+            pstmt.setString(5, character.getVoice());
+            pstmt.setString(6, character.getPersonality());
+            pstmt.setString(7, character.getDesires());
+            pstmt.setString(8, character.getFears());
+            pstmt.setString(9, character.getBackground());
+            pstmt.setString(10, character.getKnowledge());
+            pstmt.setString(11, character.getOpinion());
+            pstmt.setString(12, character.getDescriptor());
+            pstmt.setInt(13, character.getArmorClass());
+            pstmt.setString(14, character.getArmor());
+            pstmt.setInt(15, character.getHitPointMax());
+            pstmt.setInt(16, character.getHitPointCurrent());
+            pstmt.setInt(17, character.getSpeed());
             int[] scores = character.getStats().getScores();
-            pstmt.setInt(4, scores[0]);
-            pstmt.setInt(5, scores[1]);
-            pstmt.setInt(6, scores[2]);
-            pstmt.setInt(7, scores[3]);
-            pstmt.setInt(8, scores[4]);
-            pstmt.setInt(9, scores[5]);
-            pstmt.setInt(10, character.getLocationID());
+            pstmt.setInt(18, scores[0]);
+            pstmt.setInt(19, scores[1]);
+            pstmt.setInt(20, scores[2]);
+            pstmt.setInt(21, scores[3]);
+            pstmt.setInt(22, scores[4]);
+            pstmt.setInt(23, scores[5]);
+            pstmt.setInt(24, character.getSaveByIndex(0));
+            pstmt.setInt(25, character.getSaveByIndex(1));
+            pstmt.setInt(26, character.getSaveByIndex(2));
+            pstmt.setInt(27, character.getSaveByIndex(3));
+            pstmt.setInt(28, character.getSaveByIndex(4));
+            pstmt.setInt(29, character.getSaveByIndex(5));
+            pstmt.setString(30, character.getSenses());
+            pstmt.setString(31, character.getLanguages());
+            pstmt.setInt(32, character.getLocationID());
             int affectedRows = pstmt.executeUpdate();
             if (affectedRows == 0) {
                 System.out.println("No rows affected");
@@ -75,11 +120,11 @@ public class CharacterTable extends Table implements Searchable, Modifiable {
     }
 
     /**
-     * Overrides Modifiable's method. Takes a Character object, finds the match in the database and deletes it. Chose
-     * to use a Character object as the param to keep it consistent with the other Modifiable methods based around
+     * Overrides Modifiable's method. Takes a models.Character object, finds the match in the database and deletes it. Chose
+     * to use a models.Character object as the param to keep it consistent with the other Modifiable methods based around
      * inserting and deleting data.
      *
-     * @param characterData models.Character object to retrieve the ID from.
+     * @param characterData models.models.Character object to retrieve the ID from.
      * @throws SQLException sql.
      */
     @Override
@@ -101,24 +146,50 @@ public class CharacterTable extends Table implements Searchable, Modifiable {
     @Override
     public void updateData(DataModel characterData) throws SQLException {
         connect();
-        String sql = "UPDATE Characters SET name = ?, title = ?, description = ?, strength = ?, dexterity = ?, " +
-                "constitution = ?, intelligence = ?, wisdom = ?, charisma = ?, locationID = ? \n" +
+        String sql = "UPDATE Characters SET name = ?, look = ?, title = ?, race = ?, voice = ?, personality = ?, desires = ?, " +
+                "fears = ?, background = ?, knowledge = ?, opinion = ?, descriptor = ?, armorClass = ?, armor = ?, " +
+                "hitPointMax = ?, hitPointCurrent = ?, speed = ?, strength = ?, dexterity = ?, constitution = ?, " +
+                "intelligence = ?, wisdom = ?, charisma = ?, strSave = ?, dexSave = ?, conSave = ?, intSave = ?, " +
+                "wisSave = ?, chaSave = ?, senses = ?, languages = ?, locationID  = ?" +
                 "WHERE characterID = ?";
         Character character = (Character) characterData;
 
         try {
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, character.getName());
-            pstmt.setString(2, character.getTitle());
-            pstmt.setString(3, character.getDescription());
-            pstmt.setInt(4, character.getStats().getStrength(0));
-            pstmt.setInt(5, character.getStats().getDexterity(0));
-            pstmt.setInt(6, character.getStats().getConstitution(0));
-            pstmt.setInt(7, character.getStats().getIntelligence(0));
-            pstmt.setInt(8, character.getStats().getWisdom(0));
-            pstmt.setInt(9, character.getStats().getCharisma(0));
-            pstmt.setInt(10, character.getLocationID());
-            pstmt.setInt(11, character.getId());
+            pstmt.setString(2, character.getLook());
+            pstmt.setString(3, character.getTitle());
+            pstmt.setString(4, character.getRace());
+            pstmt.setString(5, character.getVoice());
+            pstmt.setString(6, character.getPersonality());
+            pstmt.setString(7, character.getDesires());
+            pstmt.setString(8, character.getFears());
+            pstmt.setString(9, character.getBackground());
+            pstmt.setString(10, character.getKnowledge());
+            pstmt.setString(11, character.getOpinion());
+            pstmt.setString(12, character.getDescriptor());
+            pstmt.setInt(13, character.getArmorClass());
+            pstmt.setString(14, character.getArmor());
+            pstmt.setInt(15, character.getHitPointMax());
+            pstmt.setInt(16, character.getHitPointCurrent());
+            pstmt.setInt(17, character.getSpeed());
+            int[] scores = character.getStats().getScores();
+            pstmt.setInt(18, scores[0]);
+            pstmt.setInt(19, scores[1]);
+            pstmt.setInt(20, scores[2]);
+            pstmt.setInt(21, scores[3]);
+            pstmt.setInt(22, scores[4]);
+            pstmt.setInt(23, scores[5]);
+            pstmt.setInt(24, character.getSaveByIndex(0));
+            pstmt.setInt(25, character.getSaveByIndex(1));
+            pstmt.setInt(26, character.getSaveByIndex(2));
+            pstmt.setInt(27, character.getSaveByIndex(3));
+            pstmt.setInt(28, character.getSaveByIndex(4));
+            pstmt.setInt(29, character.getSaveByIndex(5));
+            pstmt.setString(30, character.getSenses());
+            pstmt.setString(31, character.getLanguages());
+            pstmt.setInt(32, character.getLocationID());
+            pstmt.setInt(33, character.getId());
             pstmt.executeUpdate();
         } finally {
             closeConnection();
@@ -128,16 +199,23 @@ public class CharacterTable extends Table implements Searchable, Modifiable {
     @Override
     public List<Character> getAllData() {
         connect();
-        String sql = "SELECT * FROM Characters ";
+        String sql = "SELECT * FROM Characters";
         List<Character> list = new ArrayList<>();
 
         try {
             ResultSet rs = stmt.executeQuery(sql);
             while (rs.next()) {
-                list.add(new Character(rs.getInt("characterID"), rs.getString("name"), rs.getString("title"),
+                list.add(new Character(rs.getInt("characterID"), rs.getString("name"), rs.getString("look"), rs.getString("title"),
+                        rs.getString("race"), rs.getString("voice"), rs.getString("personality"), rs.getString("desires"),
+                        rs.getString("fears"), rs.getString("background"), rs.getString("knowledge"), rs.getString("opinion"),
+                        rs.getString("descriptor"), rs.getInt("armorClass"), rs.getString("armor"), rs.getInt("hitPointMax"),
+                        rs.getInt("hitPointCurrent"), rs.getInt("speed"),
                         new int[] { rs.getInt("strength"), rs.getInt("dexterity"), rs.getInt("constitution"),
                                 rs.getInt("intelligence"), rs.getInt("wisdom"), rs.getInt("charisma") },
-                        rs.getInt("locationID"), rs.getString("description")));
+                        new int[] { rs.getInt("strSave"), rs.getInt("dexSave"), rs.getInt("conSave"), rs.getInt("intSave"),
+                                rs.getInt("wisSave"), rs.getInt("chaSave") },
+                        rs.getString("senses"), rs.getString("languages"),
+                        rs.getInt("locationID")));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -196,16 +274,38 @@ public class CharacterTable extends Table implements Searchable, Modifiable {
                 "INNER JOIN LocationCharacterHierarchy AS lch ON lch.locationID = Locations.parentID \n" +
                 ") \n" +
                 "SELECT DISTINCT c.characterID, \n" +
-                "                c.name, \n" +
-                "                c.title, \n" +
-                "                c.description, \n" +
-                "                c.strength, \n" +
-                "                c.dexterity, \n" +
-                "                c.constitution, \n" +
-                "                c.intelligence, \n" +
-                "                c.wisdom, \n" +
-                "                c.charisma, \n" +
-                "                lch.locationID \n" +       // Removes duplicates from the ResultSet
+                "       c.name TEXT, \n" +
+                "       c.look TEXT, \n" +
+                "       c.title TEXT, \n" +
+                "       c.race TEXT, \n" +
+                "       c.voice TEXT, \n" +
+                "       c.personality TEXT, \n" +
+                "       c.desires TEXT, \n" +
+                "       c.fears TEXT, \n" +
+                "       c.background TEXT, \n" +
+                "       c.knowledge TEXT, \n" +
+                "       c.opinion TEXT, \n" +
+                "       c.descriptor TEXT, \n" +
+                "       c.armorClass INTEGER, \n" +
+                "       c.armor TEXT, \n" +
+                "       c.hitPointMax INTEGER, \n" +
+                "       c.hitPointCurrent INTEGER, \n" +
+                "       c.speed INTEGER, \n" +
+                "       c.strength INTEGER, \n" +
+                "       c.dexterity INTEGER, \n" +
+                "       c.constitution INTEGER, \n" +
+                "       c.intelligence INTEGER, \n" +
+                "       c.wisdom INTEGER, \n" +
+                "       c.charisma INTEGER, \n" +
+                "       c.strSave INTEGER, \n" +
+                "       c.dexSave INTEGER, \n" +
+                "       c.conSave INTEGER, \n" +
+                "       c.intSave INTEGER, \n" +
+                "       c.wisSave INTEGER, \n" +
+                "       c.chaSave INTEGER, \n" +
+                "       c.senses INTEGER, \n" +
+                "       c.languages INTEGER, \n" +
+                "       lch.locationID INTEGER \n" +
                 "FROM   LocationCharacterHierarchy AS lch \n" +
                 "INNER JOIN Characters AS c ON c.locationID = lch.locationID \n" +
                 "ORDER BY characterID";
@@ -221,10 +321,17 @@ public class CharacterTable extends Table implements Searchable, Modifiable {
             ResultSet rs2 = pstmt2.executeQuery();
 
             while (rs.next()) {
-                list.add(new Character(rs.getInt("characterID"), rs.getString("name"), rs.getString("title"),
+                list.add(new Character(rs.getInt("characterID"), rs.getString("name"), rs.getString("look"), rs.getString("title"),
+                        rs.getString("race"), rs.getString("voice"), rs.getString("personality"), rs.getString("desires"),
+                        rs.getString("fears"), rs.getString("background"), rs.getString("knowledge"), rs.getString("opinion"),
+                        rs.getString("descriptor"), rs.getInt("armorClass"), rs.getString("armor"), rs.getInt("hitPointMax"),
+                        rs.getInt("hitPointCurrent"), rs.getInt("speed"),
                         new int[] { rs.getInt("strength"), rs.getInt("dexterity"), rs.getInt("constitution"),
                                 rs.getInt("intelligence"), rs.getInt("wisdom"), rs.getInt("charisma") },
-                        rs.getInt("locationID"), rs.getString("description")));
+                        new int[] { rs.getInt("strSave"), rs.getInt("dexSave"), rs.getInt("conSave"), rs.getInt("intSave"),
+                                rs.getInt("wisSave"), rs.getInt("chaSave") },
+                        rs.getString("senses"), rs.getString("languages"),
+                        rs.getInt("locationID")));
             }
 
             while (rs2.next()) {
@@ -247,10 +354,17 @@ public class CharacterTable extends Table implements Searchable, Modifiable {
                     }
                 }
                 if (check) {
-                    list.add(new Character(rs2.getInt("characterID"), rs2.getString("name"), rs2.getString("title"),
+                    list.add(new Character(rs2.getInt("characterID"), rs2.getString("name"), rs2.getString("look"), rs2.getString("title"),
+                            rs2.getString("race"), rs2.getString("voice"), rs2.getString("personality"), rs2.getString("desires"),
+                            rs2.getString("fears"), rs2.getString("background"), rs2.getString("knowledge"), rs2.getString("opinion"),
+                            rs2.getString("descriptor"), rs2.getInt("armorClass"), rs2.getString("armor"), rs2.getInt("hitPointMax"),
+                            rs2.getInt("hitPointCurrent"), rs2.getInt("speed"),
                             new int[] { rs2.getInt("strength"), rs2.getInt("dexterity"), rs2.getInt("constitution"),
                                     rs2.getInt("intelligence"), rs2.getInt("wisdom"), rs2.getInt("charisma") },
-                            rs2.getInt("locationID"), rs2.getString("description")));
+                            new int[] { rs2.getInt("strSave"), rs2.getInt("dexSave"), rs2.getInt("conSave"), rs2.getInt("intSave"),
+                                    rs2.getInt("wisSave"), rs2.getInt("chaSave") },
+                            rs2.getString("senses"), rs2.getString("languages"),
+                            rs2.getInt("locationID")));
                 }
             }
         } catch (SQLException e) {

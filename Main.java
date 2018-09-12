@@ -1,9 +1,9 @@
+import databases.Database;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import databases.Database;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -25,11 +25,11 @@ public class Main extends Application {
         Parent root = loader.load();
 
         Controller controller = loader.getController();
-        controller.setup(new Database("data"));
+        controller.setup(new Database("datav2"));
 
         primaryStage.setTitle("5e Manager");
         primaryStage.setScene(new Scene(root));
-        primaryStage.setResizable(false);
+        primaryStage.setResizable(true);
         primaryStage.show();
     }
 

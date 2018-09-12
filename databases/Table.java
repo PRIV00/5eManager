@@ -14,7 +14,7 @@ abstract class Table {
     Statement stmt;
 
     Table(String fileName, String sqlCreateTableStatement) {
-        url = "jdbc:sqlite:C:/Users/Bryn/IdeaProjects/5eManager/" + fileName + ".db";
+        url = "jdbc:sqlite:C:/Users/Bryn/IdeaProjects/5eManagerV2/" + fileName + ".db";
         this.sqlCreateTableStatement = sqlCreateTableStatement;
 
         connect();

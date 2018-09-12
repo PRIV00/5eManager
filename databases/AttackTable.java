@@ -25,11 +25,12 @@ public class AttackTable extends Table implements Modifiable {
                         "damageDice INTEGER, \n" +
                         "damageType TEXT, \n" +
                         "characterID INTEGER, \n" +
-                        "FOREIGN KEY (characterID) REFERENCES Characters(characterID)");
+                        "FOREIGN KEY (characterID) REFERENCES Characters(characterID)" +
+                        ")");
     }
 
     @Override
-    public void insertData(DataModel attackData) throws SQLException {
+    public void insertData(DataModel attackData) {
         connect();
         String sql = "INSERT OR IGNORE INTO Attacks(name, category, attackBonus, range, numDice, damageDice, damageType," +
                 "characterID) VALUES (?,?,?,?,?,?,?,?)";
@@ -54,13 +55,16 @@ public class AttackTable extends Table implements Modifiable {
                     throw new SQLException("No keys generated");
                 }
             }
-        } finally {
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        finally {
             closeConnection();
         }
     }
 
     @Override
-    public void deleteData(DataModel dataModel) throws SQLException {
+    public void deleteData(DataModel dataModel){
         connect();
         String sql = "DELETE FROM Attacks WHERE attackID = ?";
         Attack attack = (Attack) dataModel;
@@ -68,15 +72,18 @@ public class AttackTable extends Table implements Modifiable {
         try (PreparedStatement pstmt = conn.prepareStatement(sql)){
             pstmt.setInt(1, attack.getId());
             pstmt.executeUpdate();
-        } finally {
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        finally {
             closeConnection();
         }
     }
 
     @Override
-    public void updateData(DataModel dataModel) throws SQLException {
+    public void updateData(DataModel dataModel) {
         connect();
-        String sql = "UPDATE Attack SET name = ?, category = ?, attackBonus = ?, range = ?, numDice = ?, damageDice = ?," +
+        String sql = "UPDATE Attacks SET name = ?, category = ?, attackBonus = ?, range = ?, numDice = ?, damageDice = ?," +
                 " damageType = ?, characterID = ? \n" +
                 "WHERE attackID = ?";
         Attack attack = (Attack) dataModel;
@@ -93,7 +100,10 @@ public class AttackTable extends Table implements Modifiable {
             pstmt.setInt(9, attack.getId());
 
             pstmt.executeUpdate();
-        } finally {
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        finally {
             closeConnection();
         }
     }
@@ -105,12 +115,24 @@ public class AttackTable extends Table implements Modifiable {
 
     @Override
     public int getNextID() {
-        return 0;
+        connect();
+        String sql = "SELECT max(attackID) \n" +
+                "FROM Attacks";
+
+        try {
+            ResultSet rs = stmt.executeQuery(sql);
+            return rs.getInt(1) + 1;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return 0;
+        } finally {
+            closeConnection();
+        }
     }
 
-    public List<Attack> getAttacksByCharacter(Character character) throws SQLException {
+    public List<Attack> getAttacksByCharacter(Character character) {
         connect();
-        String sql = "SELECT * FROM Attack \n" +
+        String sql = "SELECT * FROM Attacks \n" +
                 "WHERE characterID = ?";
         List<Attack> list = new ArrayList<>();
 
@@ -123,7 +145,10 @@ public class AttackTable extends Table implements Modifiable {
                         rs.getInt("attackBonus"), rs.getInt("range"), rs.getInt("numDice"),
                         rs.getInt("damageDice"), rs.getString("damageType"), rs.getInt("characterID")));
             }
-        } finally {
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        finally {
             closeConnection();
         }
 

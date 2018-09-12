@@ -1,7 +1,5 @@
 package databases;
 
-import databases.Table;
-
 import java.util.ArrayList;
 import java.util.List;
 

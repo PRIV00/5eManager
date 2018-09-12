@@ -1,162 +1,441 @@
+import databases.AttackTable;
 import databases.CharacterTable;
+import databases.Database;
 import databases.LocationTable;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.web.HTMLEditor;
+import javafx.scene.control.cell.TextFieldTableCell;
+import models.Attack;
 import models.Character;
-import databases.Database;
 import models.Location;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Controller {
 
-    private LocationTable locationTable;
-    private CharacterTable characterTable;
-    private List<Location> masterLocations;
-    private List<Character> masterCharacters;
-    private ObservableList<Location> filteredLocations;
-    private ObservableList<Character> filteredCharacters;
-    private ObservableList<Location> childLocations;
-    private ObservableList<Character> locationCharacters;
+    /* ------------------------------ NON-FXML FIELDS ------------------------------ */
 
-    /* Location Tab Widgets */
+    private LocationTable locationTable;
+    private List<Location> masterLocations;
+    private ObservableList<Location> filteredLocations;
+    private ObservableList<Location> childLocations = FXCollections.observableArrayList(new ArrayList<>());
+    private ObservableList<Character> locationCharacters = FXCollections.observableArrayList(new ArrayList<>());
+
+    private CharacterTable characterTable;
+    private List<Character> masterCharacters;
+    private ObservableList<Character> filteredCharacters;
+
+    private AttackTable attackTable;
+    private ObservableList<Attack> currentCharacterAttacks = FXCollections.observableArrayList();
+
+    /* ------------------------------ TOOLBAR CONTROLS ------------------------------ */
+    @FXML private Button saveAllButton;
+
+    /* ------------------------------ LOCATION TAB CONTROLS ------------------------------ */
+
+    @FXML private TextField locationFilterTextField;
+
+    /* Location TableView and Left display */
     @FXML private TableView<Location> locationTableView = new TableView<>();
+    @FXML private TableColumn<Location, Integer> locIDCol;
     @FXML private TableColumn<Location, String> locNameCol;
     @FXML private TableColumn<Location, String> locTypeCol;
-    @FXML private TableColumn<Location, Integer> locIDCol;
+    @FXML private TableColumn<Location, String> locParentCol;
 
-    @FXML private TextField locName;
-    @FXML private TextField locType;
-    @FXML private ComboBox<Location> parentChoice = new ComboBox<>();
-    @FXML private HTMLEditor locDesc;
-    @FXML private ListView<Location> childLocBox;
+    @FXML private Label locNameLabel;
+    @FXML private Label locTypeLabel;
+    @FXML private Label locParentNameLabel;
+    @FXML private Label locFlavourLabel;
+
+    @FXML private ListView<Location> childLocListView;
     @FXML private ListView<Character> locCharListView;
-    @FXML private Button locSaveButton;
 
-    @FXML private TextField locationFilterField;
-    @FXML private Label locStatusLabel;
+    /* Location Basic Info Entry */
+    @FXML private TextField locNameTextField;
+    @FXML private TextField locTypeTextField;
+    @FXML private ComboBox<Location> locParentChoiceComboBox = new ComboBox<>();
+    @FXML private TextArea locFlavourTextField;
 
-    /* Character Tab Widgets */
+    /* Location Other Info Entry*/
+    @FXML private TextField locSongLinkTextField;
+    @FXML private TextArea locDescriptionTextArea;
+    @FXML private TextArea locCultureTextArea;
+    @FXML private TextArea locGovernmentTextArea;
+    @FXML private TextArea locCrimeTextArea;
+    @FXML private TextArea locDemographicTextArea;
+    @FXML private TextArea locReligionTextArea;
+    @FXML private TextArea locHistoryTextArea;
+
+    /* ------------------------------ CHARACTER TAB CONTROLS ------------------------------ */
+
+    @FXML private TextField characterFilterTextField;
+    @FXML private Button characterAddButton;
+    @FXML private Button characterRemoveButton;
+
+    /* Character TableView and Left display */
     @FXML private TableView<Character> characterTableView = new TableView<>();
     @FXML private TableColumn<Character, Integer> charIDCol;
     @FXML private TableColumn<Character, String> charNameCol;
+    @FXML private TableColumn<Character, String> charRaceCol;
     @FXML private TableColumn<Character, String> charTitleCol;
     @FXML private TableColumn<Character, String> charLocCol;
 
-    @FXML private TextField charName;
-    @FXML private TextField charTitle;
-    @FXML private ComboBox<Location> charLocation = new ComboBox<>();
-    @FXML private TextField strText;
-    @FXML private Label strLabel;
-    @FXML private TextField dexText;
-    @FXML private Label dexLabel;
-    @FXML private TextField conText;
-    @FXML private Label conLabel;
-    @FXML private TextField intText;
-    @FXML private Label intLabel;
-    @FXML private TextField wisText;
-    @FXML private Label wisLabel;
-    @FXML private TextField chaText;
-    @FXML private Label chaLabel;
-    @FXML private HTMLEditor charDesc;
-    @FXML private Button charSaveButton;
+    @FXML private Label charNameLabel;
+    @FXML private Label charTitleLabel;
+    @FXML private Label charLookLabel;
+    @FXML private Label charBackgroundLabel;
+    @FXML private Label charKnowledgeLabel;
+    @FXML private Label charOpinionLabel;
+    @FXML private Label charVoiceLabel;
+    @FXML private Label charPersonalityLabel;
+    @FXML private Label charDesiresLabel;
+    @FXML private Label charFearsLabel;
 
-    @FXML private TextField characterFilterField;
-    @FXML private Label charStatusLabel;
+    /* Character Basic Info Entry*/
+    @FXML private TextField charNameTextField;
+    @FXML private TextField charTitleTextField;
+    @FXML private TextField charRaceTextField;
+    @FXML private ComboBox<Location> charLocationComboBox = new ComboBox<>();
+
+    /* Character Personality & Description Entry*/
+    @FXML private TextField charVoiceTextField;
+    @FXML private TextField charPersonalityTextField;
+    @FXML private TextField charDesiresTextField;
+    @FXML private TextField charFearsTextField;
+    @FXML private TextArea charLookTextArea;
+    @FXML private TextArea charBackgroundTextArea;
+    @FXML private TextArea charKnowledgeTextArea;
+    @FXML private TextArea charOpinionTextArea;
+
+    /* Character Statblock Entry */
+    @FXML private TextField charDescriptorTextField;
+    @FXML private TextField charArmorClassTextField;
+    @FXML private TextField charArmorTextField;
+    @FXML private TextField charHitPointMaxTextField;
+    @FXML private TextField charSpeedTextField;
+    @FXML private TextField charStrengthTextField;
+    @FXML private TextField charDexterityTextField;
+    @FXML private TextField charConstitutionTextField;
+    @FXML private TextField charIntelligenceTextField;
+    @FXML private TextField charWisdomTextField;
+    @FXML private TextField charCharismaTextField;
+    @FXML private TextField charStrengthSaveTextField;
+    @FXML private TextField charDexteritySaveTextField;
+    @FXML private TextField charConstitutionSaveTextField;
+    @FXML private TextField charIntelligenceSaveTextField;
+    @FXML private TextField charWisdomSaveTextField;
+    @FXML private TextField charCharismaSaveTextField;
+    @FXML private TextField charSensesTextField;
+    @FXML private TextField charLanguagesTextField;
+
+
+    /* Character Attack Table*/
+    @FXML private Button charAttackAddButton;
+    @FXML private Button charAttackRemoveButton;
+
+    @FXML private TableView<Attack> attackTableView;
+    @FXML private TableColumn<Attack, String> attackNameColumn = new TableColumn<>();
+    @FXML private TableColumn<Attack, String> attackCategoryColumn;
+    @FXML private TableColumn<Attack, Integer> attackBonusColumn;
+    @FXML private TableColumn<Attack, Integer> attackRangeColumn;
+    @FXML private TableColumn<Attack, Integer> attackNumDiceColumn;
+    @FXML private TableColumn<Attack, Integer> attackDiceTypeColumn;
+    @FXML private TableColumn<Attack, String> attackDmgTypeColumn;
+
 
     public Controller() { } /* Constructor for controller must be empty */
 
     /**
      * Used as a pseudo constructor for the controller to set up necessary variables
-     * for the app. First sets up the Location tab, then the Character tab. Includes many event listeners for
+     * for the app. First sets up the models.Location tab, then the models.Character tab. Includes many event listeners for
      * each control in the tab.
      *
      * @param db the database
      */
     void setup(Database db) {
+        /* ------------------------------ TOOLBAR SETUP ------------------------------ */
+        saveAllButton.setDisable(true);
+        setToolbarListeners();
 
+        /* ------------------------------ LOCATION TAB SETUP ------------------------------ */
+        // Create/Set the SQLite tables
         this.locationTable = db.getLocationTable();
-        this.characterTable = db.getCharacterTable();
 
+        // Prep the observable lists, set parent locations for each object in master list.
         masterLocations = db.getLocationTable().getAllData();
-        masterCharacters = db.getCharacterTable().getAllData();
         setParentLocations(masterLocations, masterLocations);
-        setCharacterLocations(masterCharacters, masterLocations);
         filteredLocations = FXCollections.observableArrayList(masterLocations);
-        filteredCharacters = FXCollections.observableArrayList(masterCharacters);
 
-
-        /* Initial setup for the Location tab - Setting up the TableView */
-
-        locNameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
-        locTypeCol.setCellValueFactory(new PropertyValueFactory<>("locType"));
-        locIDCol.setCellValueFactory(new PropertyValueFactory<>("id"));
-
-        locationTableView.setItems(filteredLocations);
-
-        updateLocationComboBoxes(new Location(-1, "", "", ""));
-        childLocations = FXCollections.observableArrayList(new ArrayList<>());
-        childLocBox.setItems(childLocations);
-
-        locationCharacters = FXCollections.observableArrayList(new ArrayList<>());
+        // Prep controls for the Location Tab
+        locationTableViewSetup(filteredLocations);
+        updateLocationComboBoxes(new Location());
+        childLocListView.setItems(childLocations);
         locCharListView.setItems(locationCharacters);
 
+        // Set Location listeners and select the first row of the table view - ready to go!
+        setLocationTabListeners();
+        locationTableView.getSelectionModel().selectFirst();
 
-        /* Initial setup for the Character Tab */
+        /* ------------------------------ CHARACTER TAB SETUP ------------------------------ */
+        // Create/Set the SQLite tables
+        this.characterTable = db.getCharacterTable();
+        this.attackTable = db.getAttackTable();
+
+        // Prep the observable lists, set attack and location fields for each object in master list.
+        masterCharacters = db.getCharacterTable().getAllData();
+        setCharacterAttacks(masterCharacters);
+        setCharacterLocations(masterCharacters, masterLocations);
+        filteredCharacters = FXCollections.observableArrayList(masterCharacters);
+
+        // Prep controls for Character tab
+        characterTableViewSetup(filteredCharacters);
+        attacksTableViewSetup(currentCharacterAttacks);
+
+        // Set Character listeners and select first row of the table view - ready to go!
+        setCharacterTabListeners();
+        characterTableView.getSelectionModel().selectFirst();
+    }
+
+    /**
+     * Sets listeners for controls in the toolbar at the top of the View.
+     */
+    private void setToolbarListeners() {
+        saveAllButton.setOnAction(event -> {
+            // Save Locations
+            for (Location loc : filteredLocations) {
+                if (loc.isEdited()) {
+                    loc.setName(Main.trim(loc.getName()));
+                    try {
+                        locationTable.updateData(loc);
+                        // Status update here
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                    loc.setEdited(false);
+                }
+            }
+            locationTableView.refresh();
+
+            // Save Characters
+            for (Character c : filteredCharacters) {
+                if (c.isEdited()) {
+                    try {
+                        c.setLocationID(c.getLocation().getId());
+                    } catch (NullPointerException e) {
+                        c.setLocationID(0);
+                    } finally {
+                        c.setName(Main.trim(c.getName()));  // The name currently has asterisks, saving trims them off.
+                    }
+
+                    // Save Attacks
+                    for (Attack atk : c.getAttackList()) {
+                        if (atk.isSetToDelete()) {
+                            attackTable.deleteData(atk);
+                            continue;
+                        }
+
+                        if (atk.getId() != 0) { // Ensures that only atks which have ids already are updated, otherwise it can be assumed that they have just been added since the ID will be 0.
+                            attackTable.updateData(atk);
+                        } else {
+                            attackTable.insertData(atk);
+                        }
+                    }
+
+                    // Update database
+                    try {
+                        characterTable.updateData(c);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                    c.setEdited(false);
+                }
+            }
+
+            saveAllButton.setDisable(true);
+            characterTableView.refresh();
+        });
+    }
+
+    /**
+     * Initializes the tableView for Locations. Sets the columns and CellValueFactories.
+     *
+     * @param locationObservableList the observable list of locations to view.
+     */
+    private void locationTableViewSetup(ObservableList<Location> locationObservableList) {
+        locIDCol.setCellValueFactory(new PropertyValueFactory<>("id"));
+        locNameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
+        locTypeCol.setCellValueFactory(new PropertyValueFactory<>("locType"));
+        locParentCol.setCellValueFactory(new PropertyValueFactory<>("parentName"));
+
+        locationTableView.setItems(locationObservableList);
+    }
+
+    /**
+     * Initializes the tableView for Character, sets the columns to the appropriate fields.
+     *
+     * @param characterObservableList The observable list of characters to view.
+     */
+    private void characterTableViewSetup(ObservableList<Character> characterObservableList) {
         charNameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
+        charRaceCol.setCellValueFactory(new PropertyValueFactory<>("race"));
         charTitleCol.setCellValueFactory(new PropertyValueFactory<>("title"));
         charLocCol.setCellValueFactory(new PropertyValueFactory<>("locName"));
         charIDCol.setCellValueFactory(new PropertyValueFactory<>("id"));
 
-        characterTableView.setItems(filteredCharacters);
-        charSaveButton.setDisable(true);
+        characterTableView.setItems(characterObservableList);
+    }
 
-        setLocationListeners();
-        setCharacterListeners();
+    /**
+     * Initializes the smaller tableView for Attacks. More advanced CellFactories here since I wanted the cells
+     * to be editable directly on the table itself.
+     *
+     * @param attackObservableList The observable list of attacks to view.
+     */
+    private void attacksTableViewSetup(ObservableList<Attack> attackObservableList) {
+        attackNameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+        attackNameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+        attackNameColumn.setOnEditCommit(event -> {
+            TablePosition<Attack, String> pos = event.getTablePosition();
+            String newName = event.getNewValue();
+            int row = pos.getRow();
+            Attack atk = event.getTableView().getItems().get(row);
+            atk.setName(newName);
+            characterEditDisplay(characterTableView.getSelectionModel().getSelectedItem());
+        });
+        attackCategoryColumn.setCellValueFactory(new PropertyValueFactory<>("category"));
+        ObservableList<String> attackCatObsList = FXCollections.observableArrayList(
+                new ArrayList<>(Arrays.asList("Melee", "Ranged"))
+        );
+        attackCategoryColumn.setCellFactory(ComboBoxTableCell.forTableColumn(attackCatObsList));
+        attackCategoryColumn.setOnEditCommit(event -> {
+            TablePosition<Attack, String> pos = event.getTablePosition();
+            String newCat = event.getNewValue();
+            int row = pos.getRow();
+            Attack atk = event.getTableView().getItems().get(row);
+            atk.setCategory(newCat);
+        });
+        attackBonusColumn.setCellValueFactory(new PropertyValueFactory<>("attackBonus"));
+        attackRangeColumn.setCellValueFactory(new PropertyValueFactory<>("range"));
+        attackNumDiceColumn.setCellValueFactory(new PropertyValueFactory<>("numDice"));
+        attackDiceTypeColumn.setCellValueFactory(new PropertyValueFactory<>("damageDice"));
+        attackDmgTypeColumn.setCellValueFactory(new PropertyValueFactory<>("damageType"));
 
-        characterTableView.getSelectionModel().selectFirst();
-        locationTableView.getSelectionModel().selectFirst();
+        attackTableView.setItems(attackObservableList);
+    }
+
+    /**
+     * Fetch data from SQL table Attacks, assigns the attack list to each character based on ID.
+     */
+    private void setCharacterAttacks(List<Character> characterList) {
+        for (Character c : characterList) {
+            c.setAttackList(attackTable.getAttacksByCharacter(c));
+        }
     }
 
     /**
      * Sets the listeners for the character tab. Includes listeners for selecting different rows and updating the
-     * display, as well as listeners that set the Character's attributes based on key presses, allowing the user to
+     * display, as well as listeners that set the models.Character's attributes based on key presses, allowing the user to
      * edit multiple rows and save them all at once.
      */
-    private void setCharacterListeners() {
+    private void setCharacterTabListeners() {
         characterTableView.getSelectionModel().selectedItemProperty().addListener(
                 (observable, oldValue, newValue) -> {
                     Character c = characterTableView.getSelectionModel().getSelectedItem();
 
-                    charName.setDisable(false);
-                    charTitle.setDisable(false);
-                    charLocation.setDisable(false);
-                    strText.setDisable(false);
-                    dexText.setDisable(false);
-                    conText.setDisable(false);
-                    intText.setDisable(false);
-                    wisText.setDisable(false);
-                    chaText.setDisable(false);
-                    charDesc.setDisable(false);
+                    charNameTextField.setDisable(false);
+                    charTitleTextField.setDisable(false);
+                    charRaceTextField.setDisable(false);
+                    charLocationComboBox.setDisable(false);
+
+                    charVoiceTextField.setDisable(false);
+                    charPersonalityTextField.setDisable(false);
+                    charDesiresTextField.setDisable(false);
+                    charFearsTextField.setDisable(false);
+                    charLookTextArea.setDisable(false);
+                    charBackgroundTextArea.setDisable(false);
+                    charKnowledgeTextArea.setDisable(false);
+                    charOpinionTextArea.setDisable(false);
+
+                    charDescriptorTextField.setDisable(false);
+                    charArmorClassTextField.setDisable(false);
+                    charArmorTextField.setDisable(false);
+                    charHitPointMaxTextField.setDisable(false);
+                    charSpeedTextField.setDisable(false);
+                    charStrengthTextField.setDisable(false);
+                    charDexterityTextField.setDisable(false);
+                    charConstitutionTextField.setDisable(false);
+                    charIntelligenceTextField.setDisable(false);
+                    charWisdomTextField.setDisable(false);
+                    charCharismaTextField.setDisable(false);
+                    charStrengthSaveTextField.setDisable(false);
+                    charDexteritySaveTextField.setDisable(false);
+                    charConstitutionSaveTextField.setDisable(false);
+                    charIntelligenceSaveTextField.setDisable(false);
+                    charWisdomSaveTextField.setDisable(false);
+                    charSensesTextField.setDisable(false);
+                    charCharismaSaveTextField.setDisable(false);
+                    charLanguagesTextField.setDisable(false);
                     try {
-                        charName.setText(Main.trim(c.getName()));
-                        charTitle.setText(c.getTitle());
-                        charDesc.setHtmlText(c.getDescription());
-                        charLocation.setValue(c.getLocation());
-                        strText.setText(String.valueOf(c.getStats().getStrength(0)));
-                        dexText.setText(String.valueOf(c.getStats().getDexterity(0)));
-                        conText.setText(String.valueOf(c.getStats().getConstitution(0)));
-                        intText.setText(String.valueOf(c.getStats().getIntelligence(0)));
-                        wisText.setText(String.valueOf(c.getStats().getWisdom(0)));
-                        chaText.setText(String.valueOf(c.getStats().getCharisma(0)));
-                        setStatLabels(c);
-                        charLocation.setValue(c.getLocation());
+                        charNameLabel.setText(Main.trim(c.getName()));
+                        charTitleLabel.setText(c.getTitle());
+                        charLookLabel.setText(c.getLook());
+
+                        charBackgroundLabel.setText(c.getBackground());
+                        charKnowledgeLabel.setText(c.getKnowledge());
+                        charOpinionLabel.setText(c.getOpinion());
+                        charVoiceLabel.setText(c.getVoice());
+                        charPersonalityLabel.setText(c.getPersonality());
+                        charDesiresLabel.setText(c.getDesires());
+                        charFearsLabel.setText(c.getFears());
+
+                        charNameTextField.setText(Main.trim(c.getName()));
+                        charTitleTextField.setText(c.getTitle());
+                        charRaceTextField.setText(c.getRace());
+                        charLocationComboBox.setValue(c.getLocation());
+
+                        charVoiceTextField.setText(c.getVoice());
+                        charPersonalityTextField.setText(c.getPersonality());
+                        charDesiresTextField.setText(c.getDesires());
+                        charFearsTextField.setText(c.getFears());
+                        charLookTextArea.setText(c.getLook());
+                        charBackgroundTextArea.setText(c.getBackground());
+                        charKnowledgeTextArea.setText(c.getKnowledge());
+                        charOpinionTextArea.setText(c.getOpinion());
+
+                        charDescriptorTextField.setText(c.getDescriptor());
+                        charArmorClassTextField.setText(String.valueOf(c.getArmorClass()));
+                        charArmorTextField.setText(c.getArmor());
+                        charHitPointMaxTextField.setText(String.valueOf(c.getHitPointMax()));
+                        charSpeedTextField.setText(String.valueOf(c.getSpeed()));
+                        charStrengthTextField.setText(String.valueOf(c.getStats().getStrength(0)));
+                        charDexterityTextField.setText(String.valueOf(c.getStats().getDexterity(0)));
+                        charConstitutionTextField.setText(String.valueOf(c.getStats().getConstitution(0)));
+                        charIntelligenceTextField.setText(String.valueOf(c.getStats().getIntelligence(0)));
+                        charWisdomTextField.setText(String.valueOf(c.getStats().getWisdom(0)));
+                        charCharismaTextField.setText(String.valueOf(c.getStats().getCharisma(0)));
+                        charStrengthSaveTextField.setText(String.valueOf(c.getSaveByIndex(0)));
+                        charDexteritySaveTextField.setText(String.valueOf(c.getSaveByIndex(1)));
+                        charConstitutionSaveTextField.setText(String.valueOf(c.getSaveByIndex(2)));
+                        charIntelligenceSaveTextField.setText(String.valueOf(c.getSaveByIndex(3)));
+                        charWisdomSaveTextField.setText(String.valueOf(c.getSaveByIndex(4)));
+                        charCharismaSaveTextField.setText(String.valueOf(c.getSaveByIndex(5)));
+                        charSensesTextField.setText(c.getSenses());
+                        charLanguagesTextField.setText(c.getLanguages());
+
+                        currentCharacterAttacks.clear();
+                        for (Attack atk : c.getAttackList()) {
+                            if (!atk.isSetToDelete()) {
+                                currentCharacterAttacks.add(atk);
+                            }
+                        }
+
                         boolean editPending = false;
                         for (Character c2 : filteredCharacters) {
                             if (c2.isEdited()) {
@@ -164,95 +443,279 @@ public class Controller {
                             }
                         }
                         if (!editPending) {
-                            charSaveButton.setDisable(true);
+                            saveAllButton.setDisable(true);
                         }
                     } catch (NullPointerException e) {
-                        charName.setDisable(true);
-                        charTitle.setDisable(true);
-                        charLocation.setDisable(true);
-                        strText.setDisable(true);
-                        dexText.setDisable(true);
-                        conText.setDisable(true);
-                        intText.setDisable(true);
-                        wisText.setDisable(true);
-                        chaText.setDisable(true);
-                        charDesc.setDisable(true);
-                        charSaveButton.setDisable(true);
+                        e.printStackTrace();
+                        charNameTextField.setDisable(true);
+                        charTitleTextField.setDisable(true);
+                        charRaceTextField.setDisable(true);
+                        charLocationComboBox.setDisable(true);
+
+                        charVoiceTextField.setDisable(true);
+                        charPersonalityTextField.setDisable(true);
+                        charDesiresTextField.setDisable(true);
+                        charFearsTextField.setDisable(true);
+                        charLookTextArea.setDisable(true);
+                        charBackgroundTextArea.setDisable(true);
+                        charKnowledgeTextArea.setDisable(true);
+                        charOpinionTextArea.setDisable(true);
+
+                        charDescriptorTextField.setDisable(true);
+                        charArmorClassTextField.setDisable(true);
+                        charArmorTextField.setDisable(true);
+                        charHitPointMaxTextField.setDisable(true);
+                        charSpeedTextField.setDisable(true);
+                        charStrengthTextField.setDisable(true);
+                        charDexterityTextField.setDisable(true);
+                        charConstitutionTextField.setDisable(true);
+                        charIntelligenceTextField.setDisable(true);
+                        charWisdomTextField.setDisable(true);
+                        charCharismaTextField.setDisable(true);
+                        charStrengthSaveTextField.setDisable(true);
+                        charDexteritySaveTextField.setDisable(true);
+                        charConstitutionSaveTextField.setDisable(true);
+                        charIntelligenceSaveTextField.setDisable(true);
+                        charWisdomSaveTextField.setDisable(true);
+                        charCharismaSaveTextField.setDisable(true);
+                        charSensesTextField.setDisable(true);
+                        charLanguagesTextField.setDisable(true);
                     }
                 });
 
-        charLocation.valueProperty().addListener((observable, oldValue, newValue) -> {
+        characterAddButton.setOnAction(event -> {
+            Character c = new Character();
+            c.setId(characterTable.getNextID());
+
+            try {
+                characterTable.insertData(c);
+                masterCharacters.add(c);
+                filteredCharacters.add(c);
+                characterTableView.getSelectionModel().select(c);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        });
+
+        characterRemoveButton.setOnAction(event -> {
+            Character c = characterTableView.getSelectionModel().getSelectedItem();
+            try {
+                characterTable.deleteData(c);
+            } catch (SQLException e) {
+                // Status update here
+            }
+            masterCharacters.remove(c);
+            filteredCharacters.remove(c);
+        });
+
+        charNameTextField.setOnKeyReleased(event -> {
+            Character c = characterTableView.getSelectionModel().getSelectedItem();
+            c.setName(charNameTextField.getText());
+            charNameLabel.setText(c.getName());
+            characterEditDisplay(c);
+        });
+
+        charTitleTextField.setOnKeyReleased(event -> {
+            Character c = characterTableView.getSelectionModel().getSelectedItem();
+            c.setTitle(charTitleTextField.getText());
+            charTitleLabel.setText(c.getTitle());
+            characterEditDisplay(c);
+        });
+
+        charRaceTextField.setOnKeyReleased(event -> {
+            Character c = characterTableView.getSelectionModel().getSelectedItem();
+            c.setRace(charRaceTextField.getText());
+            characterEditDisplay(c);
+        });
+
+        charLocationComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
             Character c = characterTableView.getSelectionModel().getSelectedItem();
             try {
                 if (c.getLocationID() != newValue.getId()) {
-                    c.setLocation(charLocation.getValue());
+                    c.setLocation(charLocationComboBox.getValue());
                     try {
                         c.setLocationID(c.getLocation().getId());
                     } catch (NullPointerException e) {
                         c.setLocationID(0);
                     }
-                    c.setName("**" + Main.trim(c.getName()) + "**");
-                    c.setEdited(true);
-                    characterTableView.refresh();
+                    characterEditDisplay(c);
                 }
-                charSaveButton.setDisable(false);
             } catch (NullPointerException e) {
                 System.out.println("k");
             }
         });
 
-        charName.setOnKeyReleased(event -> {
+        charVoiceTextField.setOnKeyReleased(event -> {
             Character c = characterTableView.getSelectionModel().getSelectedItem();
-            c.setName(charName.getText());
-            c.setName("**" + Main.trim(c.getName()) + "**");
-            c.setEdited(true);
-            characterTableView.refresh();
-            charSaveButton.setDisable(false);
+            c.setVoice(charVoiceTextField.getText());
+            charVoiceLabel.setText(c.getVoice());
+            characterEditDisplay(c);
         });
 
-        charDesc.setOnKeyReleased(event -> {
+        charPersonalityTextField.setOnKeyReleased(event -> {
             Character c = characterTableView.getSelectionModel().getSelectedItem();
-            c.setDescription(charDesc.getHtmlText());
-            c.setName("**" + Main.trim(c.getName()) + "**");
-            c.setEdited(true);
-            characterTableView.refresh();
-            charSaveButton.setDisable(false);
+            c.setPersonality(charPersonalityTextField.getText());
+            charPersonalityLabel.setText(c.getPersonality());
+            characterEditDisplay(c);
         });
 
-        charTitle.setOnKeyReleased(event -> {
+        charDesiresTextField.setOnKeyReleased(event -> {
             Character c = characterTableView.getSelectionModel().getSelectedItem();
-            c.setTitle(charTitle.getText());
-            c.setName("**" + Main.trim(c.getName()) + "**");
-            c.setEdited(true);
-            characterTableView.refresh();
-            charSaveButton.setDisable(false);
+            c.setDesires(charDesiresTextField.getText());
+            charDesiresLabel.setText(c.getDesires());
+            characterEditDisplay(c);
+        });
+
+        charFearsTextField.setOnKeyReleased(event -> {
+            Character c = characterTableView.getSelectionModel().getSelectedItem();
+            c.setFears(charFearsTextField.getText());
+            charFearsLabel.setText(c.getFears());
+            characterEditDisplay(c);
+        });
+
+        charLookTextArea.setOnKeyReleased(event -> {
+            Character c = characterTableView.getSelectionModel().getSelectedItem();
+            c.setLook(charLookTextArea.getText());
+            charLookLabel.setText(c.getLook());
+            characterEditDisplay(c);
+        });
+
+        charBackgroundTextArea.setOnKeyReleased(event -> {
+            Character c = characterTableView.getSelectionModel().getSelectedItem();
+            c.setBackground(charBackgroundTextArea.getText());
+            charBackgroundLabel.setText(c.getBackground());
+            characterEditDisplay(c);
+        });
+
+        charKnowledgeTextArea.setOnKeyReleased(event -> {
+            Character c = characterTableView.getSelectionModel().getSelectedItem();
+            c.setKnowledge(charKnowledgeTextArea.getText());
+            charKnowledgeLabel.setText(c.getKnowledge());
+            characterEditDisplay(c);
+        });
+
+        charOpinionTextArea.setOnKeyReleased(event -> {
+            Character c = characterTableView.getSelectionModel().getSelectedItem();
+            c.setOpinion(charOpinionTextArea.getText());
+            charOpinionLabel.setText(c.getOpinion());
+            characterEditDisplay(c);
+        });
+
+        charDescriptorTextField.setOnKeyReleased(event -> {
+            Character c = characterTableView.getSelectionModel().getSelectedItem();
+            c.setDescriptor(charDescriptorTextField.getText());
+            characterEditDisplay(c);
+        });
+
+        charArmorClassTextField.setOnKeyReleased(event -> {
+            Character c = characterTableView.getSelectionModel().getSelectedItem();
+            c.setArmorClass(Integer.parseInt(charArmorClassTextField.getText()));
+            characterEditDisplay(c);
+        });
+
+        charArmorTextField.setOnKeyReleased(event -> {
+            Character c = characterTableView.getSelectionModel().getSelectedItem();
+            c.setArmor(charArmorTextField.getText());
+            characterEditDisplay(c);
+        });
+
+        charHitPointMaxTextField.setOnKeyReleased(event -> {
+            Character c = characterTableView.getSelectionModel().getSelectedItem();
+            c.setHitPointCurrent(Integer.parseInt(charHitPointMaxTextField.getText()));
+            characterEditDisplay(c);
+        });
+
+        charSpeedTextField.setOnKeyReleased(event -> {
+            Character c = characterTableView.getSelectionModel().getSelectedItem();
+            c.setSpeed(Integer.parseInt(charSpeedTextField.getText()));
+            characterEditDisplay(c);
+        });
+
+        //************** MISSING SAVES LISTENERS
+
+        charSensesTextField.setOnKeyReleased(event -> {
+            Character c = characterTableView.getSelectionModel().getSelectedItem();
+            c.setSenses(charSensesTextField.getText());
+            characterEditDisplay(c);
+        });
+
+        charLanguagesTextField.setOnKeyReleased(event -> {
+            Character c = characterTableView.getSelectionModel().getSelectedItem();
+            c.setLanguages(charLanguagesTextField.getText());
+            characterEditDisplay(c);
+        });
+
+        charAttackAddButton.setOnAction(event -> { //NEED TO SET TABLE UPDATES IN SAVEALL
+            Character c = characterTableView.getSelectionModel().getSelectedItem();
+            Attack atk = new Attack();
+            atk.setCharacterID(c.getId());
+            c.addAttack(atk);
+            currentCharacterAttacks.add(atk);
+            saveAllButton.setDisable(false);
+            characterEditDisplay(c);
+        });
+
+        charAttackRemoveButton.setOnAction(event -> {
+            Character c = characterTableView.getSelectionModel().getSelectedItem();
+            Attack atk = attackTableView.getSelectionModel().getSelectedItem();
+            atk.setToDelete(true);
+            currentCharacterAttacks.remove(atk);
+            saveAllButton.setDisable(false);
+            characterEditDisplay(c);
         });
     }
 
     /**
-     * Sets the Location tab listeners. Basically just put everything under here that only has a single listener to
+     * Quick method to avoid code duplication for setCharacterTabListeners. Sets the Character object as edited.
+     */
+    private void characterEditDisplay(Character c) {
+        c.setName("**" + Main.trim(c.getName()) + "**");
+        c.setEdited(true);
+        characterTableView.refresh();
+        saveAllButton.setDisable(false);
+    }
+
+    /**
+     * Sets the models.Location tab listeners. Basically just put everything under here that only has a single listener to
      * avoid flooding the source code with dozens of methods.
      */
-    private void setLocationListeners() {
+    private void setLocationTabListeners() {
 
+        /* Left side display and tableview listeners */
         locationTableView.getSelectionModel().selectedItemProperty().addListener(event -> {
             Location loc = locationTableView.getSelectionModel().getSelectedItem();
-            locType.setDisable(false);
-            locName.setDisable(false);
-            locDesc.setDisable(false);
-            parentChoice.setDisable(false);
-            childLocBox.setDisable(false);
+
+            childLocListView.setDisable(false);
             locCharListView.setDisable(false);
+
+            locTypeTextField.setDisable(false);
+            locNameTextField.setDisable(false);
+            locParentChoiceComboBox.setDisable(false);
+            locFlavourTextField.setDisable(false);
+
+            locSongLinkTextField.setDisable(false);
+            locDescriptionTextArea.setDisable(false);
+            locCultureTextArea.setDisable(false);
+            locGovernmentTextArea.setDisable(false);
+            locCrimeTextArea.setDisable(false);
+            locDemographicTextArea.setDisable(false);
+            locReligionTextArea.setDisable(false);
+            locHistoryTextArea.setDisable(false);
 
             try {
                 updateLocationComboBoxes(loc);
 
-                locName.setText(Main.trim(loc.getName()));
-                locType.setText(loc.getLocType());
-                locDesc.setHtmlText(loc.getDescription());
-                childLocBox.getItems().clear();
+                locNameLabel.setText(loc.getName());
+                locTypeLabel.setText(loc.getLocType() + " ");
+                try {
+                    locParentNameLabel.setText(String.format("(%s)", Main.trim(loc.getParent().getName())));
+                } catch (NullPointerException e) {
+                    locParentNameLabel.setText("");
+                }
+                locFlavourLabel.setText(loc.getFlavour());
+
+                childLocListView.getItems().clear();
                 locCharListView.getItems().clear();
-                parentChoice.setValue(loc.getParent());
 
                 List<Location> x = new ArrayList<>();
                 getChildLocations(x, loc);
@@ -261,85 +724,146 @@ public class Controller {
                 List<Character> y = new ArrayList<>();
                 getCharacters(y, loc);
                 locationCharacters.addAll(y);
+
+                locNameTextField.setText(Main.trim(loc.getName()));
+                locTypeTextField.setText(loc.getLocType());
+                locParentChoiceComboBox.setValue(loc.getParent());
+                locFlavourTextField.setText(loc.getFlavour());
+
+                locSongLinkTextField.setText(loc.getSongLink());
+                locDescriptionTextArea.setText(loc.getDescription());
+                locCultureTextArea.setText(loc.getCulture());
+                locGovernmentTextArea.setText(loc.getGovernment());
+                locCrimeTextArea.setText(loc.getCrime());
+                locDemographicTextArea.setText(loc.getDemographic());
+                locReligionTextArea.setText(loc.getReligion());
+                locHistoryTextArea.setText(loc.getHistory());
+
             } catch (NullPointerException e) {
-                locName.setDisable(true);
-                locType.setDisable(true);
-                locDesc.setDisable(true);
-                parentChoice.setDisable(true);
-                locSaveButton.setDisable(true);
-                childLocBox.setDisable(true);
+                childLocListView.setDisable(true);
                 locCharListView.setDisable(true);
+
+                locNameTextField.setDisable(true);
+                locTypeTextField.setDisable(true);
+                locParentChoiceComboBox.setDisable(true);
+                locFlavourTextField.setDisable(true);
+
+                locSongLinkTextField.setDisable(true);
+                locDescriptionTextArea.setDisable(true);
+                locCultureTextArea.setDisable(true);
+                locGovernmentTextArea.setDisable(true);
+                locCrimeTextArea.setDisable(true);
+                locDemographicTextArea.setDisable(true);
+                locReligionTextArea.setDisable(true);
+                locHistoryTextArea.setDisable(true);
             }
         });
 
-        locName.setOnKeyReleased(event -> {
+        /* Info entry control listeners*/
+        locNameTextField.setOnKeyReleased(event -> {
             Location loc = locationTableView.getSelectionModel().getSelectedItem();
-            loc.setName(locName.getText());
-            loc.setName("**" + Main.trim(loc.getName()) + "**");
-            loc.setEdited(true);
-            locationTableView.refresh();
-            locSaveButton.setDisable(false);
+            loc.setName(locNameTextField.getText());
+            locNameLabel.setText(loc.getName());
+            locationEditDisplay(loc);
         });
 
-        locType.setOnKeyReleased(event -> {
+        locTypeTextField.setOnKeyReleased(event -> {
             Location loc = locationTableView.getSelectionModel().getSelectedItem();
-            loc.setLocType(locType.getText());
-            loc.setName("**" + Main.trim(loc.getName()) + "**");
-            loc.setEdited(true);
-            locationTableView.refresh();
-            locSaveButton.setDisable(false);
+            loc.setLocType(locTypeTextField.getText());
+            locTypeLabel.setText(loc.getLocType());
+            locationEditDisplay(loc);
         });
 
-        locDesc.setOnKeyReleased(event -> {
-            Location loc = locationTableView.getSelectionModel().getSelectedItem();
-            loc.setDescription(locDesc.getHtmlText());
-            loc.setName("**" + Main.trim(loc.getName()) + "**");
-            loc.setEdited(true);
-            locationTableView.refresh();
-            locSaveButton.setDisable(false);
-        });
-
-        parentChoice.valueProperty().addListener((observable, oldValue, newValue) -> {
+        locParentChoiceComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
             Location loc = locationTableView.getSelectionModel().getSelectedItem();
 
             try {
                 if (loc.getParentID() != newValue.getId()) {
-                    loc.setParent(parentChoice.getValue());
+                    loc.setParent(locParentChoiceComboBox.getValue());
                     try {
                         loc.setParentID(loc.getParent().getId());
                     } catch (NullPointerException e) {
                         loc.setParentID(0);
                     }
-                    loc.setName("**" + Main.trim(loc.getName()) + "**");
-                    loc.setEdited(true);
-                    locationTableView.refresh();
-                    locSaveButton.setDisable(false);
+                    locationEditDisplay(loc);
+                    locParentNameLabel.setText(String.format("(%s)", loc.getParent().getName()));
                 }
             } catch (NullPointerException e) {
                 // Catches when the combobox clears
             }
         });
+
+        locFlavourTextField.setOnKeyReleased(event -> {
+            Location loc = locationTableView.getSelectionModel().getSelectedItem();
+            loc.setFlavour(locFlavourTextField.getText());
+            locFlavourLabel.setText(loc.getFlavour());
+            locationEditDisplay(loc);
+        });
+
+        locSongLinkTextField.setOnKeyReleased(event -> {
+            Location loc = locationTableView.getSelectionModel().getSelectedItem();
+            loc.setSongLink(locSongLinkTextField.getText());
+            locationEditDisplay(loc);
+        });
+
+        locDescriptionTextArea.setOnKeyReleased(event -> {
+            Location loc = locationTableView.getSelectionModel().getSelectedItem();
+            loc.setDescription(locDescriptionTextArea.getText());
+            locationEditDisplay(loc);
+        });
+
+        locCultureTextArea.setOnKeyReleased(event -> {
+            Location loc = locationTableView.getSelectionModel().getSelectedItem();
+            loc.setCulture(locCultureTextArea.getText());
+            locationEditDisplay(loc);
+        });
+
+        locGovernmentTextArea.setOnKeyReleased(event -> {
+            Location loc = locationTableView.getSelectionModel().getSelectedItem();
+            loc.setGovernment(locGovernmentTextArea.getText());
+            locationEditDisplay(loc);
+        });
+
+        locCrimeTextArea.setOnKeyReleased(event -> {
+            Location loc = locationTableView.getSelectionModel().getSelectedItem();
+            loc.setCrime(locCrimeTextArea.getText());
+            locationEditDisplay(loc);
+        });
+
+        locDemographicTextArea.setOnKeyReleased(event -> {
+            Location loc = locationTableView.getSelectionModel().getSelectedItem();
+            loc.setDemographic(locDemographicTextArea.getText());
+            locationEditDisplay(loc);
+        });
+
+        locReligionTextArea.setOnKeyReleased(event -> {
+            Location loc = locationTableView.getSelectionModel().getSelectedItem();
+            loc.setReligion(locReligionTextArea.getText());
+            locationEditDisplay(loc);
+        });
+
+        locHistoryTextArea.setOnKeyReleased(event -> {
+            Location loc = locationTableView.getSelectionModel().getSelectedItem();
+            loc.setHistory(locHistoryTextArea.getText());
+            locationEditDisplay(loc);
+        });
     }
 
     /**
-     * Dynamically sets the labels above the stat entries to reflect the mod bonuses (i.e. STR (+1)).
-     *
-     * @param c The Character to retrieve the stats from.
+     * Quick method to avoid code duplication for setLocationTabListeners. Sets the Location object as edited.
      */
-    private void setStatLabels(Character c) {
-        strLabel.setText(c.getStats().getModText("STR"));
-        dexLabel.setText(c.getStats().getModText("DEX"));
-        conLabel.setText(c.getStats().getModText("CON"));
-        intLabel.setText(c.getStats().getModText("INT"));
-        wisLabel.setText(c.getStats().getModText("WIS"));
-        chaLabel.setText(c.getStats().getModText("CHA"));
+    private void locationEditDisplay(Location loc) {
+        loc.setName("**" + Main.trim(loc.getName()) + "**");
+        loc.setEdited(true);
+        locationTableView.refresh();
+        saveAllButton.setDisable(false);
     }
 
     /**
      * Sets the objects to appropriate parents based on ID.
      *
      * @param locationList : list to set the parents for.
-     * @param masterLocationList : master list of Location objects to pull from.
+     * @param masterLocationList : master list of models.Location objects to pull from.
      */
     private void setParentLocations(List<Location> locationList, List<Location> masterLocationList) {
         for (Location x : locationList) {
@@ -353,11 +877,11 @@ public class Controller {
     }
 
     /**
-     * Sets the Location object references for the master list of Characters. Does this by matching the foreign key
+     * Sets the models.Location object references for the master list of Characters. Does this by matching the foreign key
      * ID to the location's ID using for loops.
      *
-     * @param characterList : The master models.models.Character list to loop through
-     * @param masterLocationList : The master models.models.Location list to loop through
+     * @param characterList : The master models.models.models.Character list to loop through
+     * @param masterLocationList : The master models.models.models.Location list to loop through
      */
     private void setCharacterLocations(List<Character> characterList,
                                        List<Location> masterLocationList) {
@@ -372,36 +896,36 @@ public class Controller {
     }
 
     /**
-     * Functions updates the comboboxes on both the Location and Characters tab. Takes a location object to avoid
-     * possibility of setting a Location's parent object to itself and starting an infinite loop.
+     * Functions updates the comboboxes on both the models.Location and Characters tab. Takes a location object to avoid
+     * possibility of setting a models.Location's parent object to itself and starting an infinite loop.
      *
-     * @param location : Location object to avoid adding to the combo box.
+     * @param location : models.Location object to avoid adding to the combo box.
      */
     private void updateLocationComboBoxes(Location location) {
-        parentChoice.getItems().clear();
-        charLocation.getItems().clear();
+        locParentChoiceComboBox.getItems().clear();
+        charLocationComboBox.getItems().clear();
 
-        Location blank = new Location(0, "", "", "") {
+        Location blank = new Location() {
             @Override
             public String toString() {
                 return "";
             }
         };
 
-        parentChoice.getItems().add(blank);
-        charLocation.getItems().add(blank);
+        locParentChoiceComboBox.getItems().add(blank);
+        charLocationComboBox.getItems().add(blank);
 
         List<Integer> invalidIDs = invalidParents(location);
 
         for (Location loc : masterLocations) {
             if (location != null && loc.getId() != location.getId() && !(invalidIDs.contains(loc.getId()))) {
-                parentChoice.getItems().add(loc);
+                locParentChoiceComboBox.getItems().add(loc);
             }
-            charLocation.getItems().add(loc);
+            charLocationComboBox.getItems().add(loc);
         }
         try {
             assert location != null;
-            parentChoice.valueProperty().set(location.getParent());
+            locParentChoiceComboBox.valueProperty().set(location.getParent());
         } catch (NullPointerException e) {
             //
         }
@@ -428,7 +952,7 @@ public class Controller {
     }
 
     /**
-     * Recursive method to fetch the hierarchy of Location objects allowing to add all sub locations to a
+     * Recursive method to fetch the hierarchy of models.Location objects allowing to add all sub locations to a
      * list based on a chosen anchor object - In this case, will always be the selected TableView location.
      *
      * Loops through the master list and adds the current location to the recursive list if the current location's
@@ -457,7 +981,7 @@ public class Controller {
     }
 
     /**
-     * Recursive method to get all Characters within a Location and any Characters in that Location's children.
+     * Recursive method to get all Characters within a models.Location and any Characters in that models.Location's children.
      * This way when a specific location is searched, it will display all Characters within that location's hierarchy.
      *
      * @param recursiveList : Recursive list to add characters to.
@@ -486,13 +1010,12 @@ public class Controller {
     private void charStatsListener() {
         Character c = characterTableView.getSelectionModel().getSelectedItem();
         try {
-            c.getStats().setStrength(Integer.parseInt(strText.getText()));
-            c.getStats().setDexterity(Integer.parseInt(dexText.getText()));
-            c.getStats().setConstitution(Integer.parseInt(conText.getText()));
-            c.getStats().setIntelligence(Integer.parseInt(intText.getText()));
-            c.getStats().setWisdom(Integer.parseInt(wisText.getText()));
-            c.getStats().setCharisma(Integer.parseInt(chaText.getText()));
-            setStatLabels(c);
+            c.getStats().setStrength(Integer.parseInt(charStrengthTextField.getText()));
+            c.getStats().setDexterity(Integer.parseInt(charDexterityTextField.getText()));
+            c.getStats().setConstitution(Integer.parseInt(charConstitutionTextField.getText()));
+            c.getStats().setIntelligence(Integer.parseInt(charIntelligenceTextField.getText()));
+            c.getStats().setWisdom(Integer.parseInt(charWisdomTextField.getText()));
+            c.getStats().setCharisma(Integer.parseInt(charCharismaTextField.getText()));
         } catch (NumberFormatException e) {
             // Ignore for now. Catch it if it tries to save later.
         }
@@ -500,87 +1023,13 @@ public class Controller {
         c.setName("**" + Main.trim(c.getName()) + "**");
         c.setEdited(true);
         characterTableView.refresh();
-        charSaveButton.setDisable(false);
-    }
-
-    @FXML
-    private void insertCharacter() {
-        Character c = new Character(characterTable.getNextID(), "", "",
-                new int[] { 10, 10, 10, 10, 10, 10 }, 0, "<html dir=\"ltr\"><head></head><body contenteditable=\"true\">" +
-                "<p><font face=\"Cambria\" size=\"4\"><b>DESCRIPTION</b></font></p><hr><p><font face=\"Cambria\">&nbsp;" +
-                "</font></p><div><font face=\"Cambria\" size=\"4\"><b>LOOK</b></font></div><div><hr></div><div><p></p><p" +
-                "></p></div><p></p><div></div><p></p><p><font face=\"Cambria\">&nbsp;</font></p><p><font face=\"Cambria" +
-                "\" size=\"4\"><b>VOICE</b></font></p><hr><p><font face=\"Cambria\">&nbsp;</font></p><p><font size=\"4\"" +
-                " face=\"Cambria\"><b>PERSONALITY</b></font></p><p></p><p></p><hr><p><font face=\"Cambria\"><i>Ideals:</" +
-                "i>&nbsp;</font></p><p></p><p></p><p></p><p><font face=\"Cambria\"><i>Desires:</i></font></p><p><font fac" +
-                "e=\"Cambria\"><i>Fears:</i></font></p><p></p><p><font size=\"4\" face=\"Cambria\"><b>KNOWLEDGE/SKILLS</b" +
-                "></font></p><p></p><hr><p><font face=\"Cambria\">&nbsp;</font></p><p></p><p><b style=\"font-family: Camb" +
-                "ria;\"><font size=\"4\">COMBAT</font></b></p><p></p><p></p><hr><p></p><p></p><p><i style=\"font-family: " +
-                "Cambria;\">AC:</i><span style=\"font-family: Cambria;\">&nbsp;</span><span class=\"Apple-tab-span\" style=" +
-                "\"font-family: Cambria; white-space: pre;\">\t\t</span><i style=\"font-family: Cambria;\">HP:</i><span styl" +
-                "e=\"font-family: Cambria;\">&nbsp;/</span><span class=\"Apple-tab-span\" style=\"font-family: Cambria; whit" +
-                "e-space: pre;\">\t\t</span><i style=\"font-family: Cambria;\">SPD:</i><span style=\"font-family: Cambria;\"" +
-                ">&nbsp; ft.</span><span class=\"Apple-tab-span\" style=\"font-family: Cambria; white-space: pre;\">\t\t</" +
-                "span><i style=\"font-family: Cambria;\">Proficiency:</i><span style=\"font-family: Cambria;\">&nbsp;+</s" +
-                "pan></p><p><font face=\"Cambria\" size=\"4\"><b>PLAYER INTERACTIONS</b></font></p><hr><p></p><p></p><p><" +
-                "font face=\"Cambria\">&nbsp;</font></p><p></p><p></p>\n" +
-                "\n</body></html>");
-
-        try {
-            characterTable.insertData(c);
-            masterCharacters.add(c);
-            filteredCharacters.add(c);
-            characterTableView.getSelectionModel().select(c);
-            charStatusLabel.setText("New character created. " + Main.getCurrentTime());
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @FXML
-    private void saveCharacters() {
-        for (Character c : filteredCharacters) {
-            if (c.isEdited()) {
-                try {
-                    c.setLocationID(c.getLocation().getId());
-                } catch (NullPointerException e) {
-                    c.setLocationID(0);
-                } finally {
-                    c.setName(Main.trim(c.getName()));  // The name currently has asterisks, saving trims them off.
-                }
-
-                try {
-                    characterTable.updateData(c);
-                    charStatusLabel.setText("Characters saved successfully. " + Main.getCurrentTime());
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-
-                c.setEdited(false);
-            }
-        }
-
-        charSaveButton.setDisable(true);
-        characterTableView.refresh();
-    }
-
-    @FXML
-    private void deleteCharacter() {
-        Character c = characterTableView.getSelectionModel().getSelectedItem();
-        try {
-            characterTable.deleteData(c);
-        } catch (SQLException e) {
-            charStatusLabel.setText("Error deleting " + c.getName() + " " + Main.getCurrentTime());
-        }
-        masterCharacters.remove(c);
-        filteredCharacters.remove(c);
-        charStatusLabel.setText(c.getName() + " deleted successfully. " + Main.getCurrentTime());
+        saveAllButton.setDisable(false);
     }
 
     @FXML
     private void searchCharacters() {
         filteredCharacters.clear();
-        filteredCharacters.addAll(characterTable.query(characterFilterField.getText()));
+        filteredCharacters.addAll(characterTable.query(characterFilterTextField.getText()));
         for (Character c : filteredCharacters) {
             for (Location i : masterLocations) {
                 if (c.getLocationID() == i.getId()) {
@@ -594,25 +1043,6 @@ public class Controller {
     /* --------------------Location tab FXML methods-------------------- */
 
 
-    @FXML
-    private void saveLocations() {
-        for (Location loc : filteredLocations) {
-            if (loc.isEdited()) {
-                loc.setName(Main.trim(loc.getName()));
-                try {
-                    locationTable.updateData(loc);
-                    locStatusLabel.setText("Locations saved successfully " + Main.getCurrentTime());
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-                loc.setEdited(false);
-            }
-        }
-
-        locSaveButton.setDisable(true);
-        locationTableView.refresh();
-    }
-
     /**
      * Simple method to add a new line in the Location TableView. Basically the idea is to create a new Location object, which adds a row
      * to the tableview. The object has all empty values except for the ID, which is generated using the 'getNextID()' database method.
@@ -623,18 +1053,18 @@ public class Controller {
      */
     @FXML
     private void insertLocation() {
-        Location loc = new Location(locationTable.getNextID(), "", "<html dir=\"ltr\"><head></head><body contenteditab" +
-                "le=\"true\"><p><b><font size=\"4\" face=\"Cambria\">DESCRIPTION</font></b></p><hr><p><font face=\"Cam" +
-                "bria\">", "");
+        Location loc = new Location();
+        loc.setId(locationTable.getNextID());
+
         try {
             locationTable.insertData(loc);
             masterLocations.add(loc);
             filteredLocations.add(loc);
             locationTableView.getSelectionModel().select(loc);
-            locStatusLabel.setText(loc.getName() + "New location added. " + Main.getCurrentTime());
+            // Status update here
         } catch (SQLException e) {
             e.printStackTrace();
-            locStatusLabel.setText("Error adding new location entry. " + Main.getCurrentTime());
+            // Status update here
         }
     }
 
@@ -643,10 +1073,10 @@ public class Controller {
         Location loc = locationTableView.getSelectionModel().getSelectedItem();
         try {
             locationTable.deleteData(loc);
-            locStatusLabel.setText(loc.getName() + " deleted successfully. " + Main.getCurrentTime());
+            // Status update here
         } catch (SQLException e) {
             e.printStackTrace();
-            locStatusLabel.setText("Error deleting " + loc.getName() + " " + Main.getCurrentTime());
+            // Status update here
         }
         for (Location i : masterLocations) {
             if (i.getId() == loc.getId()) {
@@ -660,7 +1090,7 @@ public class Controller {
     @FXML
     private void searchLocations() {
         filteredLocations.clear();
-        filteredLocations.addAll(locationTable.query(locationFilterField.getText()));
+        filteredLocations.addAll(locationTable.query(locationFilterTextField.getText()));
         for (Location loc : filteredLocations) {
             for (Location i : masterLocations) {
                 if (loc.getParentID() == i.getId()) {
