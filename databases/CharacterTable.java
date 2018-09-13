@@ -1,7 +1,7 @@
-package databases;
+package main.databases;
 
-import models.DataModel;
-import models.Character;
+import main.models.DataModel;
+import main.models.Character;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

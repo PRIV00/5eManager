@@ -1,0 +1,762 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.shape.*?>
+<?import java.lang.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<TabPane maxWidth="1.7976931348623157E308" prefHeight="706.0" prefWidth="1166.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="main.controllers.DatabaseController">
+  <tabs>
+    <Tab text="Locations">
+      <content>
+            <GridPane>
+               <columnConstraints>
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="583.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="583.0" />
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+               </rowConstraints>
+               <children>
+                  <Accordion GridPane.columnIndex="1">
+                    <panes>
+                      <TitledPane animated="false" expanded="false" text="Information Display">
+                           <content>
+                              <ScrollPane fitToWidth="true" prefHeight="200.0" prefWidth="200.0">
+                                 <content>
+                                    <GridPane>
+                                      <columnConstraints>
+                                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="291.0" minWidth="10.0" prefWidth="133.0" />
+                                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="456.0" minWidth="10.0" prefWidth="448.0" />
+                                      </columnConstraints>
+                                      <rowConstraints>
+                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                      </rowConstraints>
+                                    </GridPane>
+                                 </content>
+                              </ScrollPane>
+                           </content>
+                        </TitledPane>
+                      <TitledPane animated="false" text="Information Entry">
+                        <content>
+                              <ScrollPane fitToWidth="true" prefViewportHeight="624.0" prefViewportWidth="581.0">
+                                 <content>
+                                    <VBox maxWidth="1.7976931348623157E308">
+                                       <children>
+                                          <TitledPane animated="false" text="Basics">
+                                            <content>
+                                                <GridPane vgap="5.0">
+                                                   <columnConstraints>
+                                                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="219.0" minWidth="10.0" prefWidth="101.0" />
+                                                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="438.0" />
+                                                   </columnConstraints>
+                                                   <rowConstraints>
+                                                      <RowConstraints maxHeight="25.0" minHeight="25.0" prefHeight="25.0" vgrow="SOMETIMES" />
+                                                      <RowConstraints maxHeight="25.0" minHeight="25.0" prefHeight="25.0" vgrow="SOMETIMES" />
+                                                      <RowConstraints maxHeight="25.0" minHeight="25.0" prefHeight="25.0" vgrow="SOMETIMES" />
+                                                      <RowConstraints maxHeight="100.0" minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                                                   </rowConstraints>
+                                                   <children>
+                                                      <Label text="Name:" />
+                                                      <Label text="Location Type:" GridPane.rowIndex="1" />
+                                                      <Label text="Parent Location:" GridPane.rowIndex="2" />
+                                                      <TextField fx:id="locNameTextField" maxWidth="500.0" minWidth="300.0" prefWidth="300.0" GridPane.columnIndex="1" />
+                                                      <TextField fx:id="locTypeTextField" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                                      <ComboBox fx:id="locParentChoiceComboBox" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                                      <Label text="Flavour Text:" GridPane.rowIndex="3" GridPane.valignment="TOP" />
+                                                      <TextArea fx:id="locFlavourTextField" prefHeight="200.0" prefWidth="200.0" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                                   </children>
+                                                   <padding>
+                                                      <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                                   </padding>
+                                                </GridPane>
+                                            </content>
+                                             <VBox.margin>
+                                                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                             </VBox.margin>
+                                          </TitledPane>
+                                          <TitledPane animated="false" text="Optional Information">
+                                            <content>
+                                                <GridPane vgap="5.0">
+                                                   <columnConstraints>
+                                                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="179.0" minWidth="10.0" prefWidth="84.0" />
+                                                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="455.0" />
+                                                   </columnConstraints>
+                                                   <rowConstraints>
+                                                      <RowConstraints maxHeight="25.0" minHeight="25.0" prefHeight="25.0" vgrow="SOMETIMES" />
+                                                      <RowConstraints maxHeight="150.0" minHeight="150.0" prefHeight="150.0" vgrow="SOMETIMES" />
+                                                      <RowConstraints maxHeight="150.0" minHeight="150.0" prefHeight="150.0" vgrow="SOMETIMES" />
+                                                      <RowConstraints maxHeight="150.0" minHeight="150.0" prefHeight="150.0" vgrow="SOMETIMES" />
+                                                      <RowConstraints maxHeight="150.0" minHeight="150.0" prefHeight="150.0" vgrow="SOMETIMES" />
+                                                      <RowConstraints maxHeight="150.0" minHeight="150.0" prefHeight="150.0" vgrow="SOMETIMES" />
+                                                      <RowConstraints maxHeight="150.0" minHeight="150.0" prefHeight="150.0" vgrow="SOMETIMES" />
+                                                      <RowConstraints maxHeight="150.0" minHeight="150.0" prefHeight="150.0" vgrow="SOMETIMES" />
+                                                   </rowConstraints>
+                                                   <children>
+                                                      <Label text="Song Link:" />
+                                                      <TextField fx:id="locSongLinkTextField" GridPane.columnIndex="1" />
+                                                      <TextArea fx:id="locDescriptionTextArea" prefHeight="200.0" prefWidth="200.0" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                                      <TextArea fx:id="locCultureTextArea" prefHeight="200.0" prefWidth="200.0" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                                      <TextArea fx:id="locGovernmentTextArea" prefHeight="200.0" prefWidth="200.0" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                                      <TextArea fx:id="locCrimeTextArea" prefHeight="200.0" prefWidth="200.0" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                                                      <Label text="Description:" GridPane.rowIndex="1" />
+                                                      <Label text="Culture:" GridPane.rowIndex="2" />
+                                                      <Label text="Government:" GridPane.rowIndex="3" />
+                                                      <Label text="Crime:" GridPane.rowIndex="4" />
+                                                      <Label text="Demographic:" GridPane.rowIndex="5" />
+                                                      <Label text="Religion:" GridPane.rowIndex="6" />
+                                                      <Label text="History:" GridPane.rowIndex="7" />
+                                                      <TextArea fx:id="locDemographicTextArea" prefHeight="200.0" prefWidth="200.0" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                                                      <TextArea fx:id="locReligionTextArea" prefHeight="200.0" prefWidth="200.0" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+                                                      <TextArea fx:id="locHistoryTextArea" prefHeight="200.0" prefWidth="200.0" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+                                                   </children>
+                                                   <padding>
+                                                      <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                                   </padding>
+                                                </GridPane>
+                                            </content>
+                                             <VBox.margin>
+                                                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                             </VBox.margin>
+                                          </TitledPane>
+                                       </children>
+                                    </VBox>
+                                 </content>
+                              </ScrollPane>
+                        </content>
+                      </TitledPane>
+                    </panes>
+                  </Accordion>
+                  <GridPane hgap="10.0">
+                    <columnConstraints>
+                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                      <RowConstraints maxHeight="40.0" minHeight="40.0" prefHeight="40.0" vgrow="SOMETIMES" />
+                      <RowConstraints maxHeight="545.0" minHeight="10.0" prefHeight="276.0" vgrow="SOMETIMES" />
+                      <RowConstraints maxHeight="345.0" minHeight="10.0" prefHeight="254.0" vgrow="SOMETIMES" />
+                        <RowConstraints maxHeight="40.0" minHeight="40.0" prefHeight="40.0" vgrow="SOMETIMES" />
+                        <RowConstraints maxHeight="345.0" minHeight="10.0" prefHeight="118.0" vgrow="SOMETIMES" />
+                    </rowConstraints>
+                     <children>
+                        <TextField fx:id="locationFilterTextField" maxWidth="200.0" promptText="Search Locations">
+                           <GridPane.margin>
+                              <Insets />
+                           </GridPane.margin>
+                        </TextField>
+                        <TableView fx:id="locationTableView" prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="2" GridPane.rowIndex="1">
+                          <columns>
+                            <TableColumn fx:id="locIDCol" prefWidth="35.0" text="ID" />
+                            <TableColumn fx:id="locNameCol" prefWidth="243.0" text="Name" />
+                              <TableColumn fx:id="locTypeCol" prefWidth="145.0" text="Type" />
+                              <TableColumn fx:id="locParentCol" prefWidth="139.0" text="Parent" />
+                              <TableColumn minWidth="0.0" prefWidth="150.0" text="# of Sub Locations" />
+                              <TableColumn minWidth="0.0" prefWidth="140.0" text="# Characters" />
+                          </columns>
+                        </TableView>
+                        <ImageView fitHeight="225.0" fitWidth="245.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
+                        <ListView fx:id="childLocListView" prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="4" />
+                        <ListView fx:id="locCharListView" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                        <Label text="Child Locations" GridPane.halignment="CENTER" GridPane.rowIndex="3" />
+                        <Label text="Child Characters" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="3" />
+                        <VBox prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                           <children>
+                              <Label fx:id="locNameLabel" text="Location Name">
+                                 <font>
+                                    <Font name="Constantia Bold" size="16.0" />
+                                 </font>
+                              </Label>
+                              <HBox prefWidth="200.0">
+                                 <children>
+                                    <Label fx:id="locTypeLabel" text="Location Type ">
+                                       <font>
+                                          <Font name="Constantia" size="12.0" />
+                                       </font>
+                                    </Label>
+                                    <Label fx:id="locParentNameLabel" text="(Location Parent Name)">
+                                       <font>
+                                          <Font name="Constantia" size="12.0" />
+                                       </font>
+                                    </Label>
+                                 </children>
+                              </HBox>
+                              <Label fx:id="locFlavourLabel" text="Location Flavour Text" wrapText="true">
+                                 <font>
+                                    <Font name="Constantia Italic" size="12.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                           <GridPane.margin>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </GridPane.margin>
+                        </VBox>
+                        <HBox alignment="TOP_RIGHT" prefHeight="100.0" prefWidth="200.0" spacing="5.0" GridPane.columnIndex="1">
+                           <children>
+                              <Button fx:id="locationAddButton" mnemonicParsing="false" text="+">
+                                 <font>
+                                    <Font name="System Bold" size="14.0" />
+                                 </font>
+                              </Button>
+                              <Button fx:id="locationRemoveButton" mnemonicParsing="false" text="-">
+                                 <font>
+                                    <Font name="System Bold" size="14.0" />
+                                 </font>
+                              </Button>
+                           </children>
+                        </HBox>
+                     </children>
+                     <padding>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </padding>
+                  </GridPane>
+               </children>
+            </GridPane>
+      </content>
+    </Tab>
+    <Tab text="Characters">
+      <content>
+            <GridPane>
+               <children>
+                  <Accordion GridPane.columnIndex="1">
+                     <panes>
+                        <TitledPane animated="false" expanded="false" text="Statblock">
+                           <content>
+                              <ScrollPane fitToWidth="true" prefHeight="200.0" prefWidth="200.0">
+                                 <content>
+                                    <GridPane hgap="5.0" vgap="5.0">
+                                      <columnConstraints>
+                                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="265.0" minWidth="10.0" prefWidth="87.0" />
+                                          <ColumnConstraints hgrow="SOMETIMES" maxWidth="265.0" minWidth="10.0" prefWidth="55.0" />
+                                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="466.0" minWidth="10.0" prefWidth="372.0" />
+                                      </columnConstraints>
+                                      <rowConstraints>
+                                        <RowConstraints maxHeight="25.0" vgrow="SOMETIMES" />
+                                        <RowConstraints maxHeight="25.0" vgrow="SOMETIMES" />
+                                        <RowConstraints maxHeight="25.0" vgrow="SOMETIMES" />
+                                          <RowConstraints maxHeight="25.0" minHeight="10.0" vgrow="SOMETIMES" />
+                                          <RowConstraints maxHeight="25.0" minHeight="10.0" vgrow="SOMETIMES" />
+                                          <RowConstraints maxHeight="50.0" minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                          <RowConstraints maxHeight="50.0" minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                          <RowConstraints maxHeight="50.0" minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                          <RowConstraints maxHeight="50.0" minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                          <RowConstraints maxHeight="50.0" minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                      </rowConstraints>
+                                       <children>
+                                          <Label text="&lt;NAME&gt;" GridPane.columnSpan="3" />
+                                          <Label text="&lt;DESCRIPTOR&gt;" GridPane.columnSpan="3" GridPane.rowIndex="1">
+                                             <font>
+                                                <Font name="System Italic" size="12.0" />
+                                             </font>
+                                          </Label>
+                                          <Label text="Armor Class" GridPane.rowIndex="2">
+                                             <font>
+                                                <Font name="System Bold" size="12.0" />
+                                             </font>
+                                          </Label>
+                                          <Label text="Hit Points" GridPane.rowIndex="3">
+                                             <font>
+                                                <Font name="System Bold" size="12.0" />
+                                             </font>
+                                          </Label>
+                                          <Label text="Speed" GridPane.rowIndex="4">
+                                             <font>
+                                                <Font name="System Bold" size="12.0" />
+                                             </font>
+                                          </Label>
+                                          <GridPane GridPane.columnSpan="3" GridPane.rowIndex="5">
+                                            <columnConstraints>
+                                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                            </columnConstraints>
+                                            <rowConstraints>
+                                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                            </rowConstraints>
+                                             <children>
+                                                <Label text="STR" GridPane.halignment="CENTER">
+                                                   <font>
+                                                      <Font name="System Bold" size="12.0" />
+                                                   </font>
+                                                </Label>
+                                                <Label text="DEX" GridPane.columnIndex="1" GridPane.halignment="CENTER">
+                                                   <font>
+                                                      <Font name="System Bold" size="12.0" />
+                                                   </font>
+                                                </Label>
+                                                <Label text="CON" GridPane.columnIndex="2" GridPane.halignment="CENTER">
+                                                   <font>
+                                                      <Font name="System Bold" size="12.0" />
+                                                   </font>
+                                                </Label>
+                                                <Label text="INT" GridPane.columnIndex="3" GridPane.halignment="CENTER">
+                                                   <font>
+                                                      <Font name="System Bold" size="12.0" />
+                                                   </font>
+                                                </Label>
+                                                <Label text="WIS" GridPane.columnIndex="4" GridPane.halignment="CENTER">
+                                                   <font>
+                                                      <Font name="System Bold" size="12.0" />
+                                                   </font>
+                                                </Label>
+                                                <Label text="CHA" GridPane.columnIndex="5" GridPane.halignment="CENTER">
+                                                   <font>
+                                                      <Font name="System Bold" size="12.0" />
+                                                   </font>
+                                                </Label>
+                                                <Label text="&lt;STR&gt;" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+                                                <Label text="&lt;DEX&gt;" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+                                                <Label text="&lt;CON&gt;" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+                                                <Label text="&lt;INT&gt;" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+                                                <Label text="&lt;WIS&gt;" GridPane.columnIndex="4" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+                                                <Label text="&lt;CHA&gt;" GridPane.columnIndex="5" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+                                             </children>
+                                          </GridPane>
+                                          <Label text="&lt;AC&gt;" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                          <Label text="&lt;MAX HP&gt;" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+                                          <TextField GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                          <Label text="&lt;SPD&gt;" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                                          <Label text="Saving Throws" GridPane.rowIndex="6">
+                                             <font>
+                                                <Font name="System Bold" size="12.0" />
+                                             </font>
+                                          </Label>
+                                          <Label text="&lt;SAVES&gt;" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="6" />
+                                          <Label text="Skills" GridPane.rowIndex="7">
+                                             <font>
+                                                <Font name="System Bold" size="12.0" />
+                                             </font>
+                                          </Label>
+                                          <Label text="&lt;SKILLS&gt;" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="7" />
+                                          <Label text="Senses" GridPane.rowIndex="8">
+                                             <font>
+                                                <Font name="System Bold" size="12.0" />
+                                             </font>
+                                          </Label>
+                                          <Label text="&lt;SENSES&gt;" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="8" />
+                                          <Label text="Languages" GridPane.rowIndex="9">
+                                             <font>
+                                                <Font name="System Bold" size="12.0" />
+                                             </font>
+                                          </Label>
+                                          <Label text="&lt;SENSES&gt;" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="9" />
+                                       </children>
+                                       <padding>
+                                          <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                       </padding>
+                                    </GridPane>
+                                 </content>
+                              </ScrollPane>
+                           </content>
+                        </TitledPane>
+                        <TitledPane animated="false" text="Information Entry">
+                           <content>
+                              <ScrollPane fitToWidth="true" prefViewportHeight="624.0" prefViewportWidth="543.0">
+                                 <content>
+                                    <VBox>
+                                       <children>
+                                          <TitledPane animated="false" text="Basics">
+                                            <content>
+                                                <GridPane vgap="5.0">
+                                                   <columnConstraints>
+                                                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="288.0" minWidth="10.0" prefWidth="67.0" />
+                                                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="420.0" minWidth="10.0" prefWidth="420.0" />
+                                                   </columnConstraints>
+                                                   <rowConstraints>
+                                                      <RowConstraints maxHeight="25.0" minHeight="25.0" prefHeight="25.0" vgrow="SOMETIMES" />
+                                                      <RowConstraints maxHeight="25.0" minHeight="25.0" prefHeight="25.0" vgrow="SOMETIMES" />
+                                                      <RowConstraints maxHeight="25.0" minHeight="25.0" prefHeight="25.0" vgrow="SOMETIMES" />
+                                                      <RowConstraints maxHeight="25.0" minHeight="25.0" prefHeight="25.0" vgrow="SOMETIMES" />
+                                                   </rowConstraints>
+                                                   <children>
+                                                      <Label text="Name:" />
+                                                      <Label text="Title:" GridPane.rowIndex="1" />
+                                                      <Label text="Race:" GridPane.rowIndex="2" />
+                                                      <Label text="Location:" GridPane.rowIndex="3" />
+                                                      <TextField fx:id="charNameTextField" maxWidth="500.0" minWidth="300.0" prefWidth="300.0" GridPane.columnIndex="1" />
+                                                      <TextField fx:id="charTitleTextField" maxWidth="500.0" minWidth="300.0" prefWidth="300.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                                      <TextField fx:id="charRaceTextField" maxWidth="500.0" minWidth="300.0" prefWidth="300.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                                      <ComboBox fx:id="charLocationComboBox" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                                   </children>
+                                                   <padding>
+                                                      <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                                   </padding>
+                                                </GridPane>
+                                            </content>
+                                             <VBox.margin>
+                                                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                             </VBox.margin>
+                                          </TitledPane>
+                                          <TitledPane animated="false" text="Personality &amp; Description">
+                                            <content>
+                                                <GridPane vgap="5.0">
+                                                   <columnConstraints>
+                                                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="194.0" minWidth="10.0" prefWidth="133.0" />
+                                                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="354.0" minWidth="10.0" prefWidth="354.0" />
+                                                   </columnConstraints>
+                                                   <rowConstraints>
+                                                      <RowConstraints maxHeight="25.0" minHeight="25.0" prefHeight="25.0" vgrow="SOMETIMES" />
+                                                      <RowConstraints maxHeight="25.0" minHeight="25.0" prefHeight="25.0" vgrow="SOMETIMES" />
+                                                      <RowConstraints maxHeight="25.0" minHeight="25.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                      <RowConstraints maxHeight="25.0" minHeight="25.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                      <RowConstraints maxHeight="100.0" minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                                                      <RowConstraints maxHeight="100.0" minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                                                      <RowConstraints maxHeight="100.0" minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                                                      <RowConstraints maxHeight="100.0" minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                                                   </rowConstraints>
+                                                   <children>
+                                                      <Label text="Voice:" />
+                                                      <Label text="Personality:" GridPane.rowIndex="1" />
+                                                      <Label text="Desires:" GridPane.rowIndex="2" />
+                                                      <Label text="Fears:" GridPane.rowIndex="3" />
+                                                      <Label text="Look:" GridPane.rowIndex="4" />
+                                                      <Label text="Background:" GridPane.rowIndex="5" />
+                                                      <Label text="Knowledge:" GridPane.rowIndex="6" />
+                                                      <TextField fx:id="charVoiceTextField" maxWidth="500.0" minWidth="300.0" prefWidth="300.0" GridPane.columnIndex="1" />
+                                                      <TextField fx:id="charPersonalityTextField" maxWidth="500.0" minWidth="300.0" prefWidth="300.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                                      <TextField fx:id="charDesiresTextField" maxWidth="500.0" minWidth="300.0" prefWidth="300.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                                      <TextField fx:id="charFearsTextField" maxWidth="500.0" minWidth="300.0" prefWidth="300.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                                      <TextArea fx:id="charLookTextArea" prefHeight="200.0" prefWidth="200.0" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                                                      <TextArea fx:id="charBackgroundTextArea" prefHeight="200.0" prefWidth="200.0" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                                                      <TextArea fx:id="charKnowledgeTextArea" prefHeight="200.0" prefWidth="200.0" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+                                                      <Label text="Player Opinion:" GridPane.rowIndex="7" />
+                                                      <TextArea fx:id="charOpinionTextArea" prefHeight="200.0" prefWidth="200.0" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+                                                   </children>
+                                                   <padding>
+                                                      <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                                   </padding>
+                                                </GridPane>
+                                            </content>
+                                             <VBox.margin>
+                                                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                             </VBox.margin>
+                                          </TitledPane>
+                                          <TitledPane animated="false" text="Statblock">
+                                            <content>
+                                                <GridPane prefWidth="513.0" vgap="5.0" GridPane.rowIndex="2">
+                                                   <columnConstraints>
+                                                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="267.0" minWidth="10.0" prefWidth="180.0" />
+                                                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="362.0" minWidth="10.0" prefWidth="349.0" />
+                                                   </columnConstraints>
+                                                   <rowConstraints>
+                                                      <RowConstraints maxHeight="25.0" minHeight="25.0" prefHeight="25.0" vgrow="SOMETIMES" />
+                                                      <RowConstraints maxHeight="25.0" minHeight="25.0" prefHeight="25.0" vgrow="SOMETIMES" />
+                                                      <RowConstraints maxHeight="25.0" minHeight="25.0" prefHeight="25.0" vgrow="SOMETIMES" />
+                                                      <RowConstraints maxHeight="25.0" minHeight="25.0" prefHeight="25.0" vgrow="SOMETIMES" />
+                                                      <RowConstraints maxHeight="55.0" minHeight="55.0" prefHeight="55.0" vgrow="SOMETIMES" />
+                                                      <RowConstraints maxHeight="25.0" minHeight="25.0" prefHeight="25.0" vgrow="SOMETIMES" />
+                                                      <RowConstraints maxHeight="25.0" minHeight="25.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                      <RowConstraints maxHeight="25.0" minHeight="25.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                      <RowConstraints maxHeight="25.0" minHeight="25.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                      <RowConstraints maxHeight="25.0" minHeight="25.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                      <RowConstraints maxHeight="150.0" minHeight="50.0" prefHeight="150.0" vgrow="SOMETIMES" />
+                                                   </rowConstraints>
+                                                   <children>
+                                                      <Label text="Descriptor:" />
+                                                      <Label text="Armor Class / Armor:" GridPane.rowIndex="1" />
+                                                      <Label text="Hit Point Max" GridPane.rowIndex="2" />
+                                                      <Label text="Speed (ft.):" GridPane.rowIndex="3" />
+                                                      <Label text="Ability Scores:" GridPane.rowIndex="4" GridPane.valignment="CENTER" />
+                                                      <GridPane GridPane.columnIndex="1" GridPane.rowIndex="4">
+                                                        <columnConstraints>
+                                                          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                                          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                                        </columnConstraints>
+                                                        <rowConstraints>
+                                                          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                        </rowConstraints>
+                                                         <children>
+                                                            <Label text="STR" GridPane.halignment="CENTER" />
+                                                            <Label text="DEX" GridPane.columnIndex="1" GridPane.halignment="CENTER" />
+                                                            <Label text="CON" GridPane.columnIndex="2" GridPane.halignment="CENTER" />
+                                                            <Label text="INT" GridPane.columnIndex="3" GridPane.halignment="CENTER" />
+                                                            <Label text="WIS" GridPane.columnIndex="4" GridPane.halignment="CENTER" />
+                                                            <TextField fx:id="charStrengthTextField" maxWidth="40.0" minWidth="40.0" prefWidth="40.0" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+                                                            <Label text="CHA" GridPane.columnIndex="5" GridPane.halignment="CENTER" />
+                                                            <TextField fx:id="charDexterityTextField" maxWidth="40.0" minWidth="40.0" prefWidth="40.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+                                                            <TextField fx:id="charConstitutionTextField" maxWidth="40.0" minWidth="40.0" prefWidth="40.0" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+                                                            <TextField fx:id="charIntelligenceTextField" maxWidth="40.0" minWidth="40.0" prefWidth="40.0" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+                                                            <TextField fx:id="charWisdomTextField" maxWidth="40.0" minWidth="40.0" prefWidth="40.0" GridPane.columnIndex="4" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+                                                            <TextField fx:id="charCharismaTextField" maxWidth="40.0" minWidth="40.0" prefWidth="40.0" GridPane.columnIndex="5" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+                                                         </children>
+                                                      </GridPane>
+                                                      <HBox prefHeight="100.0" prefWidth="200.0" spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                                         <children>
+                                                            <TextField fx:id="charArmorClassTextField" maxWidth="50.0" minWidth="50.0" prefWidth="50.0" />
+                                                            <TextField fx:id="charArmorTextField" />
+                                                         </children>
+                                                      </HBox>
+                                                      <TextField fx:id="charSpeedTextField" maxWidth="50.0" minWidth="50.0" prefWidth="50.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                                      <TextField fx:id="charDescriptorTextField" maxWidth="500.0" minWidth="300.0" prefWidth="300.0" GridPane.columnIndex="1" />
+                                                      <TextField fx:id="charHitPointMaxTextField" maxWidth="50.0" minWidth="50.0" prefWidth="50.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                                      <GridPane GridPane.columnIndex="1" GridPane.rowIndex="5">
+                                                         <children>
+                                                            <TextField fx:id="charStrengthSaveTextField" maxWidth="40.0" minWidth="40.0" prefWidth="40.0" GridPane.halignment="CENTER" />
+                                                            <TextField fx:id="charDexteritySaveTextField" maxWidth="40.0" minWidth="40.0" prefWidth="40.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" />
+                                                            <TextField fx:id="charConstitutionSaveTextField" maxWidth="40.0" minWidth="40.0" prefWidth="40.0" GridPane.columnIndex="2" GridPane.halignment="CENTER" />
+                                                            <TextField fx:id="charIntelligenceSaveTextField" maxWidth="40.0" minWidth="40.0" prefWidth="40.0" GridPane.columnIndex="3" GridPane.halignment="CENTER" />
+                                                            <TextField fx:id="charWisdomSaveTextField" maxWidth="40.0" minWidth="40.0" prefWidth="40.0" GridPane.columnIndex="4" GridPane.halignment="CENTER" />
+                                                            <TextField fx:id="charCharismaSaveTextField" maxWidth="40.0" minWidth="40.0" prefWidth="40.0" GridPane.columnIndex="5" GridPane.halignment="CENTER" />
+                                                         </children>
+                                                         <columnConstraints>
+                                                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                                         </columnConstraints>
+                                                         <rowConstraints>
+                                                            <RowConstraints maxHeight="25.0" minHeight="25.0" prefHeight="25.0" vgrow="SOMETIMES" />
+                                                         </rowConstraints>
+                                                      </GridPane>
+                                                      <Label text="Saving Throws:" GridPane.rowIndex="5" />
+                                                      <Label text="Senses:" GridPane.rowIndex="6" />
+                                                      <TextField fx:id="charSensesTextField" maxWidth="500.0" minWidth="300.0" prefWidth="300.0" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+                                                      <Label text="Languages:" GridPane.rowIndex="7" />
+                                                      <TextField fx:id="charLanguagesTextField" maxWidth="500.0" minWidth="300.0" prefWidth="300.0" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+                                                      <Label text="Attacks" GridPane.rowIndex="8">
+                                                         <font>
+                                                            <Font name="System Bold" size="12.0" />
+                                                         </font>
+                                                      </Label>
+                                                      <HBox spacing="5.0" GridPane.rowIndex="9">
+                                                         <children>
+                                                            <Button fx:id="charAttackAddButton" mnemonicParsing="false" prefWidth="25.0" text="+" GridPane.rowIndex="9" />
+                                                            <Button fx:id="charAttackRemoveButton" mnemonicParsing="false" prefWidth="25.0" text="-" />
+                                                         </children>
+                                                      </HBox>
+                                                      <TableView fx:id="attackTableView" editable="true" prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="2" GridPane.rowIndex="10">
+                                                        <columns>
+                                                          <TableColumn fx:id="attackNameColumn" prefWidth="103.0" text="Name" />
+                                                          <TableColumn fx:id="attackCategoryColumn" prefWidth="78.0" text="M/R" />
+                                                            <TableColumn fx:id="attackBonusColumn" prefWidth="44.0" text="+Atk" />
+                                                            <TableColumn fx:id="attackRangeColumn" prefWidth="43.0" text="Range" />
+                                                            <TableColumn fx:id="attackNumDiceColumn" prefWidth="45.0" text="# Dice" />
+                                                            <TableColumn fx:id="attackDiceTypeColumn" prefWidth="67.0" text="Dice Type" />
+                                                            <TableColumn fx:id="attackDmgTypeColumn" prefWidth="120.0" text="Dmg Type" />
+                                                        </columns>
+                                                      </TableView>
+                                                   </children>
+                                                   <padding>
+                                                      <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                                   </padding>
+                                                </GridPane>
+                                            </content>
+                                             <VBox.margin>
+                                                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                             </VBox.margin>
+                                          </TitledPane>
+                                       </children>
+                                    </VBox>
+                                 </content>
+                              </ScrollPane>
+                           </content>
+                        </TitledPane>
+                     </panes>
+                  </Accordion>
+                  <GridPane hgap="10.0" vgap="5.0">
+                     <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="300.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="400.0" minWidth="10.0" prefWidth="300.0" />
+                     </columnConstraints>
+                     <rowConstraints>
+                        <RowConstraints maxHeight="30.0" minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints maxHeight="615.0" minHeight="10.0" prefHeight="186.0" vgrow="SOMETIMES" />
+                        <RowConstraints maxHeight="615.0" minHeight="10.0" prefHeight="161.0" vgrow="SOMETIMES" />
+                        <RowConstraints maxHeight="1.7976931348623157E308" minHeight="10.0" prefHeight="264.0" vgrow="SOMETIMES" />
+                     </rowConstraints>
+                     <children>
+                        <TextField fx:id="characterFilterTextField" maxWidth="200.0" promptText="Search Characters">
+                           <GridPane.margin>
+                              <Insets />
+                           </GridPane.margin>
+                        </TextField>
+                        <TableView fx:id="characterTableView" prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="2" GridPane.rowIndex="1">
+                           <columns>
+                              <TableColumn fx:id="charIDCol" prefWidth="35.0" text="ID" />
+                              <TableColumn fx:id="charNameCol" prefWidth="239.0" text="Name" />
+                              <TableColumn fx:id="charRaceCol" prefWidth="150.0" text="Race" />
+                              <TableColumn fx:id="charTitleCol" minWidth="8.0" prefWidth="175.0" text="Title" />
+                              <TableColumn fx:id="charLocCol" prefWidth="280.0" text="Location" />
+                           </columns>
+                        </TableView>
+                        <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
+                        <TitledPane animated="false" collapsible="false" maxHeight="1.7976931348623157E308" text="Personality" GridPane.columnIndex="1" GridPane.rowIndex="3" GridPane.valignment="TOP">
+                           <content>
+                              <GridPane GridPane.columnIndex="1" GridPane.rowIndex="3">
+                                <columnConstraints>
+                                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="72.0" minWidth="50.0" prefWidth="67.0" />
+                                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="207.0" />
+                                </columnConstraints>
+                                <rowConstraints>
+                                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                </rowConstraints>
+                                 <children>
+                                    <Label text="Personality:" GridPane.rowIndex="1" GridPane.valignment="TOP" />
+                                    <Label text="Desires:" GridPane.rowIndex="2" GridPane.valignment="TOP" />
+                                    <Label text="Fears:" GridPane.rowIndex="3" GridPane.valignment="TOP" />
+                                    <Label text="Voice:" GridPane.valignment="TOP" />
+                                    <Label fx:id="charVoiceLabel" text="&lt;DYNAMIC LABEL&gt;" wrapText="true" GridPane.columnIndex="1" GridPane.valignment="TOP">
+                                       <font>
+                                          <Font name="System Italic" size="12.0" />
+                                       </font>
+                                    </Label>
+                                    <Label fx:id="charPersonalityLabel" text="&lt;DYNAMIC LABEL&gt;" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.valignment="TOP">
+                                       <font>
+                                          <Font name="System Italic" size="12.0" />
+                                       </font>
+                                    </Label>
+                                    <Label fx:id="charDesiresLabel" text="&lt;DYNAMIC LABEL&gt;" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="2" GridPane.valignment="TOP">
+                                       <font>
+                                          <Font name="System Italic" size="12.0" />
+                                       </font>
+                                    </Label>
+                                    <Label fx:id="charFearsLabel" text="&lt;DYNAMIC LABEL&gt;" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="3" GridPane.valignment="TOP">
+                                       <font>
+                                          <Font name="System Italic" size="12.0" />
+                                       </font>
+                                    </Label>
+                                 </children>
+                              </GridPane>
+                           </content>
+                        </TitledPane>
+                        <VBox prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                           <children>
+                              <Label fx:id="charNameLabel" text="&lt;CHARACTER NAME&gt;">
+                                 <font>
+                                    <Font name="Constantia Bold" size="16.0" />
+                                 </font>
+                              </Label>
+                              <Label fx:id="charTitleLabel" text="&lt;CHARACTER TITLE&gt;">
+                                 <font>
+                                    <Font name="Constantia" size="12.0" />
+                                 </font>
+                              </Label>
+                              <Label fx:id="charLookLabel" alignment="TOP_LEFT" text="&lt;CHARACTER LOOK&gt;" wrapText="true">
+                                 <font>
+                                    <Font name="Constantia Italic" size="12.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                        </VBox>
+                        <TitledPane animated="false" collapsible="false" maxHeight="1.7976931348623157E308" text="Character Information" GridPane.rowIndex="3" GridPane.valignment="TOP">
+                           <content>
+                              <GridPane vgap="5.0" GridPane.rowIndex="3">
+                                <columnConstraints>
+                                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="70.0" minWidth="70.0" prefWidth="70.0" />
+                                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="198.0" />
+                                </columnConstraints>
+                                <rowConstraints>
+                                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                </rowConstraints>
+                                 <children>
+                                    <Label text="Player Opinion:" wrapText="true" GridPane.rowIndex="2" GridPane.valignment="TOP" />
+                                    <Label text="Knowledge:" GridPane.rowIndex="1" GridPane.valignment="TOP">
+                                       <padding>
+                                          <Insets top="5.0" />
+                                       </padding>
+                                    </Label>
+                                    <Label text="Background:" GridPane.valignment="TOP">
+                                       <font>
+                                          <Font name="Constantia" size="12.0" />
+                                       </font>
+                                       <GridPane.margin>
+                                          <Insets top="5.0" />
+                                       </GridPane.margin>
+                                    </Label>
+                                    <ScrollPane fitToWidth="true" prefViewportHeight="14.0" prefViewportWidth="107.0" GridPane.columnIndex="1">
+                                       <content>
+                                          <Label fx:id="charBackgroundLabel" text="&lt;DYNAMIC LABEL&gt;" wrapText="true" GridPane.columnIndex="1" GridPane.valignment="TOP">
+                                             <font>
+                                                <Font name="Constantia Italic" size="12.0" />
+                                             </font>
+                                          </Label>
+                                       </content>
+                                       <padding>
+                                          <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                       </padding>
+                                    </ScrollPane>
+                                    <ScrollPane fitToWidth="true" prefViewportHeight="17.0" prefViewportWidth="104.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                       <content>
+                                          <Label fx:id="charKnowledgeLabel" text="&lt;DYNAMIC LABEL&gt;" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.valignment="TOP">
+                                             <font>
+                                                <Font name="System Italic" size="12.0" />
+                                             </font>
+                                          </Label>
+                                       </content>
+                                       <padding>
+                                          <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                       </padding>
+                                    </ScrollPane>
+                                    <ScrollPane fitToWidth="true" prefViewportHeight="17.0" prefViewportWidth="104.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                                       <content>
+                                          <Label fx:id="charOpinionLabel" text="&lt;DYNAMIC LABEL&gt;" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="2" GridPane.valignment="TOP">
+                                             <font>
+                                                <Font name="System Italic" size="12.0" />
+                                             </font>
+                                          </Label>
+                                       </content>
+                                       <padding>
+                                          <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                       </padding>
+                                    </ScrollPane>
+                                 </children>
+                              </GridPane>
+                           </content>
+                        </TitledPane>
+                        <HBox alignment="TOP_RIGHT" prefHeight="100.0" prefWidth="200.0" spacing="5.0" GridPane.columnIndex="1">
+                           <children>
+                              <Button fx:id="characterAddButton" mnemonicParsing="false" text="+">
+                                 <font>
+                                    <Font name="System Bold" size="14.0" />
+                                 </font>
+                              </Button>
+                              <Button fx:id="characterRemoveButton" mnemonicParsing="false" text="-">
+                                 <font>
+                                    <Font name="System Bold" size="14.0" />
+                                 </font>
+                              </Button>
+                           </children>
+                        </HBox>
+                     </children>
+                     <GridPane.margin>
+                        <Insets />
+                     </GridPane.margin>
+                     <padding>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </padding>
+                  </GridPane>
+               </children>
+               <columnConstraints>
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="660.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="583.0" />
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+               </rowConstraints>
+            </GridPane>
+      </content>
+    </Tab>
+  </tabs>
+</TabPane>

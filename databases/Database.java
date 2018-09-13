@@ -1,4 +1,4 @@
-package databases;
+package main.databases;
 
 public class Database {
 

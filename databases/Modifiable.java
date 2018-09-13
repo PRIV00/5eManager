@@ -1,6 +1,6 @@
-package databases;
+package main.databases;
 
-import models.DataModel;
+import main.models.DataModel;
 
 import java.sql.SQLException;
 
