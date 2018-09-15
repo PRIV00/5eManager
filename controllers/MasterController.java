@@ -2,6 +2,7 @@ package main.controllers;
 
 import javafx.scene.control.TabPane;
 import javafx.scene.control.ToolBar;
+import javafx.scene.layout.GridPane;
 import main.AppLauncher;
 import main.databases.Database;
 import javafx.fxml.FXML;
@@ -12,8 +13,9 @@ import java.io.IOException;
 
 public class MasterController {
 
-    private TabPane databaseView;
     private static ToolBar toolBar = new ToolBar();
+    private TabPane databaseView;
+    private GridPane calendarView;
 
     @FXML private VBox topBox;
 
@@ -28,10 +30,13 @@ public class MasterController {
     public void initialize(Database db) throws IOException {
         topBox.getChildren().add(toolBar);
 
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("../views/DatabaseView.fxml"));
-        databaseView = loader.load();
-        DatabaseController databaseController = loader.getController();
+        FXMLLoader databaseLoader = new FXMLLoader(getClass().getResource("../views/DatabaseView.fxml"));
+        databaseView = databaseLoader.load();
+        DatabaseController databaseController = databaseLoader.getController();
         databaseController.initialize(db);
+
+        FXMLLoader calendarLoader = new FXMLLoader(getClass().getResource("../views/CalendarView.fxml"));
+        calendarView = calendarLoader.load();
     }
 
     /**
@@ -52,5 +57,10 @@ public class MasterController {
     @FXML
     public void setDatabaseView() throws IOException {
         AppLauncher.getRoot().setCenter(databaseView);
+    }
+
+    @FXML
+    public void setCalendarView() throws IOException {
+        AppLauncher.getRoot().setCenter(calendarView);
     }
 }

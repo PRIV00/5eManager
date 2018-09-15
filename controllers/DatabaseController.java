@@ -103,6 +103,25 @@ public class DatabaseController {
     @FXML private Label charDesiresLabel;
     @FXML private Label charFearsLabel;
 
+    /* Character Statblock Display */
+    // sb for Statblock :D
+    @FXML private Label sbNameLabel;
+    @FXML private Label sbDescriptorLabel;
+    @FXML private Label sbACLabel;
+    @FXML private TextField sbCurrentHPTextField;
+    @FXML private Label sbMaxHPLabel;
+    @FXML private Label sbSpeedLabel;
+    @FXML private Label sbStrLabel;
+    @FXML private Label sbDexLabel;
+    @FXML private Label sbConLabel;
+    @FXML private Label sbIntLabel;
+    @FXML private Label sbWisLabel;
+    @FXML private Label sbChaLabel;
+    @FXML private Label sbSavesLabel;
+    @FXML private Label sbSkillsLabel;
+    @FXML private Label sbSensesLabel;
+    @FXML private Label sbLanguagesLabel;
+
     /* Character Basic Info Entry*/
     @FXML private TextField charNameTextField;
     @FXML private TextField charTitleTextField;
@@ -153,6 +172,9 @@ public class DatabaseController {
     @FXML private TableColumn<Attack, Integer> attackDiceTypeColumn;
     @FXML private TableColumn<Attack, String> attackDmgTypeColumn;
 
+    /* Character Inventory */
+    @FXML private TextArea charInventoryTextArea;
+
 
     public DatabaseController() { } /* Constructor for controller must be empty */
 
@@ -164,7 +186,7 @@ public class DatabaseController {
      * @param db the database
      */
     @FXML
-    public void initialize(Database db) {
+    void initialize(Database db) {
         /* ------------------------------ TOOLBAR SETUP ------------------------------ */
         ToolBar toolBar = MasterController.getMasterToolBar();
         toolBar.getItems().clear();
@@ -405,7 +427,9 @@ public class DatabaseController {
                     charSensesTextField.setDisable(false);
                     charCharismaSaveTextField.setDisable(false);
                     charLanguagesTextField.setDisable(false);
+                    charInventoryTextArea.setDisable(false);
                     try {
+                        //Left side character display
                         charNameLabel.setText(GuiTools.trim(c.getName()));
                         charTitleLabel.setText(c.getTitle());
                         charLookLabel.setText(c.getLook());
@@ -418,6 +442,26 @@ public class DatabaseController {
                         charDesiresLabel.setText(c.getDesires());
                         charFearsLabel.setText(c.getFears());
 
+                        // Stablock Display
+                        sbNameLabel.setText(c.getName());
+                        sbDescriptorLabel.setText(c.getDescriptor());
+                        sbACLabel.setText(String.valueOf(c.getArmorClass()));
+                        sbCurrentHPTextField.setText(String.valueOf(c.getHitPointCurrent()));
+                        sbMaxHPLabel.setText(String.valueOf(c.getHitPointMax()));
+                        sbSpeedLabel.setText(String.valueOf(c.getSpeed()) + " ft.");
+
+                        sbStrLabel.setText(c.getStats().getModText("STR"));
+                        sbDexLabel.setText(c.getStats().getModText("DEX"));
+                        sbConLabel.setText(c.getStats().getModText("CON"));
+                        sbIntLabel.setText(c.getStats().getModText("INT"));
+                        sbWisLabel.setText(c.getStats().getModText("WIS"));
+                        sbChaLabel.setText(c.getStats().getModText("CHA"));
+                        sbSavesLabel.setText(c.getSaves().toString());
+
+                        sbSensesLabel.setText(c.getSenses());
+                        sbLanguagesLabel.setText(c.getLanguages());
+
+                        // Character Entry
                         charNameTextField.setText(GuiTools.trim(c.getName()));
                         charTitleTextField.setText(c.getTitle());
                         charRaceTextField.setText(c.getRace());
@@ -443,14 +487,15 @@ public class DatabaseController {
                         charIntelligenceTextField.setText(String.valueOf(c.getStats().getIntelligence(0)));
                         charWisdomTextField.setText(String.valueOf(c.getStats().getWisdom(0)));
                         charCharismaTextField.setText(String.valueOf(c.getStats().getCharisma(0)));
-                        charStrengthSaveTextField.setText(String.valueOf(c.getSaveByIndex(0)));
-                        charDexteritySaveTextField.setText(String.valueOf(c.getSaveByIndex(1)));
-                        charConstitutionSaveTextField.setText(String.valueOf(c.getSaveByIndex(2)));
-                        charIntelligenceSaveTextField.setText(String.valueOf(c.getSaveByIndex(3)));
-                        charWisdomSaveTextField.setText(String.valueOf(c.getSaveByIndex(4)));
-                        charCharismaSaveTextField.setText(String.valueOf(c.getSaveByIndex(5)));
+                        charStrengthSaveTextField.setText(String.valueOf(c.getSaves().getStrengthSave()));
+                        charDexteritySaveTextField.setText(String.valueOf(c.getSaves().getDexteritySave()));
+                        charConstitutionSaveTextField.setText(String.valueOf(c.getSaves().getConstitutionSave()));
+                        charIntelligenceSaveTextField.setText(String.valueOf(c.getSaves().getIntelligenceSave()));
+                        charWisdomSaveTextField.setText(String.valueOf(c.getSaves().getWisdomSave()));
+                        charCharismaSaveTextField.setText(String.valueOf(c.getSaves().getCharismaSave()));
                         charSensesTextField.setText(c.getSenses());
                         charLanguagesTextField.setText(c.getLanguages());
+                        charInventoryTextArea.setText(c.getInventory());
 
                         currentCharacterAttacks.clear();
                         for (Attack atk : c.getAttackList()) {
@@ -503,6 +548,7 @@ public class DatabaseController {
                         charCharismaSaveTextField.setDisable(true);
                         charSensesTextField.setDisable(true);
                         charLanguagesTextField.setDisable(true);
+                        charInventoryTextArea.setDisable(true);
                     }
                 });
 
@@ -524,11 +570,20 @@ public class DatabaseController {
             Character c = characterTableView.getSelectionModel().getSelectedItem();
             try {
                 characterTable.deleteData(c);
+                attackTable.deleteDataByCharacter(c);
             } catch (SQLException e) {
                 // Status update here
             }
             masterCharacters.remove(c);
             filteredCharacters.remove(c);
+        });
+
+        /* Listeners for statblock */
+        sbCurrentHPTextField.setOnKeyReleased(event -> {
+            Character c = characterTableView.getSelectionModel().getSelectedItem();
+            c.setHitPointCurrent(Integer.parseInt(sbCurrentHPTextField.getText()));
+            saveAllButton.setDisable(false);
+            characterEditDisplay(c);
         });
 
         /* Listeners for character information entry */
@@ -537,6 +592,7 @@ public class DatabaseController {
             Character c = characterTableView.getSelectionModel().getSelectedItem();
             c.setName(charNameTextField.getText());
             charNameLabel.setText(c.getName());
+            sbNameLabel.setText(c.getName());
             characterEditDisplay(c);
         });
 
@@ -631,12 +687,14 @@ public class DatabaseController {
         charDescriptorTextField.setOnKeyReleased(event -> {
             Character c = characterTableView.getSelectionModel().getSelectedItem();
             c.setDescriptor(charDescriptorTextField.getText());
+            sbDescriptorLabel.setText(c.getDescriptor());
             characterEditDisplay(c);
         });
 
         charArmorClassTextField.setOnKeyReleased(event -> {
             Character c = characterTableView.getSelectionModel().getSelectedItem();
             c.setArmorClass(Integer.parseInt(charArmorClassTextField.getText()));
+            sbACLabel.setText(String.valueOf(c.getArmorClass()));
             characterEditDisplay(c);
         });
 
@@ -649,7 +707,8 @@ public class DatabaseController {
         charHitPointMaxTextField.setOnKeyReleased(event -> {
             Character c = characterTableView.getSelectionModel().getSelectedItem();
             try {
-                c.setHitPointCurrent(Integer.parseInt(charHitPointMaxTextField.getText()));
+                c.setHitPointMax(Integer.parseInt(charHitPointMaxTextField.getText()));
+                sbMaxHPLabel.setText(String.valueOf(c.getHitPointMax()));
             } catch (NumberFormatException e) {
                 //
             }
@@ -659,6 +718,7 @@ public class DatabaseController {
         charSpeedTextField.setOnKeyReleased(event -> {
             Character c = characterTableView.getSelectionModel().getSelectedItem();
             c.setSpeed(Integer.parseInt(charSpeedTextField.getText()));
+            sbSpeedLabel.setText(String.valueOf(c.getSpeed()) + " ft.");
             characterEditDisplay(c);
         });
 
@@ -666,6 +726,7 @@ public class DatabaseController {
             Character c = characterTableView.getSelectionModel().getSelectedItem();
             try {
                 c.getStats().setStrength(Integer.parseInt(charStrengthTextField.getText()));
+                sbStrLabel.setText(c.getStats().getModText("STR"));
             } catch (NumberFormatException e) {
                 // Ignore for now. Catch it if it tries to save later.
             }
@@ -676,6 +737,7 @@ public class DatabaseController {
             Character c = characterTableView.getSelectionModel().getSelectedItem();
             try {
                 c.getStats().setDexterity(Integer.parseInt(charDexterityTextField.getText()));
+                sbDexLabel.setText(c.getStats().getModText("DEX"));
             } catch (NumberFormatException e) {
                 // Ignore for now. Catch it if it tries to save later.
             }
@@ -686,6 +748,7 @@ public class DatabaseController {
             Character c = characterTableView.getSelectionModel().getSelectedItem();
             try {
                 c.getStats().setConstitution(Integer.parseInt(charConstitutionTextField.getText()));
+                sbConLabel.setText(c.getStats().getModText("CON"));
             } catch (NumberFormatException e) {
                 // Ignore for now. Catch it if it tries to save later.
             }
@@ -696,6 +759,7 @@ public class DatabaseController {
             Character c = characterTableView.getSelectionModel().getSelectedItem();
             try {
                 c.getStats().setIntelligence(Integer.parseInt(charIntelligenceTextField.getText()));
+                sbIntLabel.setText(c.getStats().getModText("INT"));
             } catch (NumberFormatException e) {
                 // Ignore for now. Catch it if it tries to save later.
             }
@@ -706,6 +770,7 @@ public class DatabaseController {
             Character c = characterTableView.getSelectionModel().getSelectedItem();
             try {
                 c.getStats().setWisdom(Integer.parseInt(charWisdomTextField.getText()));
+                sbWisLabel.setText(c.getStats().getModText("WIS"));
             } catch (NumberFormatException e) {
                 // Ignore for now. Catch it if it tries to save later.
             }
@@ -716,6 +781,7 @@ public class DatabaseController {
             Character c = characterTableView.getSelectionModel().getSelectedItem();
             try {
                 c.getStats().setCharisma(Integer.parseInt(charCharismaTextField.getText()));
+                sbChaLabel.setText(c.getStats().getModText("CHA"));
             } catch (NumberFormatException e) {
                 // Ignore for now. Catch it if it tries to save later.
             }
@@ -725,7 +791,8 @@ public class DatabaseController {
         charStrengthSaveTextField.setOnKeyReleased(event -> {
             Character c = characterTableView.getSelectionModel().getSelectedItem();
             try {
-                c.getSaves()[0] = Integer.parseInt(charStrengthSaveTextField.getText());
+                c.getSaves().setStrengthSave(Integer.parseInt(charStrengthSaveTextField.getText()));
+                sbSavesLabel.setText(c.getSaves().toString());
             } catch (NumberFormatException e) {
                 // Ignore for now. Catch it if it tries to save later.
             }
@@ -735,7 +802,8 @@ public class DatabaseController {
         charDexteritySaveTextField.setOnKeyReleased(event -> {
             Character c = characterTableView.getSelectionModel().getSelectedItem();
             try {
-                c.getSaves()[1] = Integer.parseInt(charDexteritySaveTextField.getText());
+                c.getSaves().setDexteritySave(Integer.parseInt(charDexteritySaveTextField.getText()));
+                sbSavesLabel.setText(c.getSaves().toString());
             } catch (NumberFormatException e) {
                 // Ignore for now. Catch it if it tries to save later.
             }
@@ -745,7 +813,8 @@ public class DatabaseController {
         charConstitutionSaveTextField.setOnKeyReleased(event -> {
             Character c = characterTableView.getSelectionModel().getSelectedItem();
             try {
-                c.getSaves()[2] = Integer.parseInt(charConstitutionSaveTextField.getText());
+                c.getSaves().setConstitutionSave(Integer.parseInt(charConstitutionSaveTextField.getText()));
+                sbSavesLabel.setText(c.getSaves().toString());
             } catch (NumberFormatException e) {
                 // Ignore for now. Catch it if it tries to save later.
             }
@@ -755,7 +824,8 @@ public class DatabaseController {
         charIntelligenceSaveTextField.setOnKeyReleased(event -> {
             Character c = characterTableView.getSelectionModel().getSelectedItem();
             try {
-                c.getSaves()[3] = Integer.parseInt(charIntelligenceSaveTextField.getText());
+                c.getSaves().setIntelligenceSave(Integer.parseInt(charIntelligenceSaveTextField.getText()));
+                sbSavesLabel.setText(c.getSaves().toString());
             } catch (NumberFormatException e) {
                 // Ignore for now. Catch it if it tries to save later.
             }
@@ -765,7 +835,8 @@ public class DatabaseController {
         charWisdomSaveTextField.setOnKeyReleased(event -> {
             Character c = characterTableView.getSelectionModel().getSelectedItem();
             try {
-                c.getSaves()[4] = Integer.parseInt(charWisdomSaveTextField.getText());
+                c.getSaves().setWisdomSave(Integer.parseInt(charWisdomSaveTextField.getText()));
+                sbSavesLabel.setText(c.getSaves().toString());
             } catch (NumberFormatException e) {
                 // Ignore for now. Catch it if it tries to save later.
             }
@@ -775,7 +846,8 @@ public class DatabaseController {
         charCharismaSaveTextField.setOnKeyReleased(event -> {
             Character c = characterTableView.getSelectionModel().getSelectedItem();
             try {
-                c.getSaves()[5] = Integer.parseInt(charCharismaSaveTextField.getText());
+                c.getSaves().setCharismaSave(Integer.parseInt(charCharismaSaveTextField.getText()));
+                sbSavesLabel.setText(c.getSaves().toString());
             } catch (NumberFormatException e) {
                 // Ignore for now. Catch it if it tries to save later.
             }
@@ -785,12 +857,14 @@ public class DatabaseController {
         charSensesTextField.setOnKeyReleased(event -> {
             Character c = characterTableView.getSelectionModel().getSelectedItem();
             c.setSenses(charSensesTextField.getText());
+            sbSensesLabel.setText(c.getSenses());
             characterEditDisplay(c);
         });
 
         charLanguagesTextField.setOnKeyReleased(event -> {
             Character c = characterTableView.getSelectionModel().getSelectedItem();
             c.setLanguages(charLanguagesTextField.getText());
+            sbLanguagesLabel.setText(c.getLanguages());
             characterEditDisplay(c);
         });
 
@@ -813,6 +887,15 @@ public class DatabaseController {
             saveAllButton.setDisable(false);
             characterEditDisplay(c);
         });
+
+        //Inventory
+        charInventoryTextArea.setOnKeyReleased(event -> {
+            Character c = characterTableView.getSelectionModel().getSelectedItem();
+            c.setInventory(charInventoryTextArea.getText());
+            saveAllButton.setDisable(false);
+            characterEditDisplay(c);
+        });
+
     }
 
     /**

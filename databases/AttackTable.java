@@ -80,6 +80,19 @@ public class AttackTable extends Table implements Modifiable {
         }
     }
 
+    public void deleteDataByCharacter(Character c) {
+        connect();
+        String sql = "DELETE FROM Attacks WHERE characterID = ?";
+
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, c.getId());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            closeConnection();
+        }
+    }
+
     @Override
     public void updateData(DataModel dataModel) {
         connect();

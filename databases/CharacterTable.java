@@ -47,6 +47,7 @@ public class CharacterTable extends Table implements Searchable, Modifiable {
                         " chaSave INTEGER, \n" +
                         " senses INTEGER, \n" +
                         " languages INTEGER, \n" +
+                        " inventory TEXT, \n" +
                         " locationID INTEGER, \n" +
                         " FOREIGN KEY(locationID) REFERENCES Locations(locationID) \n" +
                         ")");
@@ -64,8 +65,8 @@ public class CharacterTable extends Table implements Searchable, Modifiable {
         connect();
         String sql = "INSERT OR IGNORE INTO Characters(name, look, title, race, voice, personality, desires, fears, background, " +
                 "knowledge, opinion, descriptor, armorClass, armor, hitPointMax, hitPointCurrent, speed, strength, dexterity, constitution, " +
-                "intelligence, wisdom, charisma, strSave, dexSave, conSave, intSave, wisSave, chaSave, senses, languages, locationID) \n" +
-                "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+                "intelligence, wisdom, charisma, strSave, dexSave, conSave, intSave, wisSave, chaSave, senses, languages, inventory, locationID) \n" +
+                "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
         Character character = (Character) characterData;
 
         try (PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)){
@@ -93,15 +94,16 @@ public class CharacterTable extends Table implements Searchable, Modifiable {
             pstmt.setInt(21, scores[3]);
             pstmt.setInt(22, scores[4]);
             pstmt.setInt(23, scores[5]);
-            pstmt.setInt(24, character.getSaveByIndex(0));
-            pstmt.setInt(25, character.getSaveByIndex(1));
-            pstmt.setInt(26, character.getSaveByIndex(2));
-            pstmt.setInt(27, character.getSaveByIndex(3));
-            pstmt.setInt(28, character.getSaveByIndex(4));
-            pstmt.setInt(29, character.getSaveByIndex(5));
+            pstmt.setInt(24, character.getSaves().getStrengthSave());
+            pstmt.setInt(25, character.getSaves().getDexteritySave());
+            pstmt.setInt(26, character.getSaves().getConstitutionSave());
+            pstmt.setInt(27, character.getSaves().getIntelligenceSave());
+            pstmt.setInt(28, character.getSaves().getWisdomSave());
+            pstmt.setInt(29, character.getSaves().getCharismaSave());
             pstmt.setString(30, character.getSenses());
             pstmt.setString(31, character.getLanguages());
-            pstmt.setInt(32, character.getLocationID());
+            pstmt.setString(32, character.getInventory());
+            pstmt.setInt(33, character.getLocationID());
             int affectedRows = pstmt.executeUpdate();
             if (affectedRows == 0) {
                 System.out.println("No rows affected");
@@ -150,7 +152,7 @@ public class CharacterTable extends Table implements Searchable, Modifiable {
                 "fears = ?, background = ?, knowledge = ?, opinion = ?, descriptor = ?, armorClass = ?, armor = ?, " +
                 "hitPointMax = ?, hitPointCurrent = ?, speed = ?, strength = ?, dexterity = ?, constitution = ?, " +
                 "intelligence = ?, wisdom = ?, charisma = ?, strSave = ?, dexSave = ?, conSave = ?, intSave = ?, " +
-                "wisSave = ?, chaSave = ?, senses = ?, languages = ?, locationID  = ?" +
+                "wisSave = ?, chaSave = ?, senses = ?, languages = ?, inventory = ?, locationID  = ?" +
                 "WHERE characterID = ?";
         Character character = (Character) characterData;
 
@@ -180,16 +182,17 @@ public class CharacterTable extends Table implements Searchable, Modifiable {
             pstmt.setInt(21, scores[3]);
             pstmt.setInt(22, scores[4]);
             pstmt.setInt(23, scores[5]);
-            pstmt.setInt(24, character.getSaveByIndex(0));
-            pstmt.setInt(25, character.getSaveByIndex(1));
-            pstmt.setInt(26, character.getSaveByIndex(2));
-            pstmt.setInt(27, character.getSaveByIndex(3));
-            pstmt.setInt(28, character.getSaveByIndex(4));
-            pstmt.setInt(29, character.getSaveByIndex(5));
+            pstmt.setInt(24, character.getSaves().getStrengthSave());
+            pstmt.setInt(25, character.getSaves().getDexteritySave());
+            pstmt.setInt(26, character.getSaves().getConstitutionSave());
+            pstmt.setInt(27, character.getSaves().getIntelligenceSave());
+            pstmt.setInt(28, character.getSaves().getWisdomSave());
+            pstmt.setInt(29, character.getSaves().getCharismaSave());
             pstmt.setString(30, character.getSenses());
             pstmt.setString(31, character.getLanguages());
-            pstmt.setInt(32, character.getLocationID());
-            pstmt.setInt(33, character.getId());
+            pstmt.setString(32, character.getInventory());
+            pstmt.setInt(33, character.getLocationID());
+            pstmt.setInt(34, character.getId());
             pstmt.executeUpdate();
         } finally {
             closeConnection();
@@ -214,7 +217,7 @@ public class CharacterTable extends Table implements Searchable, Modifiable {
                                 rs.getInt("intelligence"), rs.getInt("wisdom"), rs.getInt("charisma") },
                         new int[] { rs.getInt("strSave"), rs.getInt("dexSave"), rs.getInt("conSave"), rs.getInt("intSave"),
                                 rs.getInt("wisSave"), rs.getInt("chaSave") },
-                        rs.getString("senses"), rs.getString("languages"),
+                        rs.getString("senses"), rs.getString("languages"), rs.getString("inventory"),
                         rs.getInt("locationID")));
             }
         } catch (SQLException e) {
@@ -305,6 +308,7 @@ public class CharacterTable extends Table implements Searchable, Modifiable {
                 "       c.chaSave INTEGER, \n" +
                 "       c.senses INTEGER, \n" +
                 "       c.languages INTEGER, \n" +
+                "       c.inventory TEXT, \n" +
                 "       lch.locationID INTEGER \n" +
                 "FROM   LocationCharacterHierarchy AS lch \n" +
                 "INNER JOIN Characters AS c ON c.locationID = lch.locationID \n" +
@@ -330,7 +334,7 @@ public class CharacterTable extends Table implements Searchable, Modifiable {
                                 rs.getInt("intelligence"), rs.getInt("wisdom"), rs.getInt("charisma") },
                         new int[] { rs.getInt("strSave"), rs.getInt("dexSave"), rs.getInt("conSave"), rs.getInt("intSave"),
                                 rs.getInt("wisSave"), rs.getInt("chaSave") },
-                        rs.getString("senses"), rs.getString("languages"),
+                        rs.getString("senses"), rs.getString("languages"), rs.getString("inventory"),
                         rs.getInt("locationID")));
             }
 
@@ -363,7 +367,7 @@ public class CharacterTable extends Table implements Searchable, Modifiable {
                                     rs2.getInt("intelligence"), rs2.getInt("wisdom"), rs2.getInt("charisma") },
                             new int[] { rs2.getInt("strSave"), rs2.getInt("dexSave"), rs2.getInt("conSave"), rs2.getInt("intSave"),
                                     rs2.getInt("wisSave"), rs2.getInt("chaSave") },
-                            rs2.getString("senses"), rs2.getString("languages"),
+                            rs2.getString("senses"), rs2.getString("languages"), rs2.getString("inventory"),
                             rs2.getInt("locationID")));
                 }
             }

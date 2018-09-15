@@ -28,10 +28,12 @@ public class Character implements DataModel {
     private int hitPointMax;
     private int hitPointCurrent;
     private int speed;
-    private int[] saves;
+    private Saves saves;
     private Abilities stats;
     private String senses;
     private String languages;
+    private String inventory;
+
     private Location location;
     private SimpleStringProperty locName;
     private List<Attack> attackList = new ArrayList<>();
@@ -56,16 +58,17 @@ public class Character implements DataModel {
         this.hitPointCurrent = 10;
         this.speed = 30;
         this.stats = new Abilities(10, 10, 10, 10, 10, 10);
-        this.saves = new int[] {0, 0, 0, 0, 0, 0};
+        this.saves = new Saves(0, 0, 0, 0, 0, 0);
         this.senses = "";
         this.languages = "";
+        this.inventory = "";
         this.locationID = 0;
     }
 
     public Character(int id, String name, String look, String title, String race, String voice, String personality, String desires,
                      String fears, String background, String knowledge, String opinion, String descriptor, int armorClass,
                      String armor, int hitPointMax, int hitPointCurrent, int speed, int[] s, int[] saves, String senses,
-                     String languages, int locationID) {
+                     String languages, String inventory, int locationID) {
         this.id = id;
         this.name = name;
         this.look = look;
@@ -85,9 +88,10 @@ public class Character implements DataModel {
         this.hitPointCurrent = hitPointCurrent;
         this.speed = speed;
         this.stats = new Abilities(s[0], s[1], s[2], s[3], s[4], s[5]);
-        this.saves = saves;
+        this.saves = new Saves(saves[0], saves[1], saves[2], saves[3], saves[4], saves[5]);
         this.senses = senses;
         this.languages = languages;
+        this.inventory = inventory;
         this.locationID = locationID;
     }
 
@@ -248,20 +252,8 @@ public class Character implements DataModel {
         this.speed = speed;
     }
 
-    public int[] getSaves() {
+    public Saves getSaves() {
         return saves;
-    }
-
-    public void setSaves(int[] saves) {
-        this.saves = saves;
-    }
-
-    public int getSaveByIndex(int i) {
-        return saves[i];
-    }
-
-    public void setSaveByIndex(int i, int save) {
-        saves[i] = save;
     }
 
     public Abilities getStats() {
@@ -282,6 +274,14 @@ public class Character implements DataModel {
 
     public void setLanguages(String languages) {
         this.languages = languages;
+    }
+
+    public String getInventory() {
+        return inventory;
+    }
+
+    public void setInventory(String inventory) {
+        this.inventory = inventory;
     }
 
     public int getLocationID() {
