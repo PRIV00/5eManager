@@ -1,7 +1,7 @@
 package main.models;
 
 
-public class Location implements DataModel {
+public class Location implements TableModel {
 
     private boolean edited = false;
 
@@ -195,7 +195,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
-public class Location implements DataModel {
+public class Location implements TableModel {
 
     private boolean edited = false;
 

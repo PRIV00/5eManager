@@ -1,10 +1,13 @@
 package main.databases;
 
+import main.databases.tables.*;
+
 public class Database {
 
     private LocationTable locationTable;
     private CharacterTable characterTable;
     private AttackTable attackTable;
+    private SkillTable skillTable;
     private CalendarTable calendarTable;
     private NoteTable noteTable;
 
@@ -12,6 +15,7 @@ public class Database {
         locationTable = new LocationTable(fileName);
         characterTable = new CharacterTable(fileName);
         attackTable = new AttackTable(fileName);
+        skillTable = new SkillTable(fileName);
         calendarTable = new CalendarTable(fileName);
         noteTable = new NoteTable(fileName);
     }
@@ -26,6 +30,10 @@ public class Database {
 
     public AttackTable getAttackTable() {
         return attackTable;
+    }
+
+    public SkillTable getSkillTable() {
+        return skillTable;
     }
 
     public CalendarTable getCalendarTable() {

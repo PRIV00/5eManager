@@ -5,7 +5,7 @@ import javafx.beans.property.SimpleStringProperty;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Character implements DataModel {
+public class Character implements TableModel {
 
     private boolean edited = false;
 
@@ -28,6 +28,7 @@ public class Character implements DataModel {
     private int hitPointMax;
     private int hitPointCurrent;
     private int speed;
+    private int proficiency;
     private Saves saves;
     private Abilities stats;
     private String senses;
@@ -37,6 +38,7 @@ public class Character implements DataModel {
     private Location location;
     private SimpleStringProperty locName;
     private List<Attack> attackList = new ArrayList<>();
+    private List<Skill> skillList = new ArrayList<>();
 
     public Character() {
         this.id = 0;
@@ -57,6 +59,7 @@ public class Character implements DataModel {
         this.hitPointMax = 10;
         this.hitPointCurrent = 10;
         this.speed = 30;
+        this.proficiency = 0;
         this.stats = new Abilities(10, 10, 10, 10, 10, 10);
         this.saves = new Saves(0, 0, 0, 0, 0, 0);
         this.senses = "";
@@ -67,7 +70,7 @@ public class Character implements DataModel {
 
     public Character(int id, String name, String look, String title, String race, String voice, String personality, String desires,
                      String fears, String background, String knowledge, String opinion, String descriptor, int armorClass,
-                     String armor, int hitPointMax, int hitPointCurrent, int speed, int[] s, int[] saves, String senses,
+                     String armor, int hitPointMax, int hitPointCurrent, int speed, int proficiency, int[] s, int[] saves, String senses,
                      String languages, String inventory, int locationID) {
         this.id = id;
         this.name = name;
@@ -87,6 +90,7 @@ public class Character implements DataModel {
         this.hitPointMax = hitPointMax;
         this.hitPointCurrent = hitPointCurrent;
         this.speed = speed;
+        this.proficiency = proficiency;
         this.stats = new Abilities(s[0], s[1], s[2], s[3], s[4], s[5]);
         this.saves = new Saves(saves[0], saves[1], saves[2], saves[3], saves[4], saves[5]);
         this.senses = senses;
@@ -252,6 +256,14 @@ public class Character implements DataModel {
         this.speed = speed;
     }
 
+    public int getProficiency() {
+        return proficiency;
+    }
+
+    public void setProficiency(int proficiency) {
+        this.proficiency = proficiency;
+    }
+
     public Saves getSaves() {
         return saves;
     }
@@ -324,7 +336,41 @@ public class Character implements DataModel {
         this.attackList.add(attack);
     }
 
-    public void removeAttack(Attack attack) {
-        this.attackList.remove(attack);
+    public List<Skill> getSkillList() {
+        return skillList;
+    }
+
+    public void setSkillList(List<Skill> list) {
+        this.skillList = list;
+    }
+
+    public void addSkill(Skill skill) {
+        skillList.add(skill);
+    }
+
+    /**
+     * Used to get the attack bonus based on an ability modifier code. Both used to set the label in the statblock and
+     * to set the attackBonus column for the attack SQLite table.
+     *
+     * @param attackAbilityCode code to get the stat from (STR, DEX, CON, INT, WIS, or CHA)
+     * @return the calculated attack bonus.
+     */
+    public int getAbilityMod(String attackAbilityCode) {
+        int bonus = 0;
+        switch (attackAbilityCode) {
+            case "STR": bonus = this.getStats().getStrength(1) + this.getProficiency();
+                                break;
+            case "DEX": bonus = this.getStats().getDexterity(1) + this.getProficiency();
+                                break;
+            case "CON": bonus = this.getStats().getConstitution(1) + this.getProficiency();
+                                break;
+            case "INT": bonus = this.getStats().getIntelligence(1) + this.getProficiency();
+                                break;
+            case "WIS": bonus = this.getStats().getWisdom(1) + this.getProficiency();
+                                break;
+            case "CHA": bonus = this.getStats().getCharisma(1) + this.getProficiency();
+                                break;
+        }
+        return bonus;
     }
 }

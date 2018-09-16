@@ -3,11 +3,13 @@ package main.models;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 
-public class Attack implements DataModel {
+
+public class Attack implements TableModel {
 
     private int id;
     private SimpleStringProperty name;
     private SimpleStringProperty category;
+    private SimpleStringProperty ability;
     private SimpleIntegerProperty attackBonus;
     private SimpleIntegerProperty range;
     private SimpleIntegerProperty numDice;
@@ -20,20 +22,20 @@ public class Attack implements DataModel {
         id = 0;
         name = new SimpleStringProperty("");
         category = new SimpleStringProperty("Melee");
+        ability = new SimpleStringProperty("STR");
         attackBonus = new SimpleIntegerProperty(0);
-        range = new SimpleIntegerProperty(0);
-        numDice = new SimpleIntegerProperty(0);
-        damageDice = new SimpleIntegerProperty(0);
+        range = new SimpleIntegerProperty(5);
+        numDice = new SimpleIntegerProperty(1);
+        damageDice = new SimpleIntegerProperty(4);
         damageType = new SimpleStringProperty("");
         characterID = 0;
     }
 
-
-    public Attack(int id, String name, String category, int attackBonus, int range, int numDice, int damageDice, String
-                  damageType, int characterID) {
+    public Attack(int id, String name, String category, String ability, int attackBonus, int range, int numDice, int damageDice, String damageType, int characterID) {
         this.id = id;
         this.name = new SimpleStringProperty(name);
         this.category = new SimpleStringProperty(category);
+        this.ability = new SimpleStringProperty(ability);
         this.attackBonus = new SimpleIntegerProperty(attackBonus);
         this.range = new SimpleIntegerProperty(range);
         this.numDice = new SimpleIntegerProperty(numDice);
@@ -66,24 +68,52 @@ public class Attack implements DataModel {
         this.category.set(category);
     }
 
+    public String getAbility() {
+        return ability.get();
+    }
+
+    public void setAbility(String ability) {
+        this.ability.set(ability);
+    }
+
     public int getAttackBonus() {
         return attackBonus.get();
+    }
+
+    public void setAttackBonus(int attackBonus) {
+        this.attackBonus.set(attackBonus);
     }
 
     public int getRange() {
         return range.get();
     }
 
+    public void setRange(int range) {
+        this.range.set(range);
+    }
+
     public int getNumDice() {
         return numDice.get();
+    }
+
+    public void setNumDice(int numDice) {
+        this.numDice.set(numDice);
     }
 
     public int getDamageDice() {
         return damageDice.get();
     }
 
+    public void setDamageDice(int damageDice) {
+        this.damageDice.set(damageDice);
+    }
+
     public String getDamageType() {
         return damageType.get();
+    }
+
+    public void setDamageType(String damageType) {
+        this.damageType.set(damageType);
     }
 
     public int getCharacterID() {

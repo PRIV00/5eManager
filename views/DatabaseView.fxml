@@ -231,131 +231,146 @@
                            <content>
                               <ScrollPane fitToWidth="true" prefHeight="200.0" prefWidth="200.0">
                                  <content>
-                                    <GridPane hgap="5.0" vgap="5.0">
-                                      <columnConstraints>
-                                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="90.0" minWidth="10.0" prefWidth="90.0" />
-                                          <ColumnConstraints hgrow="SOMETIMES" maxWidth="55.0" minWidth="10.0" prefWidth="55.0" />
-                                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="466.0" minWidth="10.0" prefWidth="372.0" />
-                                      </columnConstraints>
-                                      <rowConstraints>
-                                        <RowConstraints maxHeight="25.0" vgrow="SOMETIMES" />
-                                        <RowConstraints maxHeight="25.0" vgrow="SOMETIMES" />
-                                        <RowConstraints maxHeight="25.0" vgrow="SOMETIMES" />
-                                          <RowConstraints maxHeight="25.0" minHeight="10.0" vgrow="SOMETIMES" />
-                                          <RowConstraints maxHeight="25.0" minHeight="10.0" vgrow="SOMETIMES" />
-                                          <RowConstraints maxHeight="50.0" minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                          <RowConstraints maxHeight="50.0" minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                          <RowConstraints maxHeight="50.0" minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                          <RowConstraints maxHeight="50.0" minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                          <RowConstraints maxHeight="50.0" minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                      </rowConstraints>
+                                    <VBox>
                                        <children>
-                                          <Label fx:id="sbNameLabel" text="&lt;NAME&gt;" GridPane.columnSpan="3" />
-                                          <Label fx:id="sbDescriptorLabel" text="&lt;DESCRIPTOR&gt;" GridPane.columnSpan="3" GridPane.rowIndex="1">
-                                             <font>
-                                                <Font name="System Italic" size="12.0" />
-                                             </font>
-                                          </Label>
-                                          <Label text="Armor Class" GridPane.rowIndex="2">
-                                             <font>
-                                                <Font name="System Bold" size="12.0" />
-                                             </font>
-                                          </Label>
-                                          <Label text="Hit Points" GridPane.rowIndex="3">
-                                             <font>
-                                                <Font name="System Bold" size="12.0" />
-                                             </font>
-                                          </Label>
-                                          <Label text="Speed" GridPane.rowIndex="4">
-                                             <font>
-                                                <Font name="System Bold" size="12.0" />
-                                             </font>
-                                          </Label>
-                                          <GridPane GridPane.columnSpan="3" GridPane.rowIndex="5">
+                                          <GridPane hgap="5.0" vgap="5.0">
                                             <columnConstraints>
-                                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="90.0" minWidth="10.0" prefWidth="90.0" />
+                                                <ColumnConstraints hgrow="SOMETIMES" maxWidth="55.0" minWidth="10.0" prefWidth="55.0" />
+                                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="466.0" minWidth="10.0" prefWidth="372.0" />
                                             </columnConstraints>
                                             <rowConstraints>
-                                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                              <RowConstraints maxHeight="25.0" vgrow="SOMETIMES" />
+                                              <RowConstraints maxHeight="25.0" vgrow="SOMETIMES" />
+                                              <RowConstraints maxHeight="25.0" vgrow="SOMETIMES" />
+                                                <RowConstraints maxHeight="25.0" minHeight="10.0" vgrow="SOMETIMES" />
+                                                <RowConstraints maxHeight="25.0" minHeight="10.0" vgrow="SOMETIMES" />
+                                                <RowConstraints maxHeight="50.0" minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                <RowConstraints maxHeight="50.0" minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                <RowConstraints maxHeight="50.0" minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                <RowConstraints maxHeight="50.0" minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                <RowConstraints maxHeight="50.0" minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                             </rowConstraints>
                                              <children>
-                                                <Label text="STR" GridPane.halignment="CENTER">
+                                                <Label fx:id="sbNameLabel" text="&lt;NAME&gt;" GridPane.columnSpan="3" />
+                                                <Label fx:id="sbDescriptorLabel" text="&lt;DESCRIPTOR&gt;" GridPane.columnSpan="3" GridPane.rowIndex="1">
+                                                   <font>
+                                                      <Font name="System Italic" size="12.0" />
+                                                   </font>
+                                                </Label>
+                                                <Label text="Armor Class" GridPane.rowIndex="2">
                                                    <font>
                                                       <Font name="System Bold" size="12.0" />
                                                    </font>
                                                 </Label>
-                                                <Label text="DEX" GridPane.columnIndex="1" GridPane.halignment="CENTER">
+                                                <Label text="Hit Points" GridPane.rowIndex="3">
                                                    <font>
                                                       <Font name="System Bold" size="12.0" />
                                                    </font>
                                                 </Label>
-                                                <Label text="CON" GridPane.columnIndex="2" GridPane.halignment="CENTER">
+                                                <Label text="Speed" GridPane.rowIndex="4">
                                                    <font>
                                                       <Font name="System Bold" size="12.0" />
                                                    </font>
                                                 </Label>
-                                                <Label text="INT" GridPane.columnIndex="3" GridPane.halignment="CENTER">
+                                                <GridPane GridPane.columnSpan="3" GridPane.rowIndex="5">
+                                                  <columnConstraints>
+                                                    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                                    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                                  </columnConstraints>
+                                                  <rowConstraints>
+                                                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                  </rowConstraints>
+                                                   <children>
+                                                      <Label text="STR" GridPane.halignment="CENTER">
+                                                         <font>
+                                                            <Font name="System Bold" size="12.0" />
+                                                         </font>
+                                                      </Label>
+                                                      <Label text="DEX" GridPane.columnIndex="1" GridPane.halignment="CENTER">
+                                                         <font>
+                                                            <Font name="System Bold" size="12.0" />
+                                                         </font>
+                                                      </Label>
+                                                      <Label text="CON" GridPane.columnIndex="2" GridPane.halignment="CENTER">
+                                                         <font>
+                                                            <Font name="System Bold" size="12.0" />
+                                                         </font>
+                                                      </Label>
+                                                      <Label text="INT" GridPane.columnIndex="3" GridPane.halignment="CENTER">
+                                                         <font>
+                                                            <Font name="System Bold" size="12.0" />
+                                                         </font>
+                                                      </Label>
+                                                      <Label text="WIS" GridPane.columnIndex="4" GridPane.halignment="CENTER">
+                                                         <font>
+                                                            <Font name="System Bold" size="12.0" />
+                                                         </font>
+                                                      </Label>
+                                                      <Label text="CHA" GridPane.columnIndex="5" GridPane.halignment="CENTER">
+                                                         <font>
+                                                            <Font name="System Bold" size="12.0" />
+                                                         </font>
+                                                      </Label>
+                                                      <Label fx:id="sbStrLabel" text="&lt;STR&gt;" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+                                                      <Label fx:id="sbDexLabel" text="&lt;DEX&gt;" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+                                                      <Label fx:id="sbConLabel" text="&lt;CON&gt;" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+                                                      <Label fx:id="sbIntLabel" text="&lt;INT&gt;" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+                                                      <Label fx:id="sbWisLabel" text="&lt;WIS&gt;" GridPane.columnIndex="4" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+                                                      <Label fx:id="sbChaLabel" text="&lt;CHA&gt;" GridPane.columnIndex="5" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+                                                   </children>
+                                                </GridPane>
+                                                <Label fx:id="sbACLabel" text="&lt;AC&gt;" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                                <Label fx:id="sbMaxHPLabel" text="&lt;MAX HP&gt;" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+                                                <TextField fx:id="sbCurrentHPTextField" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                                <Label fx:id="sbSpeedLabel" text="&lt;SPD&gt;" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                                                <Label text="Saving Throws" GridPane.rowIndex="6">
                                                    <font>
                                                       <Font name="System Bold" size="12.0" />
                                                    </font>
                                                 </Label>
-                                                <Label text="WIS" GridPane.columnIndex="4" GridPane.halignment="CENTER">
+                                                <Label fx:id="sbSavesLabel" text="&lt;SAVES&gt;" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="6" />
+                                                <Label text="Skills" GridPane.rowIndex="7">
                                                    <font>
                                                       <Font name="System Bold" size="12.0" />
                                                    </font>
                                                 </Label>
-                                                <Label text="CHA" GridPane.columnIndex="5" GridPane.halignment="CENTER">
+                                                <Label fx:id="sbSkillsLabel" text="&lt;SKILLS&gt;" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="7" />
+                                                <Label text="Senses" GridPane.rowIndex="8">
                                                    <font>
                                                       <Font name="System Bold" size="12.0" />
                                                    </font>
                                                 </Label>
-                                                <Label fx:id="sbStrLabel" text="&lt;STR&gt;" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
-                                                <Label fx:id="sbDexLabel" text="&lt;DEX&gt;" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
-                                                <Label fx:id="sbConLabel" text="&lt;CON&gt;" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
-                                                <Label fx:id="sbIntLabel" text="&lt;INT&gt;" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
-                                                <Label fx:id="sbWisLabel" text="&lt;WIS&gt;" GridPane.columnIndex="4" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
-                                                <Label fx:id="sbChaLabel" text="&lt;CHA&gt;" GridPane.columnIndex="5" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+                                                <Label fx:id="sbSensesLabel" text="&lt;SENSES&gt;" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="8" />
+                                                <Label text="Languages" GridPane.rowIndex="9">
+                                                   <font>
+                                                      <Font name="System Bold" size="12.0" />
+                                                   </font>
+                                                </Label>
+                                                <Label fx:id="sbLanguagesLabel" text="&lt;SENSES&gt;" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="9" />
                                              </children>
+                                             <padding>
+                                                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                             </padding>
                                           </GridPane>
-                                          <Label fx:id="sbACLabel" text="&lt;AC&gt;" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                                          <Label fx:id="sbMaxHPLabel" text="&lt;MAX HP&gt;" GridPane.columnIndex="2" GridPane.rowIndex="3" />
-                                          <TextField fx:id="sbCurrentHPTextField" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                                          <Label fx:id="sbSpeedLabel" text="&lt;SPD&gt;" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-                                          <Label text="Saving Throws" GridPane.rowIndex="6">
-                                             <font>
-                                                <Font name="System Bold" size="12.0" />
-                                             </font>
-                                          </Label>
-                                          <Label fx:id="sbSavesLabel" text="&lt;SAVES&gt;" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="6" />
-                                          <Label text="Skills" GridPane.rowIndex="7">
-                                             <font>
-                                                <Font name="System Bold" size="12.0" />
-                                             </font>
-                                          </Label>
-                                          <Label fx:id="sbSkillsLabel" text="&lt;SKILLS&gt;" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="7" />
-                                          <Label text="Senses" GridPane.rowIndex="8">
-                                             <font>
-                                                <Font name="System Bold" size="12.0" />
-                                             </font>
-                                          </Label>
-                                          <Label fx:id="sbSensesLabel" text="&lt;SENSES&gt;" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="8" />
-                                          <Label text="Languages" GridPane.rowIndex="9">
-                                             <font>
-                                                <Font name="System Bold" size="12.0" />
-                                             </font>
-                                          </Label>
-                                          <Label fx:id="sbLanguagesLabel" text="&lt;SENSES&gt;" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="9" />
+                                          <GridPane fx:id="statblockGridPane">
+                                            <columnConstraints>
+                                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                            </columnConstraints>
+                                             <VBox.margin>
+                                                <Insets />
+                                             </VBox.margin>
+                                             <padding>
+                                                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                             </padding>
+                                          </GridPane>
                                        </children>
-                                       <padding>
-                                          <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                                       </padding>
-                                    </GridPane>
+                                    </VBox>
                                  </content>
                               </ScrollPane>
                            </content>
@@ -553,13 +568,17 @@
                                                       </HBox>
                                                       <TableView fx:id="attackTableView" editable="true" prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="2" GridPane.rowIndex="14">
                                                         <columns>
-                                                          <TableColumn fx:id="attackNameColumn" prefWidth="103.0" text="Name" />
-                                                          <TableColumn fx:id="attackCategoryColumn" prefWidth="78.0" text="M/R" />
-                                                            <TableColumn fx:id="attackBonusColumn" prefWidth="44.0" text="+Atk" />
-                                                            <TableColumn fx:id="attackRangeColumn" prefWidth="43.0" text="Range" />
-                                                            <TableColumn fx:id="attackNumDiceColumn" prefWidth="45.0" text="# Dice" />
-                                                            <TableColumn fx:id="attackDiceTypeColumn" prefWidth="67.0" text="Dice Type" />
-                                                            <TableColumn fx:id="attackDmgTypeColumn" prefWidth="120.0" text="Dmg Type" />
+                                                          <TableColumn fx:id="attackNameColumn" prefWidth="108.0" text="Name" />
+                                                          <TableColumn fx:id="attackCategoryColumn" prefWidth="72.0" text="Melee/Rng." />
+                                                            <TableColumn fx:id="attackAbilityColumn" prefWidth="54.0" text="Abil." />
+                                                            <TableColumn fx:id="attackRangeColumn" prefWidth="45.0" text="Rng." />
+                                                            <TableColumn prefWidth="87.0" text="Dmg. Dice (nDx)">
+                                                               <columns>
+                                                                  <TableColumn fx:id="attackNumDiceColumn" prefWidth="45.0" text="n" />
+                                                                  <TableColumn fx:id="attackDiceTypeColumn" prefWidth="53.0" text="x" />
+                                                               </columns>
+                                                            </TableColumn>
+                                                            <TableColumn fx:id="attackDmgTypeColumn" prefWidth="131.0" text="Dmg Type" />
                                                         </columns>
                                                       </TableView>
                                                       <Label text="Inventory" GridPane.rowIndex="17">
@@ -573,11 +592,11 @@
                                                             <Font name="System Bold" size="12.0" />
                                                          </font>
                                                       </Label>
-                                                      <TableView prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="2" GridPane.rowIndex="11">
+                                                      <TableView fx:id="skillTableView" editable="true" prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="2" GridPane.rowIndex="11">
                                                         <columns>
-                                                          <TableColumn prefWidth="202.0" text="Skill" />
-                                                          <TableColumn prefWidth="203.0" text="Ability" />
-                                                            <TableColumn prefWidth="94.0" text="Bonus" />
+                                                          <TableColumn fx:id="skillNameColumn" prefWidth="202.0" text="Skill" />
+                                                          <TableColumn fx:id="skillAbilityColumn" prefWidth="203.0" text="Ability" />
+                                                            <TableColumn fx:id="skillBonusColumn" prefWidth="94.0" text="Bonus" />
                                                         </columns>
                                                       </TableView>
                                                       <Label text="Traits" GridPane.rowIndex="15">
@@ -593,8 +612,8 @@
                                                       </TableView>
                                                       <HBox alignment="CENTER_RIGHT" spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="10">
                                                          <children>
-                                                            <Button mnemonicParsing="false" prefWidth="25.0" text="+" GridPane.rowIndex="9" />
-                                                            <Button mnemonicParsing="false" prefWidth="25.0" text="-" />
+                                                            <Button fx:id="charSkillAddButton" mnemonicParsing="false" prefWidth="25.0" text="+" GridPane.rowIndex="9" />
+                                                            <Button fx:id="charSkillRemoveButton" mnemonicParsing="false" prefWidth="25.0" text="-" />
                                                          </children>
                                                       </HBox>
                                                       <HBox alignment="CENTER_RIGHT" spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="13">
@@ -610,7 +629,7 @@
                                                          </children>
                                                       </HBox>
                                                       <Label text="Proficiency:" GridPane.rowIndex="4" />
-                                                      <TextField maxWidth="50.0" minWidth="50.0" prefWidth="50.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                                                      <TextField fx:id="charProficiencyTextField" maxWidth="50.0" minWidth="50.0" prefWidth="50.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
                                                    </children>
                                                    <padding>
                                                       <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />

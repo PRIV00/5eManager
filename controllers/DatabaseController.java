@@ -1,10 +1,13 @@
 package main.controllers;
 
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.GridPane;
+import javafx.util.converter.IntegerStringConverter;
 import main.assets.GuiTools;
-import main.databases.AttackTable;
-import main.databases.CharacterTable;
+import main.databases.tables.AttackTable;
+import main.databases.tables.CharacterTable;
 import main.databases.Database;
-import main.databases.LocationTable;
+import main.databases.tables.LocationTable;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -12,9 +15,11 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import main.databases.tables.SkillTable;
 import main.models.Attack;
 import main.models.Character;
 import main.models.Location;
+import main.models.Skill;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -23,20 +28,27 @@ import java.util.List;
 
 public class DatabaseController {
 
-    /* ------------------------------ NON-FXML FIELDS ------------------------------ */
+    /* ------------------------------ MODEL FIELDS ------------------------------ */
+    //TODO: field for selectedCharacter and selectedLocation to update only on tableview select. Will result in a lot less code for listeners.
+
 
     private LocationTable locationTable;
     private List<Location> masterLocations;
     private ObservableList<Location> filteredLocations;
     private ObservableList<Location> childLocations = FXCollections.observableArrayList(new ArrayList<>());
     private ObservableList<Character> locationCharacters = FXCollections.observableArrayList(new ArrayList<>());
+    private Location observedLocation;
 
     private CharacterTable characterTable;
     private List<Character> masterCharacters;
     private ObservableList<Character> filteredCharacters;
+    private Character observedCharacter;
 
     private AttackTable attackTable;
-    private ObservableList<Attack> currentCharacterAttacks = FXCollections.observableArrayList();
+    private ObservableList<Attack> observedCharacterAttacks = FXCollections.observableArrayList();
+
+    private SkillTable skillTable;
+    private ObservableList<Skill> observedCharacterSkills = FXCollections.observableArrayList();
 
     /* ------------------------------ TOOLBAR CONTROLS ------------------------------ */
     private Button saveAllButton = new Button("Save All"); // Not an FXML control as it needs to be added dynamically.
@@ -104,6 +116,8 @@ public class DatabaseController {
     @FXML private Label charFearsLabel;
 
     /* Character Statblock Display */
+    @FXML private GridPane statblockGridPane;
+
     // sb for Statblock :D
     @FXML private Label sbNameLabel;
     @FXML private Label sbDescriptorLabel;
@@ -144,6 +158,7 @@ public class DatabaseController {
     @FXML private TextField charArmorTextField;
     @FXML private TextField charHitPointMaxTextField;
     @FXML private TextField charSpeedTextField;
+    @FXML private TextField charProficiencyTextField;
     @FXML private TextField charStrengthTextField;
     @FXML private TextField charDexterityTextField;
     @FXML private TextField charConstitutionTextField;
@@ -159,14 +174,23 @@ public class DatabaseController {
     @FXML private TextField charSensesTextField;
     @FXML private TextField charLanguagesTextField;
 
-    /* Character Attack Table*/
+    /* Character Skills Tableview */
+    @FXML private Button charSkillAddButton;
+    @FXML private Button charSkillRemoveButton;
+
+    @FXML private TableView<Skill> skillTableView;
+    @FXML private TableColumn<Skill, String> skillNameColumn;
+    @FXML private TableColumn<Skill, String> skillAbilityColumn;
+    @FXML private TableColumn<Skill, Integer> skillBonusColumn;
+
+    /* Character Attack Tableview */
     @FXML private Button charAttackAddButton;
     @FXML private Button charAttackRemoveButton;
 
     @FXML private TableView<Attack> attackTableView;
-    @FXML private TableColumn<Attack, String> attackNameColumn = new TableColumn<>();
+    @FXML private TableColumn<Attack, String> attackNameColumn;
     @FXML private TableColumn<Attack, String> attackCategoryColumn;
-    @FXML private TableColumn<Attack, Integer> attackBonusColumn;
+    @FXML private TableColumn<Attack, String> attackAbilityColumn;
     @FXML private TableColumn<Attack, Integer> attackRangeColumn;
     @FXML private TableColumn<Attack, Integer> attackNumDiceColumn;
     @FXML private TableColumn<Attack, Integer> attackDiceTypeColumn;
@@ -175,8 +199,9 @@ public class DatabaseController {
     /* Character Inventory */
     @FXML private TextArea charInventoryTextArea;
 
-
     public DatabaseController() { } /* Constructor for controller must be empty */
+
+    /* ------------------------------ UNIVERSAL GUI METHODS ------------------------------ */
 
     /**
      * Used as a pseudo constructor for the controller to set up necessary variables
@@ -217,16 +242,19 @@ public class DatabaseController {
         // Create/Set the SQLite tables
         this.characterTable = db.getCharacterTable();
         this.attackTable = db.getAttackTable();
+        this.skillTable = db.getSkillTable();
 
-        // Prep the observable lists, set attack and location fields for each object in master list.
+        // Prep the observable lists, set skills, attacks, location fields for each object in master list.
         masterCharacters = db.getCharacterTable().getAllData();
+        setCharacterSkills(masterCharacters);
         setCharacterAttacks(masterCharacters);
         setCharacterLocations(masterCharacters, masterLocations);
-        filteredCharacters = FXCollections.observableArrayList(masterCharacters);
+        filteredCharacters = FXCollections.observableArrayList(masterCharacters); //Start it as a copy of the master list
 
-        // Prep controls for Character tab
+        // Prep controls for Character tableviews
         characterTableViewSetup(filteredCharacters);
-        attacksTableViewSetup(currentCharacterAttacks);
+        attacksTableViewSetup(observedCharacterAttacks);
+        skillsTableViewSetup(observedCharacterSkills);
 
         // Set Character listeners and select first row of the table view - ready to go!
         setCharacterTabListeners();
@@ -264,11 +292,31 @@ public class DatabaseController {
                         c.setName(GuiTools.trim(c.getName()));  // The name currently has asterisks, saving trims them off.
                     }
 
+                    // Save Skills
+                    List<Skill> activeSkills = new ArrayList<>();
+                    for (Skill skill : c.getSkillList()) {
+                        if (skill.isSetToDelete()) {
+                            skillTable.deleteData(skill);
+                            continue;
+                        } else {
+                            activeSkills.add(skill);
+                        }
+                        if (skill.getId() != 0) {
+                            skillTable.updateData(skill);
+                        } else {
+                            skillTable.insertData(skill);
+                        }
+                    }
+                    c.setSkillList(activeSkills);
+
                     // Save Attacks
+                    List<Attack> activeAttacks = new ArrayList<>();
                     for (Attack atk : c.getAttackList()) {
                         if (atk.isSetToDelete()) {
                             attackTable.deleteData(atk);
                             continue;
+                        } else {
+                            activeAttacks.add(atk);
                         }
 
                         if (atk.getId() != 0) { // Ensures that only atks which have ids already are updated, otherwise it can be assumed that they have just been added since the ID will be 0.
@@ -277,6 +325,7 @@ public class DatabaseController {
                             attackTable.insertData(atk);
                         }
                     }
+                    c.setAttackList(activeAttacks); // Sets the list so it doesn't include any "setToDelete" status attacks.
 
                     // Update database
                     try {
@@ -293,6 +342,25 @@ public class DatabaseController {
         });
     }
 
+    /* ------------------------------ LOCATION TAB METHODS ------------------------------ */
+
+    /**
+     * Sets the objects to appropriate parents based on ID.
+     *
+     * @param locationList : list to set the parents for.
+     * @param masterLocationList : master list of models.Location objects to pull from.
+     */
+    private void setParentLocations(List<Location> locationList, List<Location> masterLocationList) {
+        for (Location x : locationList) {
+            for (Location y : masterLocationList) {
+                if (x.getParentID() == y.getId()) {
+                    x.setParent(y);
+                    break;
+                }
+            }
+        }
+    }
+
     /**
      * Initializes the tableView for Locations. Sets the columns and CellValueFactories.
      *
@@ -305,607 +373,6 @@ public class DatabaseController {
         locParentCol.setCellValueFactory(new PropertyValueFactory<>("parentName"));
 
         locationTableView.setItems(locationObservableList);
-    }
-
-    /**
-     * Initializes the tableView for Character, sets the columns to the appropriate fields.
-     *
-     * @param characterObservableList The observable list of characters to view.
-     */
-    private void characterTableViewSetup(ObservableList<Character> characterObservableList) {
-        charNameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
-        charRaceCol.setCellValueFactory(new PropertyValueFactory<>("race"));
-        charTitleCol.setCellValueFactory(new PropertyValueFactory<>("title"));
-        charLocCol.setCellValueFactory(new PropertyValueFactory<>("locName"));
-        charIDCol.setCellValueFactory(new PropertyValueFactory<>("id"));
-
-        characterTableView.setItems(characterObservableList);
-    }
-
-    /**
-     * Initializes the smaller tableView for Attacks. More advanced CellFactories here since I wanted the cells
-     * to be editable directly on the table itself.
-     *
-     * @param attackObservableList The observable list of attacks to view.
-     */
-    private void attacksTableViewSetup(ObservableList<Attack> attackObservableList) {
-        attackNameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
-        attackNameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
-        attackNameColumn.setOnEditCommit(event -> {
-            TablePosition<Attack, String> pos = event.getTablePosition();
-            String newName = event.getNewValue();
-            int row = pos.getRow();
-            Attack atk = event.getTableView().getItems().get(row);
-            atk.setName(newName);
-            characterEditDisplay(characterTableView.getSelectionModel().getSelectedItem());
-        });
-        attackCategoryColumn.setCellValueFactory(new PropertyValueFactory<>("category"));
-        ObservableList<String> attackCatObsList = FXCollections.observableArrayList(
-                new ArrayList<>(Arrays.asList("Melee", "Ranged"))
-        );
-        attackCategoryColumn.setCellFactory(ComboBoxTableCell.forTableColumn(attackCatObsList));
-        attackCategoryColumn.setOnEditCommit(event -> {
-            TablePosition<Attack, String> pos = event.getTablePosition();
-            String newCat = event.getNewValue();
-            int row = pos.getRow();
-            Attack atk = event.getTableView().getItems().get(row);
-            atk.setCategory(newCat);
-        });
-        attackBonusColumn.setCellValueFactory(new PropertyValueFactory<>("attackBonus"));
-        attackRangeColumn.setCellValueFactory(new PropertyValueFactory<>("range"));
-        attackNumDiceColumn.setCellValueFactory(new PropertyValueFactory<>("numDice"));
-        attackDiceTypeColumn.setCellValueFactory(new PropertyValueFactory<>("damageDice"));
-        attackDmgTypeColumn.setCellValueFactory(new PropertyValueFactory<>("damageType"));
-
-        attackTableView.setItems(attackObservableList);
-    }
-
-    /**
-     * Fetch data from SQL table Attacks, assigns the attack list to each character based on ID.
-     */
-    private void setCharacterAttacks(List<Character> characterList) {
-        for (Character c : characterList) {
-            c.setAttackList(attackTable.getAttacksByCharacter(c));
-        }
-    }
-
-    /**
-     * Sets the listeners for the character tab. Includes listeners for selecting different rows and updating the
-     * display, as well as listeners that set the models.Character's attributes based on key presses, allowing the user to
-     * edit multiple rows and save them all at once.
-     */
-    private void setCharacterTabListeners() {
-
-        /* Left side tableView, add/remove and filter field listeners */
-        characterFilterTextField.setOnKeyReleased(event -> {
-            filteredCharacters.clear();
-            filteredCharacters.addAll(characterTable.query(characterFilterTextField.getText()));
-            for (Character c : filteredCharacters) {
-                for (Location i : masterLocations) {
-                    if (c.getLocationID() == i.getId()) {
-                        c.setLocation(i);
-                        break;
-                    }
-                }
-            }
-        });
-
-        characterTableView.getSelectionModel().selectedItemProperty().addListener(
-                (observable, oldValue, newValue) -> {
-                    Character c = characterTableView.getSelectionModel().getSelectedItem();
-
-                    charNameTextField.setDisable(false);
-                    charTitleTextField.setDisable(false);
-                    charRaceTextField.setDisable(false);
-                    charLocationComboBox.setDisable(false);
-
-                    charVoiceTextField.setDisable(false);
-                    charPersonalityTextField.setDisable(false);
-                    charDesiresTextField.setDisable(false);
-                    charFearsTextField.setDisable(false);
-                    charLookTextArea.setDisable(false);
-                    charBackgroundTextArea.setDisable(false);
-                    charKnowledgeTextArea.setDisable(false);
-                    charOpinionTextArea.setDisable(false);
-
-                    charDescriptorTextField.setDisable(false);
-                    charArmorClassTextField.setDisable(false);
-                    charArmorTextField.setDisable(false);
-                    charHitPointMaxTextField.setDisable(false);
-                    charSpeedTextField.setDisable(false);
-                    charStrengthTextField.setDisable(false);
-                    charDexterityTextField.setDisable(false);
-                    charConstitutionTextField.setDisable(false);
-                    charIntelligenceTextField.setDisable(false);
-                    charWisdomTextField.setDisable(false);
-                    charCharismaTextField.setDisable(false);
-                    charStrengthSaveTextField.setDisable(false);
-                    charDexteritySaveTextField.setDisable(false);
-                    charConstitutionSaveTextField.setDisable(false);
-                    charIntelligenceSaveTextField.setDisable(false);
-                    charWisdomSaveTextField.setDisable(false);
-                    charSensesTextField.setDisable(false);
-                    charCharismaSaveTextField.setDisable(false);
-                    charLanguagesTextField.setDisable(false);
-                    charInventoryTextArea.setDisable(false);
-                    try {
-                        //Left side character display
-                        charNameLabel.setText(GuiTools.trim(c.getName()));
-                        charTitleLabel.setText(c.getTitle());
-                        charLookLabel.setText(c.getLook());
-
-                        charBackgroundLabel.setText(c.getBackground());
-                        charKnowledgeLabel.setText(c.getKnowledge());
-                        charOpinionLabel.setText(c.getOpinion());
-                        charVoiceLabel.setText(c.getVoice());
-                        charPersonalityLabel.setText(c.getPersonality());
-                        charDesiresLabel.setText(c.getDesires());
-                        charFearsLabel.setText(c.getFears());
-
-                        // Stablock Display
-                        sbNameLabel.setText(c.getName());
-                        sbDescriptorLabel.setText(c.getDescriptor());
-                        sbACLabel.setText(String.valueOf(c.getArmorClass()));
-                        sbCurrentHPTextField.setText(String.valueOf(c.getHitPointCurrent()));
-                        sbMaxHPLabel.setText(String.valueOf(c.getHitPointMax()));
-                        sbSpeedLabel.setText(String.valueOf(c.getSpeed()) + " ft.");
-
-                        sbStrLabel.setText(c.getStats().getModText("STR"));
-                        sbDexLabel.setText(c.getStats().getModText("DEX"));
-                        sbConLabel.setText(c.getStats().getModText("CON"));
-                        sbIntLabel.setText(c.getStats().getModText("INT"));
-                        sbWisLabel.setText(c.getStats().getModText("WIS"));
-                        sbChaLabel.setText(c.getStats().getModText("CHA"));
-                        sbSavesLabel.setText(c.getSaves().toString());
-
-                        sbSensesLabel.setText(c.getSenses());
-                        sbLanguagesLabel.setText(c.getLanguages());
-
-                        // Character Entry
-                        charNameTextField.setText(GuiTools.trim(c.getName()));
-                        charTitleTextField.setText(c.getTitle());
-                        charRaceTextField.setText(c.getRace());
-                        charLocationComboBox.setValue(c.getLocation());
-
-                        charVoiceTextField.setText(c.getVoice());
-                        charPersonalityTextField.setText(c.getPersonality());
-                        charDesiresTextField.setText(c.getDesires());
-                        charFearsTextField.setText(c.getFears());
-                        charLookTextArea.setText(c.getLook());
-                        charBackgroundTextArea.setText(c.getBackground());
-                        charKnowledgeTextArea.setText(c.getKnowledge());
-                        charOpinionTextArea.setText(c.getOpinion());
-
-                        charDescriptorTextField.setText(c.getDescriptor());
-                        charArmorClassTextField.setText(String.valueOf(c.getArmorClass()));
-                        charArmorTextField.setText(c.getArmor());
-                        charHitPointMaxTextField.setText(String.valueOf(c.getHitPointMax()));
-                        charSpeedTextField.setText(String.valueOf(c.getSpeed()));
-                        charStrengthTextField.setText(String.valueOf(c.getStats().getStrength(0)));
-                        charDexterityTextField.setText(String.valueOf(c.getStats().getDexterity(0)));
-                        charConstitutionTextField.setText(String.valueOf(c.getStats().getConstitution(0)));
-                        charIntelligenceTextField.setText(String.valueOf(c.getStats().getIntelligence(0)));
-                        charWisdomTextField.setText(String.valueOf(c.getStats().getWisdom(0)));
-                        charCharismaTextField.setText(String.valueOf(c.getStats().getCharisma(0)));
-                        charStrengthSaveTextField.setText(String.valueOf(c.getSaves().getStrengthSave()));
-                        charDexteritySaveTextField.setText(String.valueOf(c.getSaves().getDexteritySave()));
-                        charConstitutionSaveTextField.setText(String.valueOf(c.getSaves().getConstitutionSave()));
-                        charIntelligenceSaveTextField.setText(String.valueOf(c.getSaves().getIntelligenceSave()));
-                        charWisdomSaveTextField.setText(String.valueOf(c.getSaves().getWisdomSave()));
-                        charCharismaSaveTextField.setText(String.valueOf(c.getSaves().getCharismaSave()));
-                        charSensesTextField.setText(c.getSenses());
-                        charLanguagesTextField.setText(c.getLanguages());
-                        charInventoryTextArea.setText(c.getInventory());
-
-                        currentCharacterAttacks.clear();
-                        for (Attack atk : c.getAttackList()) {
-                            if (!atk.isSetToDelete()) {
-                                currentCharacterAttacks.add(atk);
-                            }
-                        }
-
-                        boolean editPending = false;
-                        for (Character c2 : filteredCharacters) {
-                            if (c2.isEdited()) {
-                                editPending = true;
-                            }
-                        }
-                        if (!editPending) {
-                            saveAllButton.setDisable(true);
-                        }
-                    } catch (NullPointerException e) {
-                        e.printStackTrace();
-                        charNameTextField.setDisable(true);
-                        charTitleTextField.setDisable(true);
-                        charRaceTextField.setDisable(true);
-                        charLocationComboBox.setDisable(true);
-
-                        charVoiceTextField.setDisable(true);
-                        charPersonalityTextField.setDisable(true);
-                        charDesiresTextField.setDisable(true);
-                        charFearsTextField.setDisable(true);
-                        charLookTextArea.setDisable(true);
-                        charBackgroundTextArea.setDisable(true);
-                        charKnowledgeTextArea.setDisable(true);
-                        charOpinionTextArea.setDisable(true);
-
-                        charDescriptorTextField.setDisable(true);
-                        charArmorClassTextField.setDisable(true);
-                        charArmorTextField.setDisable(true);
-                        charHitPointMaxTextField.setDisable(true);
-                        charSpeedTextField.setDisable(true);
-                        charStrengthTextField.setDisable(true);
-                        charDexterityTextField.setDisable(true);
-                        charConstitutionTextField.setDisable(true);
-                        charIntelligenceTextField.setDisable(true);
-                        charWisdomTextField.setDisable(true);
-                        charCharismaTextField.setDisable(true);
-                        charStrengthSaveTextField.setDisable(true);
-                        charDexteritySaveTextField.setDisable(true);
-                        charConstitutionSaveTextField.setDisable(true);
-                        charIntelligenceSaveTextField.setDisable(true);
-                        charWisdomSaveTextField.setDisable(true);
-                        charCharismaSaveTextField.setDisable(true);
-                        charSensesTextField.setDisable(true);
-                        charLanguagesTextField.setDisable(true);
-                        charInventoryTextArea.setDisable(true);
-                    }
-                });
-
-        characterAddButton.setOnAction(event -> {
-            Character c = new Character();
-            c.setId(characterTable.getNextID());
-
-            try {
-                characterTable.insertData(c);
-                masterCharacters.add(c);
-                filteredCharacters.add(c);
-                characterTableView.getSelectionModel().select(c);
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        });
-
-        characterRemoveButton.setOnAction(event -> {
-            Character c = characterTableView.getSelectionModel().getSelectedItem();
-            try {
-                characterTable.deleteData(c);
-                attackTable.deleteDataByCharacter(c);
-            } catch (SQLException e) {
-                // Status update here
-            }
-            masterCharacters.remove(c);
-            filteredCharacters.remove(c);
-        });
-
-        /* Listeners for statblock */
-        sbCurrentHPTextField.setOnKeyReleased(event -> {
-            Character c = characterTableView.getSelectionModel().getSelectedItem();
-            c.setHitPointCurrent(Integer.parseInt(sbCurrentHPTextField.getText()));
-            saveAllButton.setDisable(false);
-            characterEditDisplay(c);
-        });
-
-        /* Listeners for character information entry */
-        // Basic Info
-        charNameTextField.setOnKeyReleased(event -> {
-            Character c = characterTableView.getSelectionModel().getSelectedItem();
-            c.setName(charNameTextField.getText());
-            charNameLabel.setText(c.getName());
-            sbNameLabel.setText(c.getName());
-            characterEditDisplay(c);
-        });
-
-        charTitleTextField.setOnKeyReleased(event -> {
-            Character c = characterTableView.getSelectionModel().getSelectedItem();
-            c.setTitle(charTitleTextField.getText());
-            charTitleLabel.setText(c.getTitle());
-            characterEditDisplay(c);
-        });
-
-        charRaceTextField.setOnKeyReleased(event -> {
-            Character c = characterTableView.getSelectionModel().getSelectedItem();
-            c.setRace(charRaceTextField.getText());
-            characterEditDisplay(c);
-        });
-
-        charLocationComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
-            Character c = characterTableView.getSelectionModel().getSelectedItem();
-            try {
-                if (c.getLocationID() != newValue.getId()) {
-                    c.setLocation(charLocationComboBox.getValue());
-                    try {
-                        c.setLocationID(c.getLocation().getId());
-                    } catch (NullPointerException e) {
-                        c.setLocationID(0);
-                    }
-                    characterEditDisplay(c);
-                }
-            } catch (NullPointerException e) {
-                System.out.println("k");
-            }
-        });
-
-        // Personality & Description
-        charVoiceTextField.setOnKeyReleased(event -> {
-            Character c = characterTableView.getSelectionModel().getSelectedItem();
-            c.setVoice(charVoiceTextField.getText());
-            charVoiceLabel.setText(c.getVoice());
-            characterEditDisplay(c);
-        });
-
-        charPersonalityTextField.setOnKeyReleased(event -> {
-            Character c = characterTableView.getSelectionModel().getSelectedItem();
-            c.setPersonality(charPersonalityTextField.getText());
-            charPersonalityLabel.setText(c.getPersonality());
-            characterEditDisplay(c);
-        });
-
-        charDesiresTextField.setOnKeyReleased(event -> {
-            Character c = characterTableView.getSelectionModel().getSelectedItem();
-            c.setDesires(charDesiresTextField.getText());
-            charDesiresLabel.setText(c.getDesires());
-            characterEditDisplay(c);
-        });
-
-        charFearsTextField.setOnKeyReleased(event -> {
-            Character c = characterTableView.getSelectionModel().getSelectedItem();
-            c.setFears(charFearsTextField.getText());
-            charFearsLabel.setText(c.getFears());
-            characterEditDisplay(c);
-        });
-
-        charLookTextArea.setOnKeyReleased(event -> {
-            Character c = characterTableView.getSelectionModel().getSelectedItem();
-            c.setLook(charLookTextArea.getText());
-            charLookLabel.setText(c.getLook());
-            characterEditDisplay(c);
-        });
-
-        charBackgroundTextArea.setOnKeyReleased(event -> {
-            Character c = characterTableView.getSelectionModel().getSelectedItem();
-            c.setBackground(charBackgroundTextArea.getText());
-            charBackgroundLabel.setText(c.getBackground());
-            characterEditDisplay(c);
-        });
-
-        charKnowledgeTextArea.setOnKeyReleased(event -> {
-            Character c = characterTableView.getSelectionModel().getSelectedItem();
-            c.setKnowledge(charKnowledgeTextArea.getText());
-            charKnowledgeLabel.setText(c.getKnowledge());
-            characterEditDisplay(c);
-        });
-
-        charOpinionTextArea.setOnKeyReleased(event -> {
-            Character c = characterTableView.getSelectionModel().getSelectedItem();
-            c.setOpinion(charOpinionTextArea.getText());
-            charOpinionLabel.setText(c.getOpinion());
-            characterEditDisplay(c);
-        });
-
-        // Statblock
-        charDescriptorTextField.setOnKeyReleased(event -> {
-            Character c = characterTableView.getSelectionModel().getSelectedItem();
-            c.setDescriptor(charDescriptorTextField.getText());
-            sbDescriptorLabel.setText(c.getDescriptor());
-            characterEditDisplay(c);
-        });
-
-        charArmorClassTextField.setOnKeyReleased(event -> {
-            Character c = characterTableView.getSelectionModel().getSelectedItem();
-            c.setArmorClass(Integer.parseInt(charArmorClassTextField.getText()));
-            sbACLabel.setText(String.valueOf(c.getArmorClass()));
-            characterEditDisplay(c);
-        });
-
-        charArmorTextField.setOnKeyReleased(event -> {
-            Character c = characterTableView.getSelectionModel().getSelectedItem();
-            c.setArmor(charArmorTextField.getText());
-            characterEditDisplay(c);
-        });
-
-        charHitPointMaxTextField.setOnKeyReleased(event -> {
-            Character c = characterTableView.getSelectionModel().getSelectedItem();
-            try {
-                c.setHitPointMax(Integer.parseInt(charHitPointMaxTextField.getText()));
-                sbMaxHPLabel.setText(String.valueOf(c.getHitPointMax()));
-            } catch (NumberFormatException e) {
-                //
-            }
-            characterEditDisplay(c);
-        });
-
-        charSpeedTextField.setOnKeyReleased(event -> {
-            Character c = characterTableView.getSelectionModel().getSelectedItem();
-            c.setSpeed(Integer.parseInt(charSpeedTextField.getText()));
-            sbSpeedLabel.setText(String.valueOf(c.getSpeed()) + " ft.");
-            characterEditDisplay(c);
-        });
-
-        charStrengthTextField.setOnKeyReleased(event -> {
-            Character c = characterTableView.getSelectionModel().getSelectedItem();
-            try {
-                c.getStats().setStrength(Integer.parseInt(charStrengthTextField.getText()));
-                sbStrLabel.setText(c.getStats().getModText("STR"));
-            } catch (NumberFormatException e) {
-                // Ignore for now. Catch it if it tries to save later.
-            }
-            characterEditDisplay(c);
-        });
-
-        charDexterityTextField.setOnKeyReleased(event -> {
-            Character c = characterTableView.getSelectionModel().getSelectedItem();
-            try {
-                c.getStats().setDexterity(Integer.parseInt(charDexterityTextField.getText()));
-                sbDexLabel.setText(c.getStats().getModText("DEX"));
-            } catch (NumberFormatException e) {
-                // Ignore for now. Catch it if it tries to save later.
-            }
-            characterEditDisplay(c);
-        });
-
-        charConstitutionTextField.setOnKeyReleased(event -> {
-            Character c = characterTableView.getSelectionModel().getSelectedItem();
-            try {
-                c.getStats().setConstitution(Integer.parseInt(charConstitutionTextField.getText()));
-                sbConLabel.setText(c.getStats().getModText("CON"));
-            } catch (NumberFormatException e) {
-                // Ignore for now. Catch it if it tries to save later.
-            }
-            characterEditDisplay(c);
-        });
-
-        charIntelligenceTextField.setOnKeyReleased(event -> {
-            Character c = characterTableView.getSelectionModel().getSelectedItem();
-            try {
-                c.getStats().setIntelligence(Integer.parseInt(charIntelligenceTextField.getText()));
-                sbIntLabel.setText(c.getStats().getModText("INT"));
-            } catch (NumberFormatException e) {
-                // Ignore for now. Catch it if it tries to save later.
-            }
-            characterEditDisplay(c);
-        });
-
-        charWisdomTextField.setOnKeyReleased(event -> {
-            Character c = characterTableView.getSelectionModel().getSelectedItem();
-            try {
-                c.getStats().setWisdom(Integer.parseInt(charWisdomTextField.getText()));
-                sbWisLabel.setText(c.getStats().getModText("WIS"));
-            } catch (NumberFormatException e) {
-                // Ignore for now. Catch it if it tries to save later.
-            }
-            characterEditDisplay(c);
-        });
-
-        charCharismaTextField.setOnKeyReleased(event -> {
-            Character c = characterTableView.getSelectionModel().getSelectedItem();
-            try {
-                c.getStats().setCharisma(Integer.parseInt(charCharismaTextField.getText()));
-                sbChaLabel.setText(c.getStats().getModText("CHA"));
-            } catch (NumberFormatException e) {
-                // Ignore for now. Catch it if it tries to save later.
-            }
-            characterEditDisplay(c);
-        });
-
-        charStrengthSaveTextField.setOnKeyReleased(event -> {
-            Character c = characterTableView.getSelectionModel().getSelectedItem();
-            try {
-                c.getSaves().setStrengthSave(Integer.parseInt(charStrengthSaveTextField.getText()));
-                sbSavesLabel.setText(c.getSaves().toString());
-            } catch (NumberFormatException e) {
-                // Ignore for now. Catch it if it tries to save later.
-            }
-            characterEditDisplay(c);
-        });
-
-        charDexteritySaveTextField.setOnKeyReleased(event -> {
-            Character c = characterTableView.getSelectionModel().getSelectedItem();
-            try {
-                c.getSaves().setDexteritySave(Integer.parseInt(charDexteritySaveTextField.getText()));
-                sbSavesLabel.setText(c.getSaves().toString());
-            } catch (NumberFormatException e) {
-                // Ignore for now. Catch it if it tries to save later.
-            }
-            characterEditDisplay(c);
-        });
-
-        charConstitutionSaveTextField.setOnKeyReleased(event -> {
-            Character c = characterTableView.getSelectionModel().getSelectedItem();
-            try {
-                c.getSaves().setConstitutionSave(Integer.parseInt(charConstitutionSaveTextField.getText()));
-                sbSavesLabel.setText(c.getSaves().toString());
-            } catch (NumberFormatException e) {
-                // Ignore for now. Catch it if it tries to save later.
-            }
-            characterEditDisplay(c);
-        });
-
-        charIntelligenceSaveTextField.setOnKeyReleased(event -> {
-            Character c = characterTableView.getSelectionModel().getSelectedItem();
-            try {
-                c.getSaves().setIntelligenceSave(Integer.parseInt(charIntelligenceSaveTextField.getText()));
-                sbSavesLabel.setText(c.getSaves().toString());
-            } catch (NumberFormatException e) {
-                // Ignore for now. Catch it if it tries to save later.
-            }
-            characterEditDisplay(c);
-        });
-
-        charWisdomSaveTextField.setOnKeyReleased(event -> {
-            Character c = characterTableView.getSelectionModel().getSelectedItem();
-            try {
-                c.getSaves().setWisdomSave(Integer.parseInt(charWisdomSaveTextField.getText()));
-                sbSavesLabel.setText(c.getSaves().toString());
-            } catch (NumberFormatException e) {
-                // Ignore for now. Catch it if it tries to save later.
-            }
-            characterEditDisplay(c);
-        });
-
-        charCharismaSaveTextField.setOnKeyReleased(event -> {
-            Character c = characterTableView.getSelectionModel().getSelectedItem();
-            try {
-                c.getSaves().setCharismaSave(Integer.parseInt(charCharismaSaveTextField.getText()));
-                sbSavesLabel.setText(c.getSaves().toString());
-            } catch (NumberFormatException e) {
-                // Ignore for now. Catch it if it tries to save later.
-            }
-            characterEditDisplay(c);
-        });
-
-        charSensesTextField.setOnKeyReleased(event -> {
-            Character c = characterTableView.getSelectionModel().getSelectedItem();
-            c.setSenses(charSensesTextField.getText());
-            sbSensesLabel.setText(c.getSenses());
-            characterEditDisplay(c);
-        });
-
-        charLanguagesTextField.setOnKeyReleased(event -> {
-            Character c = characterTableView.getSelectionModel().getSelectedItem();
-            c.setLanguages(charLanguagesTextField.getText());
-            sbLanguagesLabel.setText(c.getLanguages());
-            characterEditDisplay(c);
-        });
-
-        // Attacks
-        charAttackAddButton.setOnAction(event -> { //NEED TO SET TABLE UPDATES IN SAVEALL
-            Character c = characterTableView.getSelectionModel().getSelectedItem();
-            Attack atk = new Attack();
-            atk.setCharacterID(c.getId());
-            c.addAttack(atk);
-            currentCharacterAttacks.add(atk);
-            saveAllButton.setDisable(false);
-            characterEditDisplay(c);
-        });
-
-        charAttackRemoveButton.setOnAction(event -> {
-            Character c = characterTableView.getSelectionModel().getSelectedItem();
-            Attack atk = attackTableView.getSelectionModel().getSelectedItem();
-            atk.setToDelete(true);
-            currentCharacterAttacks.remove(atk);
-            saveAllButton.setDisable(false);
-            characterEditDisplay(c);
-        });
-
-        //Inventory
-        charInventoryTextArea.setOnKeyReleased(event -> {
-            Character c = characterTableView.getSelectionModel().getSelectedItem();
-            c.setInventory(charInventoryTextArea.getText());
-            saveAllButton.setDisable(false);
-            characterEditDisplay(c);
-        });
-
-    }
-
-    /**
-     * Quick method to avoid code duplication for setCharacterTabListeners. Sets the Character object as edited.
-     */
-    private void characterEditDisplay(Character c) {
-        c.setName("**" + GuiTools.trim(c.getName()) + "**");
-        c.setEdited(true);
-        characterTableView.refresh();
-        saveAllButton.setDisable(false);
     }
 
     /**
@@ -1140,39 +607,23 @@ public class DatabaseController {
     }
 
     /**
-     * Sets the objects to appropriate parents based on ID.
+     * Used by updateLocationComboBoxes to fill the combobox in the Locations tab with locations that won't cause
+     * an infinite loop. This essentially means any sub locations can't be assigned as the top location's parent.
      *
-     * @param locationList : list to set the parents for.
-     * @param masterLocationList : master list of models.Location objects to pull from.
+     * @param topLocation The location to check for invalid parents
+     * @return return the list of invalid IDs
      */
-    private void setParentLocations(List<Location> locationList, List<Location> masterLocationList) {
-        for (Location x : locationList) {
-            for (Location y : masterLocationList) {
-                if (x.getParentID() == y.getId()) {
-                    x.setParent(y);
-                    break;
-                }
-            }
-        }
-    }
+    private List<Integer> invalidParents(Location topLocation) {
+        List<Integer> invalidIDs = new ArrayList<>();
 
-    /**
-     * Sets the models.Location object references for the master list of Characters. Does this by matching the foreign key
-     * ID to the location's ID using for loops.
-     *
-     * @param characterList : The master models.models.models.Character list to loop through
-     * @param masterLocationList : The master models.models.models.Location list to loop through
-     */
-    private void setCharacterLocations(List<Character> characterList,
-                                       List<Location> masterLocationList) {
-        for (Character c : characterList) {
-            for (Location loc : masterLocationList) {
-                if (c.getLocationID() == loc.getId()) {
-                    c.setLocation(loc);
-                    break;
-                }
-            }
+        List<Location> childTreeList = new ArrayList<>();
+        getChildLocations(childTreeList, topLocation);
+
+        for (Location loc : childTreeList) {
+            invalidIDs.add(loc.getId());
         }
+
+        return invalidIDs;
     }
 
     /**
@@ -1209,26 +660,6 @@ public class DatabaseController {
         } catch (NullPointerException e) {
             //
         }
-    }
-
-    /**
-     * Used by updateLocationComboBoxes to fill the combobox in the Locations tab with locations that won't cause
-     * an infinite loop. This essentially means any sub locations can't be assigned as the top location's parent.
-     *
-     * @param topLocation The location to check for invalid parents
-     * @return return the list of invalid IDs
-     */
-    private List<Integer> invalidParents(Location topLocation) {
-        List<Integer> invalidIDs = new ArrayList<>();
-
-        List<Location> childTreeList = new ArrayList<>();
-        getChildLocations(childTreeList, topLocation);
-
-        for (Location loc : childTreeList) {
-            invalidIDs.add(loc.getId());
-        }
-
-        return invalidIDs;
     }
 
     /**
@@ -1276,6 +707,828 @@ public class DatabaseController {
         for (Location loc : masterLocations) {
             if (loc.getParentID() == anchorLocation.getId()) {
                 getCharacters(recursiveList, loc);
+            }
+        }
+    }
+
+    /* ------------------------------ CHARACTER TAB METHODS ------------------------------ */
+
+    /**
+     * Initializes the tableView for Character, sets the columns to the appropriate fields.
+     *
+     * @param characterObservableList The observable list of characters to view.
+     */
+    private void characterTableViewSetup(ObservableList<Character> characterObservableList) {
+        charNameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
+        charRaceCol.setCellValueFactory(new PropertyValueFactory<>("race"));
+        charTitleCol.setCellValueFactory(new PropertyValueFactory<>("title"));
+        charLocCol.setCellValueFactory(new PropertyValueFactory<>("locName"));
+        charIDCol.setCellValueFactory(new PropertyValueFactory<>("id"));
+
+        characterTableView.setItems(characterObservableList);
+    }
+
+    /**
+     * Sets the listeners for the character tab. Includes listeners for selecting different rows and updating the
+     * display, as well as listeners that set the models.Character's attributes based on key presses, allowing the user to
+     * edit multiple rows and save them all at once.
+     */
+    private void setCharacterTabListeners() {
+
+        /* Left side tableView, add/remove and filter field listeners */
+        characterFilterTextField.setOnKeyReleased(event -> {
+            filteredCharacters.clear();
+            filteredCharacters.addAll(characterTable.query(characterFilterTextField.getText()));
+            for (Character c : filteredCharacters) {
+                for (Location i : masterLocations) {
+                    if (c.getLocationID() == i.getId()) {
+                        c.setLocation(i);
+                        break;
+                    }
+                }
+            }
+        });
+
+        characterTableView.getSelectionModel().selectedItemProperty().addListener(
+                (observable, oldValue, newValue) -> {
+                    Character c = characterTableView.getSelectionModel().getSelectedItem();
+
+                    charNameTextField.setDisable(false);
+                    charTitleTextField.setDisable(false);
+                    charRaceTextField.setDisable(false);
+                    charLocationComboBox.setDisable(false);
+
+                    charVoiceTextField.setDisable(false);
+                    charPersonalityTextField.setDisable(false);
+                    charDesiresTextField.setDisable(false);
+                    charFearsTextField.setDisable(false);
+                    charLookTextArea.setDisable(false);
+                    charBackgroundTextArea.setDisable(false);
+                    charKnowledgeTextArea.setDisable(false);
+                    charOpinionTextArea.setDisable(false);
+
+                    charDescriptorTextField.setDisable(false);
+                    charArmorClassTextField.setDisable(false);
+                    charArmorTextField.setDisable(false);
+                    charHitPointMaxTextField.setDisable(false);
+                    charSpeedTextField.setDisable(false);
+                    charProficiencyTextField.setDisable(false);
+                    charStrengthTextField.setDisable(false);
+                    charDexterityTextField.setDisable(false);
+                    charConstitutionTextField.setDisable(false);
+                    charIntelligenceTextField.setDisable(false);
+                    charWisdomTextField.setDisable(false);
+                    charCharismaTextField.setDisable(false);
+                    charStrengthSaveTextField.setDisable(false);
+                    charDexteritySaveTextField.setDisable(false);
+                    charConstitutionSaveTextField.setDisable(false);
+                    charIntelligenceSaveTextField.setDisable(false);
+                    charWisdomSaveTextField.setDisable(false);
+                    charSensesTextField.setDisable(false);
+                    charCharismaSaveTextField.setDisable(false);
+                    charLanguagesTextField.setDisable(false);
+                    charInventoryTextArea.setDisable(false);
+                    try {
+                        //Left side character display
+                        charNameLabel.setText(GuiTools.trim(c.getName()));
+                        charTitleLabel.setText(c.getTitle());
+                        charLookLabel.setText(c.getLook());
+
+                        charBackgroundLabel.setText(c.getBackground());
+                        charKnowledgeLabel.setText(c.getKnowledge());
+                        charOpinionLabel.setText(c.getOpinion());
+                        charVoiceLabel.setText(c.getVoice());
+                        charPersonalityLabel.setText(c.getPersonality());
+                        charDesiresLabel.setText(c.getDesires());
+                        charFearsLabel.setText(c.getFears());
+
+                        // Stablock Display
+                        sbNameLabel.setText(c.getName());
+                        sbDescriptorLabel.setText(c.getDescriptor());
+                        sbACLabel.setText(String.valueOf(c.getArmorClass()));
+                        sbCurrentHPTextField.setText(String.valueOf(c.getHitPointCurrent()));
+                        sbMaxHPLabel.setText(String.valueOf(c.getHitPointMax()));
+                        sbSpeedLabel.setText(String.valueOf(c.getSpeed()) + " ft.");
+
+                        sbStrLabel.setText(c.getStats().getModText("STR"));
+                        sbDexLabel.setText(c.getStats().getModText("DEX"));
+                        sbConLabel.setText(c.getStats().getModText("CON"));
+                        sbIntLabel.setText(c.getStats().getModText("INT"));
+                        sbWisLabel.setText(c.getStats().getModText("WIS"));
+                        sbChaLabel.setText(c.getStats().getModText("CHA"));
+                        sbSavesLabel.setText(c.getSaves().toString());
+
+                        sbSensesLabel.setText(c.getSenses());
+                        sbLanguagesLabel.setText(c.getLanguages());
+
+                        setSkillsLabelForStatblock(c);
+                        setAttacksForStatblock(c);
+
+                        // Character Entry
+                        charNameTextField.setText(GuiTools.trim(c.getName()));
+                        charTitleTextField.setText(c.getTitle());
+                        charRaceTextField.setText(c.getRace());
+                        charLocationComboBox.setValue(c.getLocation());
+
+                        charVoiceTextField.setText(c.getVoice());
+                        charPersonalityTextField.setText(c.getPersonality());
+                        charDesiresTextField.setText(c.getDesires());
+                        charFearsTextField.setText(c.getFears());
+                        charLookTextArea.setText(c.getLook());
+                        charBackgroundTextArea.setText(c.getBackground());
+                        charKnowledgeTextArea.setText(c.getKnowledge());
+                        charOpinionTextArea.setText(c.getOpinion());
+
+                        charDescriptorTextField.setText(c.getDescriptor());
+                        charArmorClassTextField.setText(String.valueOf(c.getArmorClass()));
+                        charArmorTextField.setText(c.getArmor());
+                        charHitPointMaxTextField.setText(String.valueOf(c.getHitPointMax()));
+                        charSpeedTextField.setText(String.valueOf(c.getSpeed()));
+                        charProficiencyTextField.setText(String.valueOf(c.getProficiency()));
+                        charStrengthTextField.setText(String.valueOf(c.getStats().getStrength(0)));
+                        charDexterityTextField.setText(String.valueOf(c.getStats().getDexterity(0)));
+                        charConstitutionTextField.setText(String.valueOf(c.getStats().getConstitution(0)));
+                        charIntelligenceTextField.setText(String.valueOf(c.getStats().getIntelligence(0)));
+                        charWisdomTextField.setText(String.valueOf(c.getStats().getWisdom(0)));
+                        charCharismaTextField.setText(String.valueOf(c.getStats().getCharisma(0)));
+                        charStrengthSaveTextField.setText(String.valueOf(c.getSaves().getStrengthSave()));
+                        charDexteritySaveTextField.setText(String.valueOf(c.getSaves().getDexteritySave()));
+                        charConstitutionSaveTextField.setText(String.valueOf(c.getSaves().getConstitutionSave()));
+                        charIntelligenceSaveTextField.setText(String.valueOf(c.getSaves().getIntelligenceSave()));
+                        charWisdomSaveTextField.setText(String.valueOf(c.getSaves().getWisdomSave()));
+                        charCharismaSaveTextField.setText(String.valueOf(c.getSaves().getCharismaSave()));
+                        charSensesTextField.setText(c.getSenses());
+                        charLanguagesTextField.setText(c.getLanguages());
+                        charInventoryTextArea.setText(c.getInventory());
+
+                        // Character skills
+                        observedCharacterSkills.clear();
+                        for (Skill skill : c.getSkillList()) {
+                            if (!skill.isSetToDelete()) {
+                                observedCharacterSkills.add(skill);
+                            }
+                        }
+
+                        // Character attacks
+                        observedCharacterAttacks.clear();
+                        for (Attack atk : c.getAttackList()) {
+                            if (!atk.isSetToDelete()) {
+                                observedCharacterAttacks.add(atk);
+                            }
+                        }
+
+                        boolean editPending = false; //check if any other characters have edits pending.
+                        for (Character c2 : filteredCharacters) {
+                            if (c2.isEdited()) {
+                                editPending = true;
+                            }
+                        }
+                        if (!editPending) {
+                            saveAllButton.setDisable(true);
+                        }
+                    } catch (NullPointerException e) {
+                        e.printStackTrace();
+                        charNameTextField.setDisable(true);
+                        charTitleTextField.setDisable(true);
+                        charRaceTextField.setDisable(true);
+                        charLocationComboBox.setDisable(true);
+
+                        charVoiceTextField.setDisable(true);
+                        charPersonalityTextField.setDisable(true);
+                        charDesiresTextField.setDisable(true);
+                        charFearsTextField.setDisable(true);
+                        charLookTextArea.setDisable(true);
+                        charBackgroundTextArea.setDisable(true);
+                        charKnowledgeTextArea.setDisable(true);
+                        charOpinionTextArea.setDisable(true);
+
+                        charDescriptorTextField.setDisable(true);
+                        charArmorClassTextField.setDisable(true);
+                        charArmorTextField.setDisable(true);
+                        charHitPointMaxTextField.setDisable(true);
+                        charSpeedTextField.setDisable(true);
+                        charProficiencyTextField.setDisable(true);
+                        charStrengthTextField.setDisable(true);
+                        charDexterityTextField.setDisable(true);
+                        charConstitutionTextField.setDisable(true);
+                        charIntelligenceTextField.setDisable(true);
+                        charWisdomTextField.setDisable(true);
+                        charCharismaTextField.setDisable(true);
+                        charStrengthSaveTextField.setDisable(true);
+                        charDexteritySaveTextField.setDisable(true);
+                        charConstitutionSaveTextField.setDisable(true);
+                        charIntelligenceSaveTextField.setDisable(true);
+                        charWisdomSaveTextField.setDisable(true);
+                        charCharismaSaveTextField.setDisable(true);
+                        charSensesTextField.setDisable(true);
+                        charLanguagesTextField.setDisable(true);
+                        charInventoryTextArea.setDisable(true);
+                    }
+                });
+
+        characterAddButton.setOnAction(event -> {
+            Character c = new Character();
+            c.setId(characterTable.getNextID());
+
+            try {
+                characterTable.insertData(c);
+                masterCharacters.add(c);
+                filteredCharacters.add(c);
+                characterTableView.getSelectionModel().select(c);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        });
+
+        characterRemoveButton.setOnAction(event -> {
+            Character c = characterTableView.getSelectionModel().getSelectedItem();
+            try {
+                characterTable.deleteData(c);
+                attackTable.deleteDataByCharacter(c);
+            } catch (SQLException e) {
+                // Status update here
+            }
+            masterCharacters.remove(c);
+            filteredCharacters.remove(c);
+        });
+
+        /* Listeners for statblock */
+        sbCurrentHPTextField.setOnKeyReleased(event -> {
+            Character c = characterTableView.getSelectionModel().getSelectedItem();
+            c.setHitPointCurrent(Integer.parseInt(sbCurrentHPTextField.getText()));
+            characterEditDisplay(c);
+        });
+
+        /* Listeners for character information entry */
+        // Basic Info
+        charNameTextField.setOnKeyReleased(event -> {
+            Character c = characterTableView.getSelectionModel().getSelectedItem();
+            c.setName(charNameTextField.getText());
+            charNameLabel.setText(c.getName());
+            sbNameLabel.setText(c.getName());
+            characterEditDisplay(c);
+        });
+
+        charTitleTextField.setOnKeyReleased(event -> {
+            Character c = characterTableView.getSelectionModel().getSelectedItem();
+            c.setTitle(charTitleTextField.getText());
+            charTitleLabel.setText(c.getTitle());
+            characterEditDisplay(c);
+        });
+
+        charRaceTextField.setOnKeyReleased(event -> {
+            Character c = characterTableView.getSelectionModel().getSelectedItem();
+            c.setRace(charRaceTextField.getText());
+            characterEditDisplay(c);
+        });
+
+        charLocationComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
+            Character c = characterTableView.getSelectionModel().getSelectedItem();
+            try {
+                if (c.getLocationID() != newValue.getId()) {
+                    c.setLocation(charLocationComboBox.getValue());
+                    try {
+                        c.setLocationID(c.getLocation().getId());
+                    } catch (NullPointerException e) {
+                        c.setLocationID(0);
+                    }
+                    characterEditDisplay(c);
+                }
+            } catch (NullPointerException e) {
+                System.out.println("k");
+            }
+        });
+
+        // Personality & Description
+        charVoiceTextField.setOnKeyReleased(event -> {
+            Character c = characterTableView.getSelectionModel().getSelectedItem();
+            c.setVoice(charVoiceTextField.getText());
+            charVoiceLabel.setText(c.getVoice());
+            characterEditDisplay(c);
+        });
+
+        charPersonalityTextField.setOnKeyReleased(event -> {
+            Character c = characterTableView.getSelectionModel().getSelectedItem();
+            c.setPersonality(charPersonalityTextField.getText());
+            charPersonalityLabel.setText(c.getPersonality());
+            characterEditDisplay(c);
+        });
+
+        charDesiresTextField.setOnKeyReleased(event -> {
+            Character c = characterTableView.getSelectionModel().getSelectedItem();
+            c.setDesires(charDesiresTextField.getText());
+            charDesiresLabel.setText(c.getDesires());
+            characterEditDisplay(c);
+        });
+
+        charFearsTextField.setOnKeyReleased(event -> {
+            Character c = characterTableView.getSelectionModel().getSelectedItem();
+            c.setFears(charFearsTextField.getText());
+            charFearsLabel.setText(c.getFears());
+            characterEditDisplay(c);
+        });
+
+        charLookTextArea.setOnKeyReleased(event -> {
+            Character c = characterTableView.getSelectionModel().getSelectedItem();
+            c.setLook(charLookTextArea.getText());
+            charLookLabel.setText(c.getLook());
+            characterEditDisplay(c);
+        });
+
+        charBackgroundTextArea.setOnKeyReleased(event -> {
+            Character c = characterTableView.getSelectionModel().getSelectedItem();
+            c.setBackground(charBackgroundTextArea.getText());
+            charBackgroundLabel.setText(c.getBackground());
+            characterEditDisplay(c);
+        });
+
+        charKnowledgeTextArea.setOnKeyReleased(event -> {
+            Character c = characterTableView.getSelectionModel().getSelectedItem();
+            c.setKnowledge(charKnowledgeTextArea.getText());
+            charKnowledgeLabel.setText(c.getKnowledge());
+            characterEditDisplay(c);
+        });
+
+        charOpinionTextArea.setOnKeyReleased(event -> {
+            Character c = characterTableView.getSelectionModel().getSelectedItem();
+            c.setOpinion(charOpinionTextArea.getText());
+            charOpinionLabel.setText(c.getOpinion());
+            characterEditDisplay(c);
+        });
+
+        // Statblock
+        charDescriptorTextField.setOnKeyReleased(event -> {
+            Character c = characterTableView.getSelectionModel().getSelectedItem();
+            c.setDescriptor(charDescriptorTextField.getText());
+            sbDescriptorLabel.setText(c.getDescriptor());
+            characterEditDisplay(c);
+        });
+
+        charArmorClassTextField.setOnKeyReleased(event -> {
+            Character c = characterTableView.getSelectionModel().getSelectedItem();
+            c.setArmorClass(Integer.parseInt(charArmorClassTextField.getText()));
+            sbACLabel.setText(String.valueOf(c.getArmorClass()));
+            characterEditDisplay(c);
+        });
+
+        charArmorTextField.setOnKeyReleased(event -> {
+            Character c = characterTableView.getSelectionModel().getSelectedItem();
+            c.setArmor(charArmorTextField.getText());
+            characterEditDisplay(c);
+        });
+
+        charHitPointMaxTextField.setOnKeyReleased(event -> {
+            Character c = characterTableView.getSelectionModel().getSelectedItem();
+            try {
+                c.setHitPointMax(Integer.parseInt(charHitPointMaxTextField.getText()));
+                sbMaxHPLabel.setText(String.valueOf(c.getHitPointMax()));
+            } catch (NumberFormatException e) {
+                //
+            }
+            characterEditDisplay(c);
+        });
+
+        charSpeedTextField.setOnKeyReleased(event -> {
+            Character c = characterTableView.getSelectionModel().getSelectedItem();
+            c.setSpeed(Integer.parseInt(charSpeedTextField.getText()));
+            sbSpeedLabel.setText(String.valueOf(c.getSpeed()) + " ft.");
+            characterEditDisplay(c);
+        });
+
+        charProficiencyTextField.setOnKeyReleased(event -> {
+            Character c = characterTableView.getSelectionModel().getSelectedItem();
+            try {
+                c.setProficiency(Integer.parseInt(charProficiencyTextField.getText()));
+            } catch (NumberFormatException e) {
+                // No big deal
+            }
+            characterEditDisplay(c);
+        });
+
+        charStrengthTextField.setOnKeyReleased(event -> {
+            Character c = characterTableView.getSelectionModel().getSelectedItem();
+            try {
+                c.getStats().setStrength(Integer.parseInt(charStrengthTextField.getText()));
+                sbStrLabel.setText(c.getStats().getModText("STR"));
+            } catch (NumberFormatException e) {
+                // Ignore for now. Catch it if it tries to save later.
+            }
+            characterEditDisplay(c);
+        });
+
+        charDexterityTextField.setOnKeyReleased(event -> {
+            Character c = characterTableView.getSelectionModel().getSelectedItem();
+            try {
+                c.getStats().setDexterity(Integer.parseInt(charDexterityTextField.getText()));
+                sbDexLabel.setText(c.getStats().getModText("DEX"));
+            } catch (NumberFormatException e) {
+                // Ignore for now. Catch it if it tries to save later.
+            }
+            characterEditDisplay(c);
+        });
+
+        charConstitutionTextField.setOnKeyReleased(event -> {
+            Character c = characterTableView.getSelectionModel().getSelectedItem();
+            try {
+                c.getStats().setConstitution(Integer.parseInt(charConstitutionTextField.getText()));
+                sbConLabel.setText(c.getStats().getModText("CON"));
+            } catch (NumberFormatException e) {
+                // Ignore for now. Catch it if it tries to save later.
+            }
+            characterEditDisplay(c);
+        });
+
+        charIntelligenceTextField.setOnKeyReleased(event -> {
+            Character c = characterTableView.getSelectionModel().getSelectedItem();
+            try {
+                c.getStats().setIntelligence(Integer.parseInt(charIntelligenceTextField.getText()));
+                sbIntLabel.setText(c.getStats().getModText("INT"));
+            } catch (NumberFormatException e) {
+                // Ignore for now. Catch it if it tries to save later.
+            }
+            characterEditDisplay(c);
+        });
+
+        charWisdomTextField.setOnKeyReleased(event -> {
+            Character c = characterTableView.getSelectionModel().getSelectedItem();
+            try {
+                c.getStats().setWisdom(Integer.parseInt(charWisdomTextField.getText()));
+                sbWisLabel.setText(c.getStats().getModText("WIS"));
+            } catch (NumberFormatException e) {
+                // Ignore for now. Catch it if it tries to save later.
+            }
+            characterEditDisplay(c);
+        });
+
+        charCharismaTextField.setOnKeyReleased(event -> {
+            Character c = characterTableView.getSelectionModel().getSelectedItem();
+            try {
+                c.getStats().setCharisma(Integer.parseInt(charCharismaTextField.getText()));
+                sbChaLabel.setText(c.getStats().getModText("CHA"));
+            } catch (NumberFormatException e) {
+                // Ignore for now. Catch it if it tries to save later.
+            }
+            characterEditDisplay(c);
+        });
+
+        charStrengthSaveTextField.setOnKeyReleased(event -> {
+            Character c = characterTableView.getSelectionModel().getSelectedItem();
+            try {
+                c.getSaves().setStrengthSave(Integer.parseInt(charStrengthSaveTextField.getText()));
+                sbSavesLabel.setText(c.getSaves().toString());
+            } catch (NumberFormatException e) {
+                // Ignore for now. Catch it if it tries to save later.
+            }
+            characterEditDisplay(c);
+        });
+
+        charDexteritySaveTextField.setOnKeyReleased(event -> {
+            Character c = characterTableView.getSelectionModel().getSelectedItem();
+            try {
+                c.getSaves().setDexteritySave(Integer.parseInt(charDexteritySaveTextField.getText()));
+                sbSavesLabel.setText(c.getSaves().toString());
+            } catch (NumberFormatException e) {
+                // Ignore for now. Catch it if it tries to save later.
+            }
+            characterEditDisplay(c);
+        });
+
+        charConstitutionSaveTextField.setOnKeyReleased(event -> {
+            Character c = characterTableView.getSelectionModel().getSelectedItem();
+            try {
+                c.getSaves().setConstitutionSave(Integer.parseInt(charConstitutionSaveTextField.getText()));
+                sbSavesLabel.setText(c.getSaves().toString());
+            } catch (NumberFormatException e) {
+                // Ignore for now. Catch it if it tries to save later.
+            }
+            characterEditDisplay(c);
+        });
+
+        charIntelligenceSaveTextField.setOnKeyReleased(event -> {
+            Character c = characterTableView.getSelectionModel().getSelectedItem();
+            try {
+                c.getSaves().setIntelligenceSave(Integer.parseInt(charIntelligenceSaveTextField.getText()));
+                sbSavesLabel.setText(c.getSaves().toString());
+            } catch (NumberFormatException e) {
+                // Ignore for now. Catch it if it tries to save later.
+            }
+            characterEditDisplay(c);
+        });
+
+        charWisdomSaveTextField.setOnKeyReleased(event -> {
+            Character c = characterTableView.getSelectionModel().getSelectedItem();
+            try {
+                c.getSaves().setWisdomSave(Integer.parseInt(charWisdomSaveTextField.getText()));
+                sbSavesLabel.setText(c.getSaves().toString());
+            } catch (NumberFormatException e) {
+                // Ignore for now. Catch it if it tries to save later.
+            }
+            characterEditDisplay(c);
+        });
+
+        charCharismaSaveTextField.setOnKeyReleased(event -> {
+            Character c = characterTableView.getSelectionModel().getSelectedItem();
+            try {
+                c.getSaves().setCharismaSave(Integer.parseInt(charCharismaSaveTextField.getText()));
+                sbSavesLabel.setText(c.getSaves().toString());
+            } catch (NumberFormatException e) {
+                // Ignore for now. Catch it if it tries to save later.
+            }
+            characterEditDisplay(c);
+        });
+
+        charSensesTextField.setOnKeyReleased(event -> {
+            Character c = characterTableView.getSelectionModel().getSelectedItem();
+            c.setSenses(charSensesTextField.getText());
+            sbSensesLabel.setText(c.getSenses());
+            characterEditDisplay(c);
+        });
+
+        charLanguagesTextField.setOnKeyReleased(event -> {
+            Character c = characterTableView.getSelectionModel().getSelectedItem();
+            c.setLanguages(charLanguagesTextField.getText());
+            sbLanguagesLabel.setText(c.getLanguages());
+            characterEditDisplay(c);
+        });
+
+        //Skills
+        charSkillAddButton.setOnAction(event -> {
+            Character c = characterTableView.getSelectionModel().getSelectedItem();
+            Skill skill = new Skill();
+            skill.setCharacterID(c.getId());
+            c.addSkill(skill);
+            observedCharacterSkills.add(skill);
+            characterEditDisplay(c);
+        });
+
+        charSkillRemoveButton.setOnAction(event -> {
+            Character c = characterTableView.getSelectionModel().getSelectedItem();
+            Skill skill = skillTableView.getSelectionModel().getSelectedItem();
+            try {
+                skill.setToDelete(true);
+                observedCharacterSkills.remove(skill);
+                characterEditDisplay(c);
+            } catch (NullPointerException e) {
+                System.out.println("No Skill selected.");
+            }
+        });
+
+        // Attacks
+        charAttackAddButton.setOnAction(event -> {
+            Character c = characterTableView.getSelectionModel().getSelectedItem();
+            Attack atk = new Attack();
+            atk.setCharacterID(c.getId());
+            c.addAttack(atk);
+            observedCharacterAttacks.add(atk);
+            characterEditDisplay(c);
+        });
+
+        charAttackRemoveButton.setOnAction(event -> {
+            Character c = characterTableView.getSelectionModel().getSelectedItem();
+            Attack atk = attackTableView.getSelectionModel().getSelectedItem();
+            try {
+                atk.setToDelete(true);
+                observedCharacterAttacks.remove(atk);
+                characterEditDisplay(c);
+            } catch (NullPointerException e) {
+                System.out.println("No attack selected");
+            }
+        });
+
+        //Inventory
+        charInventoryTextArea.setOnKeyReleased(event -> {
+            Character c = characterTableView.getSelectionModel().getSelectedItem();
+            c.setInventory(charInventoryTextArea.getText());
+            characterEditDisplay(c);
+        });
+
+    }
+
+    private void skillsTableViewSetup(ObservableList<Skill> skillsObservableList) {
+        skillNameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+        ObservableList<String> skillNameList = FXCollections.observableArrayList(
+               new ArrayList<>(Arrays.asList("Animal Handling", "Acrobatics", "Arcana", "Athletics", "Deception", "History", "Insight",
+                       "Intimidation", "Investigation", "Medicine", "Nature", "Perception", "Performance", "Persuasion",
+                       "Religion", "Sleight of Hand", "Stealth", "Survival"))
+        );
+        skillNameColumn.setCellFactory(ComboBoxTableCell.forTableColumn(skillNameList));
+        skillNameColumn.setOnEditCommit(event -> {
+            TablePosition<Skill, String> pos = event.getTablePosition();
+            String newName = event.getNewValue();
+            int row = pos.getRow();
+            Skill skill = event.getTableView().getItems().get(row);
+            skill.setName(newName);
+            skill.setAbility(newName);
+            skillTableView.refresh();
+            characterEditDisplay(characterTableView.getSelectionModel().getSelectedItem());
+        });
+
+        skillAbilityColumn.setCellValueFactory(new PropertyValueFactory<>("Ability"));
+
+        skillBonusColumn.setCellValueFactory(new PropertyValueFactory<>("bonus"));
+        skillBonusColumn.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
+        skillBonusColumn.setOnEditCommit(event -> {
+            TablePosition<Skill, Integer> pos = event.getTablePosition();
+            int newBonus = event.getNewValue();
+            int row = pos.getRow();
+            Skill skill = event.getTableView().getItems().get(row);
+            skill.setBonus(newBonus);
+            characterEditDisplay(characterTableView.getSelectionModel().getSelectedItem());
+        });
+
+        skillTableView.setItems(skillsObservableList);
+    }
+
+    private void setCharacterSkills(List<Character> characterList) {
+        for (Character c : characterList) {
+            c.setSkillList(skillTable.getDataByCharacter(c));
+        }
+    }
+
+    /**
+     * Initializes the smaller tableView for Attacks. More advanced CellFactories here since I wanted the cells
+     * to be editable directly on the table itself.
+     *
+     * @param attackObservableList The observable list of attacks to view.
+     */
+    private void attacksTableViewSetup(ObservableList<Attack> attackObservableList) {
+        attackNameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+        attackNameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+        attackNameColumn.setOnEditCommit(event -> {
+            TablePosition<Attack, String> pos = event.getTablePosition();
+            String newName = event.getNewValue();
+            int row = pos.getRow();
+            Attack atk = event.getTableView().getItems().get(row);
+            atk.setName(newName);
+            characterEditDisplay(characterTableView.getSelectionModel().getSelectedItem());
+        });
+
+        attackCategoryColumn.setCellValueFactory(new PropertyValueFactory<>("category"));
+        ObservableList<String> attackCatObsList = FXCollections.observableArrayList(
+                new ArrayList<>(Arrays.asList("Melee", "Ranged"))
+        );
+        attackCategoryColumn.setCellFactory(ComboBoxTableCell.forTableColumn(attackCatObsList));
+        attackCategoryColumn.setOnEditCommit(event -> {
+            TablePosition<Attack, String> pos = event.getTablePosition();
+            String newCat = event.getNewValue();
+            int row = pos.getRow();
+            Attack atk = event.getTableView().getItems().get(row);
+            atk.setCategory(newCat);
+            characterEditDisplay(characterTableView.getSelectionModel().getSelectedItem());
+        });
+
+        attackAbilityColumn.setCellValueFactory(new PropertyValueFactory<>("ability"));
+        ObservableList<String> attackAbilityObsList = FXCollections.observableArrayList(
+                new ArrayList<>(Arrays.asList("STR", "DEX", "CON", "INT", "WIS", "CHA"))
+        );
+        attackAbilityColumn.setCellFactory(ComboBoxTableCell.forTableColumn(attackAbilityObsList));
+        attackAbilityColumn.setOnEditCommit(event -> {
+            Character c = characterTableView.getSelectionModel().getSelectedItem();
+            TablePosition<Attack, String> pos = event.getTablePosition();
+            String newAbility = event.getNewValue();
+            int row = pos.getRow();
+            Attack atk = event.getTableView().getItems().get(row);
+            atk.setAbility(newAbility);
+            atk.setAttackBonus(c.getAbilityMod(newAbility));
+            characterEditDisplay(c);
+        });
+
+        attackRangeColumn.setCellValueFactory(new PropertyValueFactory<>("range"));
+        attackRangeColumn.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
+        attackRangeColumn.setOnEditCommit(event -> {
+            TablePosition<Attack, Integer> pos = event.getTablePosition();
+            int newRange = event.getNewValue();
+            int row = pos.getRow();
+            Attack atk = event.getTableView().getItems().get(row);
+            atk.setRange(newRange);
+            characterEditDisplay(characterTableView.getSelectionModel().getSelectedItem());
+        });
+
+        attackNumDiceColumn.setCellValueFactory(new PropertyValueFactory<>("numDice"));
+        attackNumDiceColumn.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
+        attackNumDiceColumn.setOnEditCommit(event -> {
+            TablePosition<Attack, Integer> pos = event.getTablePosition();
+            int newNumDice = event.getNewValue();
+            int row = pos.getRow();
+            Attack atk = event.getTableView().getItems().get(row);
+            atk.setNumDice(newNumDice);
+            characterEditDisplay(characterTableView.getSelectionModel().getSelectedItem());
+        });
+
+        attackDiceTypeColumn.setCellValueFactory(new PropertyValueFactory<>("damageDice"));
+        attackDiceTypeColumn.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
+        attackDiceTypeColumn.setOnEditCommit(event -> {
+            TablePosition<Attack, Integer> pos = event.getTablePosition();
+            int newDamageDice = event.getNewValue();
+            int row = pos.getRow();
+            Attack atk = event.getTableView().getItems().get(row);
+            atk.setDamageDice(newDamageDice);
+            characterEditDisplay(characterTableView.getSelectionModel().getSelectedItem());
+        });
+
+        attackDmgTypeColumn.setCellValueFactory(new PropertyValueFactory<>("damageType"));
+        attackDmgTypeColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+        attackDmgTypeColumn.setOnEditCommit(event -> {
+            TablePosition<Attack, String> pos = event.getTablePosition();
+            String newDamageType = event.getNewValue();
+            int row = pos.getRow();
+            Attack atk = event.getTableView().getItems().get(row);
+            atk.setDamageType(newDamageType);
+            characterEditDisplay(characterTableView.getSelectionModel().getSelectedItem());
+        });
+
+        attackTableView.setItems(attackObservableList);
+    }
+
+    /**
+     * Fetch data from SQL table Attacks, assigns the attack list to each character based on ID.
+     */
+    private void setCharacterAttacks(List<Character> characterList) {
+        for (Character c : characterList) {
+            c.setAttackList(attackTable.getDataByCharacter(c));
+        }
+    }
+
+    /**
+     * Quick method to avoid code duplication for setCharacterTabListeners. Sets the Character object as edited.
+     */
+    private void characterEditDisplay(Character c) {
+        c.setName("**" + GuiTools.trim(c.getName()) + "**");
+        c.setEdited(true);
+        characterTableView.refresh();
+        saveAllButton.setDisable(false);
+    }
+
+    private void setSkillsLabelForStatblock(Character c) {
+        List<Skill> skills = c.getSkillList();
+
+        List<String> skillsStrings = new ArrayList<>();
+        String symbol = "+";
+        for (Skill s : skills) {
+            int bonusTotal = s.getBonus() + c.getAbilityMod(s.getAbility()) + c.getProficiency();
+            if (bonusTotal < 0) {
+                symbol = "";
+            }
+            skillsStrings.add(s.getName() + " " + symbol + bonusTotal);
+        }
+
+        sbSkillsLabel.setText(String.join(", ", skillsStrings));
+    }
+
+    /**
+     * Used to set the display on the statblock for attacks. Adjusts rows dynamically based on the number of attacks
+     * the character possesses.
+     *
+     * @param c The character to retrieve the attacks from.
+     */
+    private void setAttacksForStatblock(Character c) {
+        statblockGridPane.getChildren().clear();
+        List<Attack> attacks = c.getAttackList();
+
+        for (int i = 0; i < c.getAttackList().size(); i++) {
+            Attack a = attacks.get(i);
+            int damageBonus = c.getAbilityMod(a.getAbility());
+
+            String attackBonusSymbol = "+";
+            if (a.getAttackBonus() < 0) {
+                attackBonusSymbol = "-";
+            }
+            String damageBonusSymbol = "+";
+            if (damageBonus < 0) {
+                damageBonusSymbol = "-";
+            }
+            String rangeWording = "reach";
+            if (a.getRange() > 10 ) {
+                rangeWording = "range";
+            }
+
+            FlowPane fp = new FlowPane();
+            fp.getChildren().add(new Label(a.getName() + ". "));
+            fp.getChildren().add(new Label(a.getCategory() + " Weapon Attack: "));
+            fp.getChildren().add(new Label(attackBonusSymbol + a.getAttackBonus() + " to hit, "));
+            fp.getChildren().add(new Label(rangeWording + " " + a.getRange() + " ft., one target. "));
+            fp.getChildren().add(new Label("Hit: "));
+            fp.getChildren().add(new Label(a.getNumDice() + "d" + a.getDamageDice() + " " + damageBonusSymbol + " " + damageBonus));
+            fp.getChildren().add(new Label(" " + a.getDamageType() + " damage."));
+            statblockGridPane.add(fp, 0, i);
+        }
+    }
+
+    /**
+     * Sets the models.Location object references for the master list of Characters. Does this by matching the foreign key
+     * ID to the location's ID using for loops.
+     *
+     * @param characterList : The master models.models.models.Character list to loop through
+     * @param masterLocationList : The master models.models.models.Location list to loop through
+     */
+    private void setCharacterLocations(List<Character> characterList,
+                                       List<Location> masterLocationList) {
+        for (Character c : characterList) {
+            for (Location loc : masterLocationList) {
+                if (c.getLocationID() == loc.getId()) {
+                    c.setLocation(loc);
+                    break;
+                }
             }
         }
     }
