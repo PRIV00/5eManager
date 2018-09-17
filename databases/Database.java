@@ -8,6 +8,7 @@ public class Database {
     private CharacterTable characterTable;
     private AttackTable attackTable;
     private SkillTable skillTable;
+    private TraitTable traitTable;
     private CalendarTable calendarTable;
     private NoteTable noteTable;
 
@@ -16,6 +17,7 @@ public class Database {
         characterTable = new CharacterTable(fileName);
         attackTable = new AttackTable(fileName);
         skillTable = new SkillTable(fileName);
+        traitTable = new TraitTable(fileName);
         calendarTable = new CalendarTable(fileName);
         noteTable = new NoteTable(fileName);
     }
@@ -34,6 +36,10 @@ public class Database {
 
     public SkillTable getSkillTable() {
         return skillTable;
+    }
+
+    public TraitTable getTraitTable() {
+        return traitTable;
     }
 
     public CalendarTable getCalendarTable() {

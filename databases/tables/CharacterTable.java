@@ -67,7 +67,7 @@ public class CharacterTable extends Table implements Searchable, TopLevelTable {
         String sql = "INSERT OR IGNORE INTO Characters(name, look, title, race, voice, personality, desires, fears, background, " +
                 "knowledge, opinion, descriptor, armorClass, armor, hitPointMax, hitPointCurrent, speed, proficiency, strength, dexterity, constitution, " +
                 "intelligence, wisdom, charisma, strSave, dexSave, conSave, intSave, wisSave, chaSave, senses, languages, inventory, locationID) \n" +
-                "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+                "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
         Character character = (Character) characterData;
 
         try (PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)){

@@ -1,7 +1,5 @@
 package main.databases;
 
-import main.models.Saves;
-
 public class TableUpdater {
 
 

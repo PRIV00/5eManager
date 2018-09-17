@@ -23,7 +23,7 @@
                   <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
                </rowConstraints>
                <children>
-                  <Accordion GridPane.columnIndex="1">
+                  <Accordion fx:id="locationAccordion" GridPane.columnIndex="1">
                     <panes>
                       <TitledPane animated="false" expanded="false" text="Information Display">
                            <content>
@@ -225,7 +225,7 @@
       <content>
             <GridPane>
                <children>
-                  <Accordion GridPane.columnIndex="1">
+                  <Accordion fx:id="characterAccordion" GridPane.columnIndex="1">
                      <panes>
                         <TitledPane animated="false" expanded="false" text="Statblock">
                            <content>
@@ -604,10 +604,10 @@
                                                             <Font name="System Bold" size="12.0" />
                                                          </font>
                                                       </Label>
-                                                      <TableView prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="2" GridPane.rowIndex="16">
+                                                      <TableView fx:id="traitTableView" editable="true" prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="2" GridPane.rowIndex="16">
                                                         <columns>
-                                                          <TableColumn prefWidth="163.0" text="Name" />
-                                                          <TableColumn prefWidth="337.0" text="Description" />
+                                                          <TableColumn fx:id="traitNameColumn" prefWidth="163.0" text="Name" />
+                                                          <TableColumn fx:id="traitDescriptionColumn" prefWidth="337.0" text="Description" />
                                                         </columns>
                                                       </TableView>
                                                       <HBox alignment="CENTER_RIGHT" spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="10">
@@ -624,8 +624,8 @@
                                                       </HBox>
                                                       <HBox alignment="CENTER_RIGHT" spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="15">
                                                          <children>
-                                                            <Button mnemonicParsing="false" prefWidth="25.0" text="+" GridPane.rowIndex="9" />
-                                                            <Button mnemonicParsing="false" prefWidth="25.0" text="-" />
+                                                            <Button fx:id="charTraitAddButton" mnemonicParsing="false" prefWidth="25.0" text="+" GridPane.rowIndex="9" />
+                                                            <Button fx:id="charTraitRemoveButton" mnemonicParsing="false" prefWidth="25.0" text="-" />
                                                          </children>
                                                       </HBox>
                                                       <Label text="Proficiency:" GridPane.rowIndex="4" />

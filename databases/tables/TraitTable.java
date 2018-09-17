@@ -1,8 +1,8 @@
 package main.databases.tables;
 
 import main.models.Character;
-import main.models.characterfields.Skill;
 import main.models.TableModel;
+import main.models.characterfields.Trait;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -11,38 +11,35 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SkillTable extends Table implements CharacterSubTable {
+public class TraitTable extends Table implements CharacterSubTable {
 
-    public SkillTable(String fileName) {
+    public TraitTable(String fileName) {
         super(fileName,
-                "CREATE TABLE IF NOT EXISTS Skills (\n" +
-                        "skillID INTEGER PRIMARY KEY, \n" +
+                "CREATE TABLE IF NOT EXISTS Traits (\n" +
+                        "traitID INTEGER PRIMARY KEY, \n" +
                         "name TEXT, \n" +
-                        "ability TEXT, \n" +
-                        "bonus INTEGER, \n" +
+                        "description TEXT, \n" +
                         "characterID INTEGER, \n" +
-                        "FOREIGN KEY (characterID) REFERENCES Characters(characterID)  \n" +
+                        "FOREIGN KEY (characterID) REFERENCES Characters(characterID) \n" +
                         ")");
     }
 
     @Override
-    public void insertData(TableModel skillData) {
+    public void insertData(TableModel traitData) {
         connect();
-        String sql = "INSERT OR IGNORE INTO Skills (name, ability, bonus, characterID) " +
-                "VALUES (?,?,?,?)";
-        Skill skill = (Skill) skillData;
+        String sql = "INSERT OR IGNORE INTO Traits (name, description, characterID) VALUES (?,?,?)";
+        Trait trait = (Trait) traitData;
 
         try (PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            pstmt.setString(1, skill.getName());
-            pstmt.setString(2, skill.getAbility());
-            pstmt.setInt(3, skill.getBonus());
-            pstmt.setInt(4, skill.getCharacterID());
+            pstmt.setString(1, trait.getName());
+            pstmt.setString(2, trait.getDescription());
+            pstmt.setInt(3, trait.getCharacterID());
 
             pstmt.executeUpdate();
 
             try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
-                    skill.setId(generatedKeys.getInt(1));
+                    trait.setId(generatedKeys.getInt(1));
                 } else {
                     throw new SQLException("No keys generated");
                 }
@@ -56,13 +53,13 @@ public class SkillTable extends Table implements CharacterSubTable {
     }
 
     @Override
-    public void deleteData(TableModel skillData) {
+    public void deleteData(TableModel traitData) {
         connect();
-        String sql = "DELETE FROM Skills WHERE skillID = ?";
-        Skill skill = (Skill) skillData;
+        String sql = "DELETE FROM Traits WHERE traitID = ?";
+        Trait trait = (Trait) traitData;
 
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setInt(1, skill.getId());
+            pstmt.setInt(1, trait.getId());
             pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -72,18 +69,17 @@ public class SkillTable extends Table implements CharacterSubTable {
     }
 
     @Override
-    public void updateData(TableModel skillData) {
+    public void updateData(TableModel traitData) {
         connect();
-        String sql = "UPDATE Skills SET name = ?, ability = ?, bonus = ?, characterID = ? \n" +
-                "WHERE skillID = ?";
-        Skill skill = (Skill) skillData;
+        String sql = "UPDATE Traits SET name = ?, description = ?, characterID = ? \n" +
+                "WHERE traitID = ?";
+        Trait trait = (Trait) traitData;
 
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, skill.getName());
-            pstmt.setString(2, skill.getAbility());
-            pstmt.setInt(3, skill.getBonus());
-            pstmt.setInt(4, skill.getCharacterID());
-            pstmt.setInt(5, skill.getId());
+            pstmt.setString(1, trait.getName());
+            pstmt.setString(2, trait.getDescription());
+            pstmt.setInt(3, trait.getCharacterID());
+            pstmt.setInt(4, trait.getId());
 
             pstmt.executeUpdate();
         } catch (SQLException e) {
@@ -96,8 +92,7 @@ public class SkillTable extends Table implements CharacterSubTable {
     @Override
     public int getNextID() {
         connect();
-        String sql = "SELECT max(skillID) \n" +
-                "FROM Skills";
+        String sql = "SELECT max(traitID) FROM Traits";
 
         try {
             ResultSet rs = stmt.executeQuery(sql);
@@ -112,19 +107,19 @@ public class SkillTable extends Table implements CharacterSubTable {
 
 
     @Override
-    public List<Skill> getDataByCharacter(Character character) {
+    public List<Trait> getDataByCharacter(Character character) {
         connect();
-        String sql = "SELECT * FROM Skills \n" +
+        String sql = "SELECT * FROM Traits \n" +
                 "WHERE characterID = ?";
-        List<Skill> list = new ArrayList<>();
+        List<Trait> list = new ArrayList<>();
 
         try (PreparedStatement pstmt = conn.prepareStatement(sql)){
             pstmt.setInt(1, character.getId());
 
             ResultSet rs = pstmt.executeQuery();
             while (rs.next()) {
-                list.add(new Skill(rs.getInt("skillID"), rs.getString("name"), rs.getString("ability"),
-                        rs.getInt("bonus"), rs.getInt("characterID")));
+                list.add(new Trait(rs.getInt("traitID"), rs.getString("name"), rs.getString("description"),
+                        rs.getInt("characterID")));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -139,7 +134,7 @@ public class SkillTable extends Table implements CharacterSubTable {
     @Override
     public void deleteDataByCharacter(Character character) {
         connect();
-        String sql = "DELETE FROM Skills WHERE characterID = ?";
+        String sql = "DELETE FROM Traits WHERE characterID = ?";
 
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, character.getId());

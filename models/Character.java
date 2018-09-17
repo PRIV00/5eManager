@@ -1,6 +1,10 @@
 package main.models;
 
 import javafx.beans.property.SimpleStringProperty;
+import main.models.characterfields.Abilities;
+import main.models.characterfields.Saves;
+import main.models.characterfields.Skill;
+import main.models.characterfields.Trait;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +43,7 @@ public class Character implements TableModel {
     private SimpleStringProperty locName;
     private List<Attack> attackList = new ArrayList<>();
     private List<Skill> skillList = new ArrayList<>();
+    private List<Trait> traitList = new ArrayList<>();
 
     public Character() {
         this.id = 0;
@@ -346,6 +351,18 @@ public class Character implements TableModel {
 
     public void addSkill(Skill skill) {
         skillList.add(skill);
+    }
+
+    public List<Trait> getTraitList() {
+        return traitList;
+    }
+
+    public void setTraitList(List<Trait> traitList) {
+        this.traitList = traitList;
+    }
+
+    public void addTrait(Trait trait) {
+        traitList.add(trait);
     }
 
     /**
