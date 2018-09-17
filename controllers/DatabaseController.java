@@ -2,6 +2,7 @@ package main.controllers;
 
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
+import javafx.util.Callback;
 import javafx.util.converter.IntegerStringConverter;
 import main.assets.GuiTools;
 import main.databases.tables.*;
@@ -398,6 +399,8 @@ public class DatabaseController {
      * @param locationObservableList the observable list of locations to view.
      */
     private void locationTableViewSetup(ObservableList<Location> locationObservableList) {
+        locationTableView.setColumnResizePolicy(param -> true);
+
         locIDCol.setCellValueFactory(new PropertyValueFactory<>("id"));
         locNameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
         locTypeCol.setCellValueFactory(new PropertyValueFactory<>("locType"));
@@ -711,6 +714,8 @@ public class DatabaseController {
      * @param characterObservableList The observable list of characters to view.
      */
     private void characterTableViewSetup(ObservableList<Character> characterObservableList) {
+        characterTableView.setColumnResizePolicy(param -> true);
+
         charNameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
         charRaceCol.setCellValueFactory(new PropertyValueFactory<>("race"));
         charTitleCol.setCellValueFactory(new PropertyValueFactory<>("title"));
@@ -1219,6 +1224,8 @@ public class DatabaseController {
     }
 
     private void skillsTableViewSetup(ObservableList<Skill> skillsObservableList) {
+        skillTableView.setColumnResizePolicy(param -> true);
+
         skillNameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         ObservableList<String> skillNameList = FXCollections.observableArrayList(
                new ArrayList<>(Arrays.asList("Animal Handling", "Acrobatics", "Arcana", "Athletics", "Deception", "History", "Insight",
@@ -1266,6 +1273,8 @@ public class DatabaseController {
      * @param attackObservableList The observable list of attacks to view.
      */
     private void attacksTableViewSetup(ObservableList<Attack> attackObservableList) {
+        attackTableView.setColumnResizePolicy(param -> true);
+
         attackNameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         attackNameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
         attackNameColumn.setOnEditCommit(event -> {
@@ -1363,6 +1372,8 @@ public class DatabaseController {
     }
 
     private void traitsTableViewSetup(ObservableList<Trait> traitsObservableList) {
+        traitTableView.setColumnResizePolicy(param -> true);
+
         traitNameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         traitNameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
         traitNameColumn.setOnEditCommit(event -> {

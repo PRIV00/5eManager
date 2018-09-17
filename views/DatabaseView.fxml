@@ -158,8 +158,8 @@
                             <TableColumn fx:id="locNameCol" prefWidth="243.0" text="Name" />
                               <TableColumn fx:id="locTypeCol" prefWidth="145.0" text="Type" />
                               <TableColumn fx:id="locParentCol" prefWidth="139.0" text="Parent" />
-                              <TableColumn minWidth="0.0" prefWidth="150.0" text="# of Sub Locations" />
-                              <TableColumn minWidth="0.0" prefWidth="140.0" text="# Characters" />
+                              <TableColumn minWidth="0.0" prefWidth="120.0" text="# of Sub Locations" />
+                              <TableColumn minWidth="0.0" prefWidth="120.0" text="# Characters" />
                           </columns>
                         </TableView>
                         <ImageView fitHeight="225.0" fitWidth="245.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
@@ -568,17 +568,17 @@
                                                       </HBox>
                                                       <TableView fx:id="attackTableView" editable="true" prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="2" GridPane.rowIndex="14">
                                                         <columns>
-                                                          <TableColumn fx:id="attackNameColumn" prefWidth="108.0" text="Name" />
-                                                          <TableColumn fx:id="attackCategoryColumn" prefWidth="72.0" text="Melee/Rng." />
-                                                            <TableColumn fx:id="attackAbilityColumn" prefWidth="54.0" text="Abil." />
-                                                            <TableColumn fx:id="attackRangeColumn" prefWidth="45.0" text="Rng." />
-                                                            <TableColumn prefWidth="87.0" text="Dmg. Dice (nDx)">
+                                                          <TableColumn fx:id="attackNameColumn" prefWidth="185.0" text="Name" />
+                                                          <TableColumn fx:id="attackCategoryColumn" prefWidth="100.0" text="Melee/Rng." />
+                                                            <TableColumn fx:id="attackAbilityColumn" prefWidth="56.0" text="Abil." />
+                                                            <TableColumn fx:id="attackRangeColumn" prefWidth="50.0" text="Rng." />
+                                                            <TableColumn prefWidth="127.0" text="Dmg. Dice (nDx)">
                                                                <columns>
-                                                                  <TableColumn fx:id="attackNumDiceColumn" prefWidth="45.0" text="n" />
-                                                                  <TableColumn fx:id="attackDiceTypeColumn" prefWidth="53.0" text="x" />
+                                                                  <TableColumn fx:id="attackNumDiceColumn" prefWidth="50.0" text="n" />
+                                                                  <TableColumn fx:id="attackDiceTypeColumn" prefWidth="50.0" text="x" />
                                                                </columns>
                                                             </TableColumn>
-                                                            <TableColumn fx:id="attackDmgTypeColumn" prefWidth="131.0" text="Dmg Type" />
+                                                            <TableColumn fx:id="attackDmgTypeColumn" prefWidth="41.0" text="Dmg Type" />
                                                         </columns>
                                                       </TableView>
                                                       <Label text="Inventory" GridPane.rowIndex="17">
@@ -606,8 +606,8 @@
                                                       </Label>
                                                       <TableView fx:id="traitTableView" editable="true" prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="2" GridPane.rowIndex="16">
                                                         <columns>
-                                                          <TableColumn fx:id="traitNameColumn" prefWidth="163.0" text="Name" />
-                                                          <TableColumn fx:id="traitDescriptionColumn" prefWidth="337.0" text="Description" />
+                                                          <TableColumn fx:id="traitNameColumn" prefWidth="190.0" text="Name" />
+                                                          <TableColumn fx:id="traitDescriptionColumn" prefWidth="301.0" text="Description" />
                                                         </columns>
                                                       </TableView>
                                                       <HBox alignment="CENTER_RIGHT" spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="10">
@@ -671,7 +671,7 @@
                               <TableColumn fx:id="charNameCol" prefWidth="239.0" text="Name" />
                               <TableColumn fx:id="charRaceCol" prefWidth="150.0" text="Race" />
                               <TableColumn fx:id="charTitleCol" minWidth="8.0" prefWidth="175.0" text="Title" />
-                              <TableColumn fx:id="charLocCol" prefWidth="280.0" text="Location" />
+                              <TableColumn fx:id="charLocCol" prefWidth="278.0" text="Location" />
                            </columns>
                         </TableView>
                         <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
