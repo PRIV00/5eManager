@@ -1381,7 +1381,7 @@ public class DatabaseController {
             String newName = event.getNewValue();
             int row = pos.getRow();
             Trait trait = event.getTableView().getItems().get(row);
-            trait.setName(newName);
+            trait.setDescription(newName);
             characterEditDisplay(observedCharacter);
         });
 
