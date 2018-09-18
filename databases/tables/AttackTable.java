@@ -1,6 +1,6 @@
 package main.databases.tables;
 
-import main.models.Attack;
+import main.models.characterfields.Attack;
 import main.models.TableModel;
 import main.models.Character;
 
@@ -30,22 +30,36 @@ public class AttackTable extends Table implements CharacterSubTable{
                         ")");
     }
 
+    public void deleteAll() {
+        connect();
+        String sql = "DELETE FROM Attacks";
+
+        try {
+            stmt.execute(sql);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            closeConnection();
+        }
+    }
+
     @Override
     public void insertData(TableModel attackData) {
         connect();
-        String sql = "INSERT OR IGNORE INTO Attacks(name, category, attackBonus, range, numDice, damageDice, damageType," +
-                "characterID) VALUES (?,?,?,?,?,?,?,?)";
+        String sql = "INSERT OR IGNORE INTO Attacks(name, category, ability, attackBonus, range, numDice, damageDice, damageType," +
+                "characterID) VALUES (?,?,?,?,?,?,?,?,?)";
         Attack attack = (Attack) attackData;
 
         try (PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)){
             pstmt.setString(1, attack.getName());
             pstmt.setString(2, attack.getCategory());
-            pstmt.setInt(3, attack.getAttackBonus());
-            pstmt.setInt(4, attack.getRange());
-            pstmt.setInt(5, attack.getNumDice());
-            pstmt.setInt(6, attack.getDamageDice());
-            pstmt.setString(7, attack.getDamageType());
-            pstmt.setInt(8, attack.getCharacterID());
+            pstmt.setString(3, attack.getAbility());
+            pstmt.setInt(4, attack.getAttackBonus());
+            pstmt.setInt(5, attack.getRange());
+            pstmt.setInt(6, attack.getNumDice());
+            pstmt.setInt(7, attack.getDamageDice());
+            pstmt.setString(8, attack.getDamageType());
+            pstmt.setInt(9, attack.getCharacterID());
 
             pstmt.executeUpdate();
 
@@ -163,6 +177,7 @@ public class AttackTable extends Table implements CharacterSubTable{
 
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, c.getId());
+            pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {

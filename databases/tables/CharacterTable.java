@@ -54,6 +54,29 @@ public class CharacterTable extends Table implements Searchable, TopLevelTable {
                         ")");
     }
 
+    //Test method
+    public void readAllData() {
+        connect();
+        String sql = "SELECT * FROM Characters";
+
+        try {
+            ResultSet rs = stmt.executeQuery(sql);
+
+            while (rs.next()) {
+                String s = "";
+                for (int i = 1; i < 34; i++) {
+                        s = s + rs.getString(i) +"\n";
+                }
+                System.out.println(s);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            closeConnection();
+        }
+    }
+
+
     /**
      * Overrides Modifiable's method. Takes a models.Character object and uses its data to insert a new row into the Characters
      * table.

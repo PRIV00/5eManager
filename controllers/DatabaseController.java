@@ -2,7 +2,9 @@ package main.controllers;
 
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
-import javafx.util.Callback;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
+import javafx.scene.text.FontWeight;
 import javafx.util.converter.IntegerStringConverter;
 import main.assets.GuiTools;
 import main.databases.tables.*;
@@ -14,7 +16,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
-import main.models.Attack;
+import main.models.characterfields.Attack;
 import main.models.Character;
 import main.models.Location;
 import main.models.characterfields.Skill;
@@ -29,6 +31,7 @@ public class DatabaseController {
 
     /* ------------------------------ MODEL FIELDS ------------------------------ */
     //TODO: Cleanup fields. See where you can delete or combine unnecessary code.
+    //TODO: Add spells
 
     private LocationTable locationTable;
     private List<Location> masterLocations;
@@ -119,7 +122,8 @@ public class DatabaseController {
     @FXML private Label charFearsLabel;
 
     /* Character Statblock Display */
-    @FXML private GridPane statblockGridPane;
+    @FXML private GridPane statblockTraitsGridPane;
+    @FXML private GridPane statblockAttacksGridPane;
 
     // sb for Statblock :D
     @FXML private Label sbNameLabel;
@@ -358,6 +362,7 @@ public class DatabaseController {
                             traitTable.insertData(trait);
                         }
                     }
+                    c.setTraitList(activeTraits);
 
                     // Update database
                     try {
@@ -785,6 +790,7 @@ public class DatabaseController {
                         sbLanguagesLabel.setText(observedCharacter.getLanguages());
 
                         setSkillsLabelForStatblock(observedCharacter);
+                        setTraitsForStatblock(observedCharacter);
                         setAttacksForStatblock(observedCharacter);
 
                         // Character Entry
@@ -858,6 +864,7 @@ public class DatabaseController {
                             saveAllButton.setDisable(true);
                         }
                     } catch (NullPointerException e) {
+                        e.printStackTrace();
                         characterAccordion.setDisable(true); // So that info can't be changed or entered when character is not selected.
                     }
                 });
@@ -879,6 +886,7 @@ public class DatabaseController {
         characterRemoveButton.setOnAction(event -> {
             try {
                 characterTable.deleteData(observedCharacter);
+                // The following 3 lines are to ensure there are no orphaned entries of the sub tables.
                 skillTable.deleteDataByCharacter(observedCharacter);
                 attackTable.deleteDataByCharacter(observedCharacter);
                 traitTable.deleteDataByCharacter(observedCharacter);
@@ -1311,8 +1319,9 @@ public class DatabaseController {
             int row = pos.getRow();
             Attack atk = event.getTableView().getItems().get(row);
             atk.setAbility(newAbility);
-            atk.setAttackBonus(observedCharacter.getAbilityMod(newAbility));
+            atk.setAttackBonus(observedCharacter.getAbilityMod(newAbility) + observedCharacter.getProficiency());
             characterEditDisplay(observedCharacter);
+            System.out.println(atk.toString());
         });
 
         attackRangeColumn.setCellValueFactory(new PropertyValueFactory<>("range"));
@@ -1431,6 +1440,27 @@ public class DatabaseController {
         sbSkillsLabel.setText(String.join(", ", skillsStrings));
     }
 
+    private void setTraitsForStatblock(Character c) {
+        statblockTraitsGridPane.getChildren().clear();
+        List<Trait> traits = c.getTraitList();
+
+        for (int i = 0; i < traits.size(); i++) {
+            Trait t = traits.get(i);
+            FlowPane fp = new FlowPane();
+
+            //Prep the labels to insert
+            Label nameLabel = new Label(t.getName() + ". ");
+            nameLabel.setFont(Font.font("Georgia", FontWeight.BOLD, FontPosture.ITALIC, 12));
+            Label descriptionLabel = new Label(t.getDescription());
+            descriptionLabel.setFont(Font.font("Georgia"));
+
+            // Add to flowpane
+            fp.getChildren().add(nameLabel);
+            fp.getChildren().add(descriptionLabel);
+            statblockTraitsGridPane.add(fp, 0, i);
+        }
+    }
+
     /**
      * Used to set the display on the statblock for attacks. Adjusts rows dynamically based on the number of attacks
      * the character possesses.
@@ -1438,11 +1468,19 @@ public class DatabaseController {
      * @param c The character to retrieve the attacks from.
      */
     private void setAttacksForStatblock(Character c) {
-        statblockGridPane.getChildren().clear();
+        statblockAttacksGridPane.getChildren().clear();
         List<Attack> attacks = c.getAttackList();
 
-        for (int i = 0; i < c.getAttackList().size(); i++) {
+        if (!attacks.isEmpty()) {
+            Label attackTitleLabel = new Label("Attacks");
+
+            attackTitleLabel.setFont(Font.font("Georgia", FontWeight.BOLD, 16));
+            statblockAttacksGridPane.add(attackTitleLabel, 0, 0);
+        }
+
+        for (int i = 0; i < attacks.size(); i++) {
             Attack a = attacks.get(i);
+            System.out.println(a.toString());
             int damageBonus = c.getAbilityMod(a.getAbility());
 
             String attackBonusSymbol = "+";
@@ -1458,15 +1496,30 @@ public class DatabaseController {
                 rangeWording = "range";
             }
 
+            Label nameLabel = new Label(a.getName() + ". ");
+            nameLabel.setFont(Font.font("Georgia", FontWeight.BOLD, FontPosture.ITALIC, 12));
+            Label categoryLabel = new Label(a.getCategory() + " Weapon Attack: ");
+            categoryLabel.setFont(Font.font("Georgia", FontPosture.ITALIC, 12));
+            Label attackLabel = new Label(attackBonusSymbol + a.getAttackBonus() + " to hit, ");
+            attackLabel.setFont(Font.font("Georgia", 12));
+            Label rangeLabel = new Label(rangeWording + " " + a.getRange() + " ft., one target. ");
+            rangeLabel.setFont(Font.font("Georgia", 12));
+            Label hitLabel = new Label("Hit: ");
+            hitLabel.setFont(Font.font("Georgia", FontPosture.ITALIC, 12));
+            Label damageLabel = new Label(a.getNumDice() + "d" + a.getDamageDice() + " " + damageBonusSymbol + " " + damageBonus);
+            damageLabel.setFont(Font.font("Georgia", 12));
+            Label damageTypeLabel = new Label(" " + a.getDamageType() + " damage.");
+            damageTypeLabel.setFont(Font.font("Georgia", 12));
+
             FlowPane fp = new FlowPane();
-            fp.getChildren().add(new Label(a.getName() + ". "));
-            fp.getChildren().add(new Label(a.getCategory() + " Weapon Attack: "));
-            fp.getChildren().add(new Label(attackBonusSymbol + a.getAttackBonus() + " to hit, "));
-            fp.getChildren().add(new Label(rangeWording + " " + a.getRange() + " ft., one target. "));
-            fp.getChildren().add(new Label("Hit: "));
-            fp.getChildren().add(new Label(a.getNumDice() + "d" + a.getDamageDice() + " " + damageBonusSymbol + " " + damageBonus));
-            fp.getChildren().add(new Label(" " + a.getDamageType() + " damage."));
-            statblockGridPane.add(fp, 0, i);
+            fp.getChildren().add(nameLabel);
+            fp.getChildren().add(categoryLabel);
+            fp.getChildren().add(attackLabel);
+            fp.getChildren().add(rangeLabel);
+            fp.getChildren().add(hitLabel);
+            fp.getChildren().add(damageLabel);
+            fp.getChildren().add(damageTypeLabel);
+            statblockAttacksGridPane.add(fp, 0, i + 1);
         }
     }
 

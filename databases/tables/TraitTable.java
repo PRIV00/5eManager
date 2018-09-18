@@ -24,6 +24,19 @@ public class TraitTable extends Table implements CharacterSubTable {
                         ")");
     }
 
+    public void deleteAll() {
+        connect();
+        String sql = "DELETE FROM Traits";
+
+        try {
+            stmt.execute(sql);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            closeConnection();
+        }
+    }
+
     @Override
     public void insertData(TableModel traitData) {
         connect();
@@ -138,6 +151,7 @@ public class TraitTable extends Table implements CharacterSubTable {
 
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, character.getId());
+            pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {

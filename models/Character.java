@@ -1,10 +1,7 @@
 package main.models;
 
 import javafx.beans.property.SimpleStringProperty;
-import main.models.characterfields.Abilities;
-import main.models.characterfields.Saves;
-import main.models.characterfields.Skill;
-import main.models.characterfields.Trait;
+import main.models.characterfields.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -375,17 +372,17 @@ public class Character implements TableModel {
     public int getAbilityMod(String attackAbilityCode) {
         int bonus = 0;
         switch (attackAbilityCode) {
-            case "STR": bonus = this.getStats().getStrength(1) + this.getProficiency();
+            case "STR": bonus = this.getStats().getStrength(1);
                                 break;
-            case "DEX": bonus = this.getStats().getDexterity(1) + this.getProficiency();
+            case "DEX": bonus = this.getStats().getDexterity(1);
                                 break;
-            case "CON": bonus = this.getStats().getConstitution(1) + this.getProficiency();
+            case "CON": bonus = this.getStats().getConstitution(1);
                                 break;
-            case "INT": bonus = this.getStats().getIntelligence(1) + this.getProficiency();
+            case "INT": bonus = this.getStats().getIntelligence(1);
                                 break;
-            case "WIS": bonus = this.getStats().getWisdom(1) + this.getProficiency();
+            case "WIS": bonus = this.getStats().getWisdom(1);
                                 break;
-            case "CHA": bonus = this.getStats().getCharisma(1) + this.getProficiency();
+            case "CHA": bonus = this.getStats().getCharisma(1);
                                 break;
         }
         return bonus;

@@ -25,6 +25,19 @@ public class SkillTable extends Table implements CharacterSubTable {
                         ")");
     }
 
+    public void deleteAll() {
+        connect();
+        String sql = "DELETE FROM Skills";
+
+        try {
+            stmt.execute(sql);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            closeConnection();
+        }
+    }
+
     @Override
     public void insertData(TableModel skillData) {
         connect();
@@ -143,6 +156,7 @@ public class SkillTable extends Table implements CharacterSubTable {
 
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, character.getId());
+            pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
