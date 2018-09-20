@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SkillTable extends Table implements CharacterSubTable {
-
+    //TODO: Some inconsistency here as I have a column for "bonus", but nothing for the total... whereas on the attack table I have a section for the attack bonus.
     public SkillTable(String fileName) {
         super(fileName,
                 "CREATE TABLE IF NOT EXISTS Skills (\n" +

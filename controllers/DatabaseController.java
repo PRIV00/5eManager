@@ -1,5 +1,7 @@
 package main.controllers;
 
+import javafx.geometry.Insets;
+import javafx.geometry.VPos;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Font;
@@ -7,6 +9,7 @@ import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.util.converter.IntegerStringConverter;
 import main.assets.GuiTools;
+import main.assets.TextAreaTableCell;
 import main.databases.tables.*;
 import main.databases.Database;
 import javafx.collections.FXCollections;
@@ -31,7 +34,6 @@ public class DatabaseController {
 
     /* ------------------------------ MODEL FIELDS ------------------------------ */
     //TODO: Cleanup fields. See where you can delete or combine unnecessary code.
-    //TODO: Add spells
 
     private LocationTable locationTable;
     private List<Location> masterLocations;
@@ -63,6 +65,9 @@ public class DatabaseController {
     @FXML private TextField locationFilterTextField;
     @FXML private Button locationAddButton;
     @FXML private Button locationRemoveButton;
+
+    /* Location display tab */
+    @FXML private GridPane locationDisplayGridPane;
 
     /* Location TableView and Left display */
     @FXML private TableView<Location> locationTableView = new TableView<>();
@@ -374,6 +379,9 @@ public class DatabaseController {
                 }
             }
 
+            setSkillsForStatblock(observedCharacter);
+            setAttacksForStatblock(observedCharacter);
+            setTraitsForStatblock(observedCharacter);
             saveAllButton.setDisable(true);
             characterTableView.refresh();
         });
@@ -509,6 +517,8 @@ public class DatabaseController {
                 locDemographicTextArea.setText(observedLocation.getDemographic());
                 locReligionTextArea.setText(observedLocation.getReligion());
                 locHistoryTextArea.setText(observedLocation.getHistory());
+
+                setLocationDisplayTab();
 
             } catch (NullPointerException e) {
                 childLocListView.setDisable(true);
@@ -711,6 +721,108 @@ public class DatabaseController {
         }
     }
 
+    private void setLocationDisplayTab() {
+        locationDisplayGridPane.getChildren().clear();
+
+        int rowCount = 0;
+        if (!observedLocation.getDescription().equals("")) {
+            Label descriptionTitleLabel = new Label("Description");
+            descriptionTitleLabel.setFont(Font.font("Georgia", FontWeight.BOLD, 16));
+            descriptionTitleLabel.setPadding(new Insets(10, 0, 0, 0));
+            locationDisplayGridPane.add(descriptionTitleLabel, 0, rowCount);
+            rowCount += 1;
+
+            Label descriptionLabel = new Label(observedLocation.getDescription());
+            descriptionLabel.setFont(Font.font("Georgia", 12));
+            descriptionLabel.setWrapText(true);
+            locationDisplayGridPane.add(descriptionLabel, 0, rowCount);
+            rowCount +=1;
+        }
+
+        if (!observedLocation.getCulture().equals("")) {
+            Label cultureTitleLabel = new Label("Culture");
+            cultureTitleLabel.setFont(Font.font("Georgia", FontWeight.BOLD, 16));
+            cultureTitleLabel.setPadding(new Insets(10, 0, 0, 0));
+            locationDisplayGridPane.add(cultureTitleLabel, 0, rowCount);
+            rowCount += 1;
+
+            Label cultureLabel = new Label(observedLocation.getCulture());
+            cultureLabel.setFont(Font.font("Georgia", 12));
+            cultureLabel.setWrapText(true);
+            locationDisplayGridPane.add(cultureLabel, 0, rowCount);
+            rowCount += 1;
+        }
+
+        if (!observedLocation.getGovernment().equals("")) {
+            Label governmentTitleLabel = new Label("Government");
+            governmentTitleLabel.setFont(Font.font("Georgia", FontWeight.BOLD, 16));
+            governmentTitleLabel.setPadding(new Insets(10, 0, 0, 0));
+            locationDisplayGridPane.add(governmentTitleLabel, 0, rowCount);
+            rowCount += 1;
+
+            Label governmentLabel = new Label(observedLocation.getGovernment());
+            governmentLabel.setFont(Font.font("Georgia", 12));
+            governmentLabel.setWrapText(true);
+            locationDisplayGridPane.add(governmentLabel, 0, rowCount);
+            rowCount += 1;
+        }
+
+        if (!observedLocation.getCrime().equals("")) {
+            Label crimeTitleLabel = new Label("Crime");
+            crimeTitleLabel.setFont(Font.font("Georgia", FontWeight.BOLD, 16));
+            crimeTitleLabel.setPadding(new Insets(10, 0, 0, 0));
+            locationDisplayGridPane.add(crimeTitleLabel, 0, rowCount);
+            rowCount += 1;
+
+            Label crimeLabel = new Label(observedLocation.getCrime());
+            crimeLabel.setFont(Font.font("Georgia", 12));
+            crimeLabel.setWrapText(true);
+            locationDisplayGridPane.add(crimeLabel, 0, rowCount);
+            rowCount += 1;
+        }
+
+        if (!observedLocation.getDemographic().equals("")) {
+            Label demographicTitleLabel = new Label("Demographic");
+            demographicTitleLabel.setFont(Font.font("Georgia", FontWeight.BOLD, 16));
+            demographicTitleLabel.setPadding(new Insets(10, 0, 0, 0));
+            locationDisplayGridPane.add(demographicTitleLabel, 0, rowCount);
+            rowCount += 1;
+
+            Label demographicLabel = new Label(observedLocation.getDemographic());
+            demographicLabel.setFont(Font.font("Georgia", 12));
+            demographicLabel.setWrapText(true);
+            locationDisplayGridPane.add(demographicLabel, 0, rowCount);
+            rowCount += 1;
+        }
+
+        if (!observedLocation.getReligion().equals("")) {
+            Label religionTitleLabel = new Label("Religion");
+            religionTitleLabel.setFont(Font.font("Georgia", FontWeight.BOLD, 16));
+            religionTitleLabel.setPadding(new Insets(10, 0, 0, 0));
+            locationDisplayGridPane.add(religionTitleLabel, 0, rowCount);
+            rowCount += 1;
+
+            Label religionLabel = new Label(observedLocation.getReligion());
+            religionLabel.setFont(Font.font("Georgia", 12));
+            religionLabel.setWrapText(true);
+            locationDisplayGridPane.add(religionLabel, 0, rowCount);
+            rowCount += 1;
+        }
+
+        if (!observedLocation.getHistory().equals("")) {
+            Label historyTitleLabel = new Label("History");
+            historyTitleLabel.setFont(Font.font("Georgia", FontWeight.BOLD, 16));
+            historyTitleLabel.setPadding(new Insets(10, 0, 0, 0));
+            locationDisplayGridPane.add(historyTitleLabel, 0, rowCount);
+            rowCount += 1;
+
+            Label historyLabel = new Label(observedLocation.getHistory());
+            historyLabel.setFont(Font.font("Georgia", 12));
+            historyLabel.setWrapText(true);
+            locationDisplayGridPane.add(historyLabel, 0, rowCount);
+        }
+    }
+
     /* ------------------------------ CHARACTER TAB METHODS ------------------------------ */
 
     /**
@@ -789,7 +901,7 @@ public class DatabaseController {
                         sbSensesLabel.setText(observedCharacter.getSenses());
                         sbLanguagesLabel.setText(observedCharacter.getLanguages());
 
-                        setSkillsLabelForStatblock(observedCharacter);
+                        setSkillsForStatblock(observedCharacter);
                         setTraitsForStatblock(observedCharacter);
                         setAttacksForStatblock(observedCharacter);
 
@@ -1025,6 +1137,10 @@ public class DatabaseController {
         charProficiencyTextField.setOnKeyReleased(event -> {
             try {
                 observedCharacter.setProficiency(Integer.parseInt(charProficiencyTextField.getText()));
+                for (Attack atk : observedCharacter.getAttackList()) {
+                    atk.setAttackBonus(observedCharacter.getAbilityMod(atk.getAbility()) +
+                            observedCharacter.getProficiency());
+                }
             } catch (NumberFormatException e) {
                 // No big deal
             }
@@ -1187,6 +1303,7 @@ public class DatabaseController {
         charAttackAddButton.setOnAction(event -> {
             Attack atk = new Attack();
             atk.setCharacterID(observedCharacter.getId());
+            atk.setAttackBonus(observedCharacter.getAbilityMod(atk.getAbility()) + observedCharacter.getProficiency()); //TODO: might need to change. NEED to decide if you want sql table to save the total (+prof) or just the abilitybonus, or NEITHER?!
             observedCharacter.addAttack(atk);
             selectedCharacterAttacks.add(atk);
             characterEditDisplay(observedCharacter);
@@ -1395,7 +1512,7 @@ public class DatabaseController {
         });
 
         traitDescriptionColumn.setCellValueFactory(new PropertyValueFactory<>("description"));
-        traitDescriptionColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+        traitDescriptionColumn.setCellFactory(TextAreaTableCell.forTableColumn());
         traitDescriptionColumn.setOnEditCommit(event -> {
             TablePosition<Trait, String> pos = event.getTablePosition();
             String newName = event.getNewValue();
@@ -1424,7 +1541,7 @@ public class DatabaseController {
         saveAllButton.setDisable(false);
     }
 
-    private void setSkillsLabelForStatblock(Character c) {
+    private void setSkillsForStatblock(Character c) {
         List<Skill> skills = c.getSkillList();
 
         List<String> skillsStrings = new ArrayList<>();
@@ -1455,6 +1572,7 @@ public class DatabaseController {
             descriptionLabel.setFont(Font.font("Georgia"));
 
             // Add to flowpane
+            fp.rowValignmentProperty().set(VPos.TOP);
             fp.getChildren().add(nameLabel);
             fp.getChildren().add(descriptionLabel);
             statblockTraitsGridPane.add(fp, 0, i);
@@ -1489,7 +1607,7 @@ public class DatabaseController {
             }
             String damageBonusSymbol = "+";
             if (damageBonus < 0) {
-                damageBonusSymbol = "-";
+                damageBonusSymbol = "";
             }
             String rangeWording = "reach";
             if (a.getRange() > 10 ) {
