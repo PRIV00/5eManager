@@ -22,7 +22,9 @@ public class AppLauncher extends Application {
         controller.setDatabaseView();
 
         primaryStage.setTitle("5e Manager");
-        primaryStage.setScene(new Scene(root));
+        Scene scene = new Scene(root);
+        scene.getStylesheets().add("main/views/style.css");
+        primaryStage.setScene(scene);
         primaryStage.setResizable(true);
         primaryStage.show();
     }

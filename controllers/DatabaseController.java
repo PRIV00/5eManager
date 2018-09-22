@@ -1,12 +1,8 @@
 package main.controllers;
 
 import javafx.geometry.Insets;
-import javafx.geometry.VPos;
-import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontPosture;
-import javafx.scene.text.FontWeight;
+import javafx.scene.text.*;
 import javafx.util.converter.IntegerStringConverter;
 import main.assets.GuiTools;
 import main.assets.TextAreaTableCell;
@@ -33,7 +29,6 @@ import java.util.List;
 public class DatabaseController {
 
     /* ------------------------------ MODEL FIELDS ------------------------------ */
-    //TODO: Cleanup fields. See where you can delete or combine unnecessary code.
 
     private LocationTable locationTable;
     private List<Location> masterLocations;
@@ -530,7 +525,7 @@ public class DatabaseController {
         /* Info entry control listeners*/
         locNameTextField.setOnKeyReleased(event -> {
             observedLocation.setName(locNameTextField.getText());
-            locNameLabel.setText(observedLocation.getName());
+            locNameLabel.setText(observedLocation.getName() + " ");
             locationEditDisplay(observedLocation);
         });
 
@@ -824,6 +819,24 @@ public class DatabaseController {
     }
 
     /* ------------------------------ CHARACTER TAB METHODS ------------------------------ */
+    /**
+     * Sets the models.Location object references for the master list of Characters. Does this by matching the foreign key
+     * ID to the location's ID using for loops.
+     *
+     * @param characterList : The master models.models.models.Character list to loop through
+     * @param masterLocationList : The master models.models.models.Location list to loop through
+     */
+    private void setCharacterLocations(List<Character> characterList,
+                                       List<Location> masterLocationList) {
+        for (Character c : characterList) {
+            for (Location loc : masterLocationList) {
+                if (c.getLocationID() == loc.getId()) {
+                    c.setLocation(loc);
+                    break;
+                }
+            }
+        }
+    }
 
     /**
      * Initializes the tableView for Character, sets the columns to the appropriate fields.
@@ -1563,19 +1576,24 @@ public class DatabaseController {
 
         for (int i = 0; i < traits.size(); i++) {
             Trait t = traits.get(i);
-            FlowPane fp = new FlowPane();
+            TextFlow tf = new TextFlow();
 
             //Prep the labels to insert
-            Label nameLabel = new Label(t.getName() + ". ");
-            nameLabel.setFont(Font.font("Georgia", FontWeight.BOLD, FontPosture.ITALIC, 12));
-            Label descriptionLabel = new Label(t.getDescription());
-            descriptionLabel.setFont(Font.font("Georgia"));
+            Text nameLabel = new Text(t.getName() + ". ");
+            //nameLabel.setFont(Font.font("Georgia", FontWeight.BOLD, FontPosture.ITALIC, 12));
+            nameLabel.setStyle("-fx-font-family: ScalySans; -fx-font-size: 10pt; -fx-font-weight: bold;");
+            Text descriptionLabel = new Text(t.getDescription());
+            //descriptionLabel.setFont(Font.font("Georgia"));
+            descriptionLabel.setStyle("-fx-font-family: ScalySans; -fx-font-size: 10pt;");
 
             // Add to flowpane
-            fp.rowValignmentProperty().set(VPos.TOP);
-            fp.getChildren().add(nameLabel);
-            fp.getChildren().add(descriptionLabel);
-            statblockTraitsGridPane.add(fp, 0, i);
+            tf.getChildren().add(nameLabel);
+            tf.getChildren().add(descriptionLabel);
+            if (i > 0) {
+                tf.setPadding(new Insets(10, 0, 0, 0));
+            }
+
+            statblockTraitsGridPane.add(tf, 0, i);
         }
     }
 
@@ -1592,7 +1610,7 @@ public class DatabaseController {
         if (!attacks.isEmpty()) {
             Label attackTitleLabel = new Label("Attacks");
 
-            attackTitleLabel.setFont(Font.font("Georgia", FontWeight.BOLD, 16));
+            attackTitleLabel.setStyle("-fx-font-family: \"Scaly Sans Caps\"; -fx-font-size: 14pt;");
             statblockAttacksGridPane.add(attackTitleLabel, 0, 0);
         }
 
@@ -1613,50 +1631,31 @@ public class DatabaseController {
             if (a.getRange() > 10 ) {
                 rangeWording = "range";
             }
+            Text nameLabel = new Text(a.getName() + ". ");
+            nameLabel.setStyle("-fx-font-family: ScalySans; -fx-font-size: 10pt; -fx-font-weight: bold; -fx-font-style: italic;");
+            Text categoryLabel = new Text(a.getCategory() + " Weapon Attack: ");
+            categoryLabel.setStyle("-fx-font-family: ScalySans; -fx-font-size: 10pt; -fx-font-style: italic;");
+            Text attackLabel = new Text(attackBonusSymbol + a.getAttackBonus() + " to hit, ");
+            attackLabel.setStyle("-fx-font-family: ScalySans; -fx-font-size: 10pt;");
+            Text rangeLabel = new Text(rangeWording + " " + a.getRange() + " ft., one target. ");
+            rangeLabel.setStyle("-fx-font-family: ScalySans; -fx-font-size: 10pt;");
+            Text hitLabel = new Text("Hit: ");
+            hitLabel.setStyle("-fx-font-family: ScalySans; -fx-font-size: 10pt; -fx-font-style: italic;");
+            Text damageLabel = new Text(a.getNumDice() + "d" + a.getDamageDice() + " " + damageBonusSymbol + " " + damageBonus);
+            damageLabel.setStyle("-fx-font-family: ScalySans; -fx-font-size: 10pt;");
+            Text damageTypeLabel = new Text(" " + a.getDamageType() + " damage.");
+            damageTypeLabel.setStyle("-fx-font-family: ScalySans; -fx-font-size: 10pt;");
 
-            Label nameLabel = new Label(a.getName() + ". ");
-            nameLabel.setFont(Font.font("Georgia", FontWeight.BOLD, FontPosture.ITALIC, 12));
-            Label categoryLabel = new Label(a.getCategory() + " Weapon Attack: ");
-            categoryLabel.setFont(Font.font("Georgia", FontPosture.ITALIC, 12));
-            Label attackLabel = new Label(attackBonusSymbol + a.getAttackBonus() + " to hit, ");
-            attackLabel.setFont(Font.font("Georgia", 12));
-            Label rangeLabel = new Label(rangeWording + " " + a.getRange() + " ft., one target. ");
-            rangeLabel.setFont(Font.font("Georgia", 12));
-            Label hitLabel = new Label("Hit: ");
-            hitLabel.setFont(Font.font("Georgia", FontPosture.ITALIC, 12));
-            Label damageLabel = new Label(a.getNumDice() + "d" + a.getDamageDice() + " " + damageBonusSymbol + " " + damageBonus);
-            damageLabel.setFont(Font.font("Georgia", 12));
-            Label damageTypeLabel = new Label(" " + a.getDamageType() + " damage.");
-            damageTypeLabel.setFont(Font.font("Georgia", 12));
-
-            FlowPane fp = new FlowPane();
-            fp.getChildren().add(nameLabel);
-            fp.getChildren().add(categoryLabel);
-            fp.getChildren().add(attackLabel);
-            fp.getChildren().add(rangeLabel);
-            fp.getChildren().add(hitLabel);
-            fp.getChildren().add(damageLabel);
-            fp.getChildren().add(damageTypeLabel);
-            statblockAttacksGridPane.add(fp, 0, i + 1);
-        }
-    }
-
-    /**
-     * Sets the models.Location object references for the master list of Characters. Does this by matching the foreign key
-     * ID to the location's ID using for loops.
-     *
-     * @param characterList : The master models.models.models.Character list to loop through
-     * @param masterLocationList : The master models.models.models.Location list to loop through
-     */
-    private void setCharacterLocations(List<Character> characterList,
-                                       List<Location> masterLocationList) {
-        for (Character c : characterList) {
-            for (Location loc : masterLocationList) {
-                if (c.getLocationID() == loc.getId()) {
-                    c.setLocation(loc);
-                    break;
-                }
-            }
+            TextFlow tf = new TextFlow();
+            tf.setPadding(new Insets(10, 0, 0, 0));
+            tf.getChildren().add(nameLabel);
+            tf.getChildren().add(categoryLabel);
+            tf.getChildren().add(attackLabel);
+            tf.getChildren().add(rangeLabel);
+            tf.getChildren().add(hitLabel);
+            tf.getChildren().add(damageLabel);
+            tf.getChildren().add(damageTypeLabel);
+            statblockAttacksGridPane.add(tf, 0, i + 1);
         }
     }
 }

@@ -1,0 +1,108 @@
+@font-face {
+    src: url("fonts/Bookinsanity.otf");
+}
+
+@font-face {
+    src: url("fonts/MrsEavesSmallCaps.ttf");
+}
+
+@font-face {
+    src: url("fonts/ScalySansCaps.otf");
+}
+
+@font-face {
+    src: url("fonts/ScalySansCapsBold.otf");
+}
+
+@font-face {
+    src: url("fonts/ScalySansItalic.otf");
+}
+
+@font-face {
+    src: url("fonts/ScalySansBold.otf");
+}
+
+@font-face {
+    src: url("fonts/ScalySansItalic.otf");
+}
+
+@font-face {
+    src: url("fonts/ScalySansBoldItalic.otf");
+}
+
+
+/* Set scroll pane style */
+
+.accordion .titled-pane > *.content {
+    -fx-background-color: transparent;
+}
+
+.titled-pane > *.content {
+    -fx-background-color: transparent;
+}
+
+.scroll-pane > .viewport {
+    -fx-background-color: transparent;
+}
+
+/* Tablview Styling */
+
+#table-view-image {
+    -fx-background-image: url("images/tableview.png");
+    -fx-background-position: center;
+    -fx-background-size: stretch;
+}
+
+.table-view:focused {
+    -fx-background-color: transparent;
+}
+
+.table-row-cell {
+    -fx-background-color: #E0E5C1;
+}
+
+.table-row-cell: odd {
+    -fx-background-color: white;
+}
+
+
+#page {
+    -fx-background-image: url("images/pagetexture.png");
+    -fx-background-repeat: repeat;
+}
+
+/* Font settings */
+
+.sb-name-title {
+    -fx-text-fill: #58170D;
+    -fx-font-size: 24pt;
+    -fx-font-family: "MrsEavesSmallCaps";
+}
+
+.sb-descriptor {
+    -fx-font-size: 10pt;
+    -fx-font-style: italic;
+    -fx-font-family: "ScalySans";
+}
+
+.sb-static-label {
+    -fx-font-size: 10pt;
+    -fx-font-weight: bold;
+    -fx-font-family: "ScalySans";
+}
+
+.sb-dynamic-label {
+    -fx-font-size: 10pt;
+    -fx-font-family: "ScalySans";
+}
+
+.sb-title-label {
+    -fx-font-size: 14pt;
+    -fx-font-weight: bold;
+    -fx-font-family: "Scaly Sans Caps";
+}
+
+.sb-text {
+    -fx-font-size: 10pt;
+    -fx-font-family: "Bookinsanity";
+}

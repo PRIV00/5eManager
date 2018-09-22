@@ -10,11 +10,11 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<TabPane maxWidth="1.7976931348623157E308" prefHeight="2000.0" prefWidth="1166.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="main.controllers.DatabaseController">
+<TabPane maxWidth="1.7976931348623157E308" prefHeight="2000.0" prefWidth="1166.0" styleClass="dark-blue" stylesheets="@style.css" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="main.controllers.DatabaseController">
   <tabs>
     <Tab text="Locations">
       <content>
-            <GridPane>
+            <GridPane id="page">
                <columnConstraints>
                   <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="583.0" />
                   <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="583.0" />
@@ -220,21 +220,21 @@
     </Tab>
     <Tab text="Characters">
       <content>
-            <GridPane>
+            <GridPane id="page">
                <children>
                   <Accordion fx:id="characterAccordion" GridPane.columnIndex="1">
                      <panes>
                         <TitledPane animated="false" expanded="false" text="Statblock">
                            <content>
-                              <ScrollPane fitToWidth="true" prefHeight="200.0" prefWidth="200.0">
+                              <ScrollPane fitToWidth="true" prefHeight="200.0" prefWidth="200.0" stylesheets="@style.css">
                                  <content>
-                                    <VBox>
+                                    <VBox maxHeight="1.7976931348623157E308" prefWidth="543.0">
                                        <children>
                                           <GridPane hgap="5.0" vgap="5.0">
                                             <columnConstraints>
-                                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="90.0" minWidth="10.0" prefWidth="90.0" />
-                                                <ColumnConstraints hgrow="SOMETIMES" maxWidth="55.0" minWidth="10.0" prefWidth="55.0" />
-                                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="466.0" minWidth="10.0" prefWidth="372.0" />
+                                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="108.0" minWidth="10.0" prefWidth="97.0" />
+                                                <ColumnConstraints hgrow="SOMETIMES" maxWidth="66.0" minWidth="10.0" prefWidth="35.0" />
+                                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="466.0" minWidth="10.0" prefWidth="378.0" />
                                             </columnConstraints>
                                             <rowConstraints>
                                               <RowConstraints maxHeight="25.0" vgrow="SOMETIMES" />
@@ -253,26 +253,26 @@
                                                 <RowConstraints maxHeight="50.0" minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                             </rowConstraints>
                                              <children>
-                                                <Label fx:id="sbNameLabel" text="&lt;Name&gt;" GridPane.columnSpan="3">
+                                                <Label fx:id="sbNameLabel" styleClass="sb-name-title" stylesheets="@style.css" text="&lt;Name&gt;" GridPane.columnSpan="3">
                                                    <font>
                                                       <Font name="Constantia Bold" size="18.0" />
                                                    </font></Label>
-                                                <Label fx:id="sbDescriptorLabel" text="&lt;Descriptor&gt;" GridPane.columnSpan="3" GridPane.rowIndex="1">
+                                                <Label fx:id="sbDescriptorLabel" styleClass="sb-descriptor" text="&lt;Descriptor&gt;" GridPane.columnSpan="3" GridPane.rowIndex="1">
                                                    <font>
                                                       <Font name="Georgia Italic" size="12.0" />
                                                    </font>
                                                 </Label>
-                                                <Label text="Armor Class" GridPane.rowIndex="3">
+                                                <Label styleClass="sb-static-label" text="Armor Class" GridPane.rowIndex="3">
                                                    <font>
                                                       <Font name="Georgia Bold" size="12.0" />
                                                    </font>
                                                 </Label>
-                                                <Label text="Hit Points" GridPane.rowIndex="4">
+                                                <Label styleClass="sb-static-label" text="Hit Points" GridPane.rowIndex="4">
                                                    <font>
                                                       <Font name="Georgia Bold" size="12.0" />
                                                    </font>
                                                 </Label>
-                                                <Label text="Speed" GridPane.rowIndex="5">
+                                                <Label styleClass="sb-static-label" text="Speed" GridPane.rowIndex="5">
                                                    <font>
                                                       <Font name="Georgia Bold" size="12.0" />
                                                    </font>
@@ -291,78 +291,78 @@
                                                     <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                                   </rowConstraints>
                                                    <children>
-                                                      <Label text="STR" GridPane.halignment="CENTER">
+                                                      <Label styleClass="sb-static-label" text="STR" GridPane.halignment="CENTER">
                                                          <font>
                                                             <Font name="System Bold" size="12.0" />
                                                          </font>
                                                       </Label>
-                                                      <Label text="DEX" GridPane.columnIndex="1" GridPane.halignment="CENTER">
+                                                      <Label styleClass="sb-static-label" text="DEX" GridPane.columnIndex="1" GridPane.halignment="CENTER">
                                                          <font>
                                                             <Font name="System Bold" size="12.0" />
                                                          </font>
                                                       </Label>
-                                                      <Label text="CON" GridPane.columnIndex="2" GridPane.halignment="CENTER">
+                                                      <Label styleClass="sb-static-label" text="CON" GridPane.columnIndex="2" GridPane.halignment="CENTER">
                                                          <font>
                                                             <Font name="System Bold" size="12.0" />
                                                          </font>
                                                       </Label>
-                                                      <Label text="INT" GridPane.columnIndex="3" GridPane.halignment="CENTER">
+                                                      <Label styleClass="sb-static-label" text="INT" GridPane.columnIndex="3" GridPane.halignment="CENTER">
                                                          <font>
                                                             <Font name="System Bold" size="12.0" />
                                                          </font>
                                                       </Label>
-                                                      <Label text="WIS" GridPane.columnIndex="4" GridPane.halignment="CENTER">
+                                                      <Label styleClass="sb-static-label" text="WIS" GridPane.columnIndex="4" GridPane.halignment="CENTER">
                                                          <font>
                                                             <Font name="System Bold" size="12.0" />
                                                          </font>
                                                       </Label>
-                                                      <Label text="CHA" GridPane.columnIndex="5" GridPane.halignment="CENTER">
+                                                      <Label styleClass="sb-static-label" text="CHA" GridPane.columnIndex="5" GridPane.halignment="CENTER">
                                                          <font>
                                                             <Font name="System Bold" size="12.0" />
                                                          </font>
                                                       </Label>
-                                                      <Label fx:id="sbStrLabel" text="&lt;STR&gt;" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
-                                                      <Label fx:id="sbDexLabel" text="&lt;DEX&gt;" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
-                                                      <Label fx:id="sbConLabel" text="&lt;CON&gt;" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
-                                                      <Label fx:id="sbIntLabel" text="&lt;INT&gt;" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
-                                                      <Label fx:id="sbWisLabel" text="&lt;WIS&gt;" GridPane.columnIndex="4" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
-                                                      <Label fx:id="sbChaLabel" text="&lt;CHA&gt;" GridPane.columnIndex="5" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+                                                      <Label fx:id="sbStrLabel" styleClass="sb-dynamic-label" text="&lt;STR&gt;" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+                                                      <Label fx:id="sbDexLabel" styleClass="sb-dynamic-label" text="&lt;DEX&gt;" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+                                                      <Label fx:id="sbConLabel" styleClass="sb-dynamic-label" text="&lt;CON&gt;" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+                                                      <Label fx:id="sbIntLabel" styleClass="sb-dynamic-label" text="&lt;INT&gt;" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+                                                      <Label fx:id="sbWisLabel" styleClass="sb-dynamic-label" text="&lt;WIS&gt;" GridPane.columnIndex="4" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+                                                      <Label fx:id="sbChaLabel" styleClass="sb-dynamic-label" text="&lt;CHA&gt;" GridPane.columnIndex="5" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
                                                    </children>
                                                 </GridPane>
-                                                <Label fx:id="sbACLabel" text="&lt;AC&gt;" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                                                <Label fx:id="sbMaxHPLabel" text="&lt;MAX HP&gt;" GridPane.columnIndex="2" GridPane.rowIndex="4">
+                                                <Label fx:id="sbACLabel" styleClass="sb-dynamic-label" text="&lt;AC&gt;" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="3" />
+                                                <Label fx:id="sbMaxHPLabel" styleClass="sb-dynamic-label" text="&lt;MAX HP&gt;" GridPane.columnIndex="2" GridPane.rowIndex="4">
                                                    <font>
                                                       <Font name="Georgia" size="12.0" />
                                                    </font></Label>
-                                                <TextField fx:id="sbCurrentHPTextField" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-                                                <Label fx:id="sbSpeedLabel" text="&lt;SPD&gt;" GridPane.columnIndex="1" GridPane.rowIndex="5">
+                                                <TextField fx:id="sbCurrentHPTextField" maxWidth="35.0" minWidth="35.0" prefWidth="35.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                                                <Label fx:id="sbSpeedLabel" styleClass="sb-dynamic-label" text="&lt;SPD&gt;" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="5">
                                                    <font>
                                                       <Font name="Georgia" size="12.0" />
                                                    </font></Label>
-                                                <Label text="Saving Throws" GridPane.rowIndex="9">
+                                                <Label styleClass="sb-static-label" text="Saving Throws" GridPane.rowIndex="9">
                                                    <font>
                                                       <Font name="System Bold" size="12.0" />
                                                    </font>
                                                 </Label>
-                                                <Label fx:id="sbSavesLabel" text="&lt;SAVES&gt;" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="9" />
-                                                <Label text="Skills" GridPane.rowIndex="10">
+                                                <Label fx:id="sbSavesLabel" styleClass="sb-dynamic-label" text="&lt;SAVES&gt;" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="9" />
+                                                <Label styleClass="sb-static-label" text="Skills" GridPane.rowIndex="10">
                                                    <font>
                                                       <Font name="System Bold" size="12.0" />
                                                    </font>
                                                 </Label>
-                                                <Label fx:id="sbSkillsLabel" text="&lt;SKILLS&gt;" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="10" />
-                                                <Label text="Senses" GridPane.rowIndex="11">
+                                                <Label fx:id="sbSkillsLabel" styleClass="sb-dynamic-label" text="&lt;SKILLS&gt;" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="10" />
+                                                <Label styleClass="sb-static-label" text="Senses" GridPane.rowIndex="11">
                                                    <font>
                                                       <Font name="System Bold" size="12.0" />
                                                    </font>
                                                 </Label>
-                                                <Label fx:id="sbSensesLabel" text="&lt;SENSES&gt;" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="11" />
-                                                <Label text="Languages" GridPane.rowIndex="12">
+                                                <Label fx:id="sbSensesLabel" styleClass="sb-dynamic-label" text="&lt;SENSES&gt;" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="11" />
+                                                <Label styleClass="sb-static-label" text="Languages" GridPane.rowIndex="12">
                                                    <font>
                                                       <Font name="System Bold" size="12.0" />
                                                    </font>
                                                 </Label>
-                                                <Label fx:id="sbLanguagesLabel" text="&lt;SENSES&gt;" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="12" />
+                                                <Label fx:id="sbLanguagesLabel" styleClass="sb-dynamic-label" text="&lt;Senses&gt;" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="12" />
                                                 <Separator prefWidth="200.0" GridPane.columnSpan="3" GridPane.rowIndex="2" />
                                                 <Separator prefWidth="200.0" GridPane.columnSpan="3" GridPane.rowIndex="6" />
                                                 <Separator prefWidth="200.0" GridPane.columnSpan="3" GridPane.rowIndex="8" />
@@ -676,7 +676,7 @@
                         </TitledPane>
                      </panes>
                   </Accordion>
-                  <GridPane hgap="10.0" vgap="5.0">
+                  <GridPane hgap="10.0" vgap="5.0" GridPane.hgrow="ALWAYS">
                      <columnConstraints>
                         <ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="300.0" />
                         <ColumnConstraints hgrow="SOMETIMES" maxWidth="400.0" minWidth="10.0" prefWidth="300.0" />
@@ -703,132 +703,106 @@
                            </columns>
                         </TableView>
                         <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
-                        <TitledPane animated="false" collapsible="false" maxHeight="1.7976931348623157E308" text="Personality" GridPane.columnIndex="1" GridPane.rowIndex="3" GridPane.valignment="TOP">
+                        <TitledPane animated="false" collapsible="false" maxHeight="1.7976931348623157E308" mouseTransparent="true" style="-fx-font-size: 16pt;" styleClass="sb-name-title" text="Qualities" GridPane.columnIndex="1" GridPane.rowIndex="3" GridPane.valignment="TOP">
                            <content>
-                              <GridPane GridPane.columnIndex="1" GridPane.rowIndex="3">
-                                <columnConstraints>
-                                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="72.0" minWidth="50.0" prefWidth="67.0" />
-                                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="207.0" />
-                                </columnConstraints>
-                                <rowConstraints>
-                                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                </rowConstraints>
-                                 <children>
-                                    <Label text="Personality:" GridPane.rowIndex="1" GridPane.valignment="TOP" />
-                                    <Label text="Desires:" GridPane.rowIndex="2" GridPane.valignment="TOP" />
-                                    <Label text="Fears:" GridPane.rowIndex="3" GridPane.valignment="TOP" />
-                                    <Label text="Voice:" GridPane.valignment="TOP" />
-                                    <Label fx:id="charVoiceLabel" text="&lt;DYNAMIC LABEL&gt;" wrapText="true" GridPane.columnIndex="1" GridPane.valignment="TOP">
-                                       <font>
-                                          <Font name="System Italic" size="12.0" />
-                                       </font>
-                                    </Label>
-                                    <Label fx:id="charPersonalityLabel" text="&lt;DYNAMIC LABEL&gt;" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.valignment="TOP">
-                                       <font>
-                                          <Font name="System Italic" size="12.0" />
-                                       </font>
-                                    </Label>
-                                    <Label fx:id="charDesiresLabel" text="&lt;DYNAMIC LABEL&gt;" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="2" GridPane.valignment="TOP">
-                                       <font>
-                                          <Font name="System Italic" size="12.0" />
-                                       </font>
-                                    </Label>
-                                    <Label fx:id="charFearsLabel" text="&lt;DYNAMIC LABEL&gt;" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="3" GridPane.valignment="TOP">
-                                       <font>
-                                          <Font name="System Italic" size="12.0" />
-                                       </font>
-                                    </Label>
-                                 </children>
-                              </GridPane>
+                              <ScrollPane fitToWidth="true" prefViewportHeight="671.0" prefViewportWidth="294.0">
+                                 <content>
+                                    <VBox>
+                                       <children>
+                                          <Label prefHeight="25.0" prefWidth="105.0" style="-fx-font-size: 18pt;" styleClass="sb-name-title" text="Voice" GridPane.valignment="TOP" />
+                                          <Label fx:id="charVoiceLabel" styleClass="sb-text" text="&lt;DYNAMIC LABEL&gt;" wrapText="true" GridPane.rowIndex="1" GridPane.valignment="TOP">
+                                             <font>
+                                                <Font name="System Italic" size="12.0" />
+                                             </font>
+                                          </Label>
+                                          <Label style="-fx-font-size: 18pt;" styleClass="sb-name-title" text="Personality" GridPane.rowIndex="2" GridPane.valignment="TOP" />
+                                          <Label fx:id="charPersonalityLabel" styleClass="sb-text" text="&lt;DYNAMIC LABEL&gt;" wrapText="true" GridPane.rowIndex="3" GridPane.valignment="TOP">
+                                             <font>
+                                                <Font name="System Italic" size="12.0" />
+                                             </font>
+                                          </Label>
+                                          <Label style="-fx-font-size: 18pt;" styleClass="sb-name-title" text="Fears" GridPane.rowIndex="6" GridPane.valignment="TOP" />
+                                          <Label fx:id="charFearsLabel" styleClass="sb-text" text="&lt;DYNAMIC LABEL&gt;" wrapText="true" GridPane.rowIndex="7" GridPane.valignment="TOP">
+                                             <font>
+                                                <Font name="System Italic" size="12.0" />
+                                             </font>
+                                          </Label>
+                                          <Label style="-fx-font-size: 18pt;" styleClass="sb-name-title" text="Desires" GridPane.rowIndex="4" GridPane.valignment="TOP" />
+                                          <Label fx:id="charDesiresLabel" styleClass="sb-text" text="&lt;DYNAMIC LABEL&gt;" wrapText="true" GridPane.rowIndex="5" GridPane.valignment="TOP">
+                                             <font>
+                                                <Font name="System Italic" size="12.0" />
+                                             </font>
+                                          </Label>
+                                       </children>
+                                       <padding>
+                                          <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                       </padding>
+                                    </VBox>
+                                 </content>
+                              </ScrollPane>
                            </content>
                         </TitledPane>
-                        <VBox prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                        <VBox spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
                            <children>
-                              <Label fx:id="charNameLabel" text="&lt;CHARACTER NAME&gt;">
+                              <Label fx:id="charNameLabel" style="-fx-font-size: 20pt;" styleClass="sb-name-title" text="&lt;CHARACTER NAME&gt;">
                                  <font>
                                     <Font name="Constantia Bold" size="16.0" />
                                  </font>
                               </Label>
-                              <Label fx:id="charTitleLabel" text="&lt;CHARACTER TITLE&gt;">
+                              <Label fx:id="charTitleLabel" styleClass="sb-title-label" text="&lt;Character Title&gt;" GridPane.rowIndex="1">
                                  <font>
                                     <Font name="Constantia" size="12.0" />
                                  </font>
                               </Label>
-                              <Label fx:id="charLookLabel" alignment="TOP_LEFT" text="&lt;CHARACTER LOOK&gt;" wrapText="true">
+                              <Label fx:id="charLookLabel" alignment="TOP_LEFT" style="-fx-font-family: Bookinsanity; -fx-font-size: 11pt;" text="&lt;CHARACTER LOOK&gt;" wrapText="true" GridPane.rowIndex="2" GridPane.valignment="TOP">
                                  <font>
                                     <Font name="Constantia Italic" size="12.0" />
                                  </font>
                               </Label>
                            </children>
                         </VBox>
-                        <TitledPane animated="false" collapsible="false" maxHeight="1.7976931348623157E308" text="Character Information" GridPane.rowIndex="3" GridPane.valignment="TOP">
+                        <TitledPane animated="false" collapsible="false" maxHeight="1.7976931348623157E308" style="-fx-font-size: 16pt;" styleClass="sb-name-title" text="Character Information" GridPane.rowIndex="3" GridPane.valignment="TOP">
                            <content>
-                              <GridPane vgap="5.0" GridPane.rowIndex="3">
-                                <columnConstraints>
-                                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="70.0" minWidth="70.0" prefWidth="70.0" />
-                                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="198.0" />
-                                </columnConstraints>
-                                <rowConstraints>
-                                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                </rowConstraints>
-                                 <children>
-                                    <Label text="Player Opinion:" wrapText="true" GridPane.rowIndex="2" GridPane.valignment="TOP" />
-                                    <Label text="Knowledge:" GridPane.rowIndex="1" GridPane.valignment="TOP">
-                                       <padding>
-                                          <Insets top="5.0" />
-                                       </padding>
-                                    </Label>
-                                    <Label text="Background:" GridPane.valignment="TOP">
-                                       <font>
-                                          <Font name="Constantia" size="12.0" />
-                                       </font>
-                                       <GridPane.margin>
-                                          <Insets top="5.0" />
-                                       </GridPane.margin>
-                                    </Label>
-                                    <ScrollPane fitToWidth="true" prefViewportHeight="14.0" prefViewportWidth="107.0" GridPane.columnIndex="1">
-                                       <content>
-                                          <Label fx:id="charBackgroundLabel" text="&lt;DYNAMIC LABEL&gt;" wrapText="true" GridPane.columnIndex="1" GridPane.valignment="TOP">
+                              <ScrollPane fitToWidth="true" prefViewportHeight="651.0" prefViewportWidth="293.0">
+                                 <content>
+                                    <VBox>
+                                       <children>
+                                          <Label style="-fx-font-size: 18pt;" styleClass="sb-name-title" text="Background" GridPane.valignment="TOP">
+                                             <font>
+                                                <Font name="Constantia" size="12.0" />
+                                             </font>
+                                             <GridPane.margin>
+                                                <Insets top="5.0" />
+                                             </GridPane.margin>
+                                          </Label>
+                                          <Label fx:id="charKnowledgeLabel" styleClass="sb-text" text="&lt;DYNAMIC LABEL&gt;" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.valignment="TOP">
+                                             <font>
+                                                <Font name="System Italic" size="12.0" />
+                                             </font>
+                                          </Label>
+                                          <Label style="-fx-font-size: 18pt;" styleClass="sb-name-title" text="Knowledge" GridPane.rowIndex="1" GridPane.valignment="TOP">
+                                             <padding>
+                                                <Insets top="5.0" />
+                                             </padding>
+                                          </Label>
+                                          <Label fx:id="charBackgroundLabel" styleClass="sb-text" text="&lt;DYNAMIC LABEL&gt;" wrapText="true" GridPane.columnIndex="1" GridPane.valignment="TOP">
                                              <font>
                                                 <Font name="Constantia Italic" size="12.0" />
                                              </font>
                                           </Label>
-                                       </content>
-                                       <padding>
-                                          <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                       </padding>
-                                    </ScrollPane>
-                                    <ScrollPane fitToWidth="true" prefViewportHeight="17.0" prefViewportWidth="104.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
-                                       <content>
-                                          <Label fx:id="charKnowledgeLabel" text="&lt;DYNAMIC LABEL&gt;" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.valignment="TOP">
+                                          <Label style="-fx-font-size: 18pt;" styleClass="sb-name-title" text="Player Opinion" wrapText="true" GridPane.rowIndex="2" GridPane.valignment="TOP" />
+                                          <Label fx:id="charOpinionLabel" styleClass="sb-text" text="&lt;DYNAMIC LABEL&gt;" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="2" GridPane.valignment="TOP">
                                              <font>
                                                 <Font name="System Italic" size="12.0" />
                                              </font>
                                           </Label>
-                                       </content>
+                                       </children>
                                        <padding>
-                                          <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                          <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                                        </padding>
-                                    </ScrollPane>
-                                    <ScrollPane fitToWidth="true" prefViewportHeight="17.0" prefViewportWidth="104.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
-                                       <content>
-                                          <Label fx:id="charOpinionLabel" text="&lt;DYNAMIC LABEL&gt;" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="2" GridPane.valignment="TOP">
-                                             <font>
-                                                <Font name="System Italic" size="12.0" />
-                                             </font>
-                                          </Label>
-                                       </content>
-                                       <padding>
-                                          <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                       </padding>
-                                    </ScrollPane>
-                                 </children>
-                              </GridPane>
+                                    </VBox>
+                                 </content>
+                              </ScrollPane>
                            </content>
                         </TitledPane>
                         <HBox alignment="TOP_RIGHT" prefHeight="100.0" prefWidth="200.0" spacing="5.0" GridPane.columnIndex="1">
