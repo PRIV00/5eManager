@@ -1,8 +1,8 @@
 package main.databases.tables;
 
-import main.models.Character;
-import main.models.characterfields.Skill;
-import main.models.TableModel;
+import main.model.modeldata.Character;
+import main.model.characterfields.Skill;
+import main.model.modeldata.ModelData;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -39,7 +39,7 @@ public class SkillTable extends Table implements CharacterSubTable {
     }
 
     @Override
-    public void insertData(TableModel skillData) {
+    public void insertData(ModelData skillData) {
         connect();
         String sql = "INSERT OR IGNORE INTO Skills (name, ability, bonus, characterID) " +
                 "VALUES (?,?,?,?)";
@@ -69,7 +69,7 @@ public class SkillTable extends Table implements CharacterSubTable {
     }
 
     @Override
-    public void deleteData(TableModel skillData) {
+    public void deleteData(ModelData skillData) {
         connect();
         String sql = "DELETE FROM Skills WHERE skillID = ?";
         Skill skill = (Skill) skillData;
@@ -85,7 +85,7 @@ public class SkillTable extends Table implements CharacterSubTable {
     }
 
     @Override
-    public void updateData(TableModel skillData) {
+    public void updateData(ModelData skillData) {
         connect();
         String sql = "UPDATE Skills SET name = ?, ability = ?, bonus = ?, characterID = ? \n" +
                 "WHERE skillID = ?";

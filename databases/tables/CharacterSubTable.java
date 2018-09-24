@@ -1,7 +1,7 @@
 package main.databases.tables;
 
 import java.util.List;
-import main.models.Character;
+import main.model.modeldata.Character;
 
 public interface CharacterSubTable {
     List getDataByCharacter(Character c);

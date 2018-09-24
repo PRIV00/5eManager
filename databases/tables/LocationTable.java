@@ -1,7 +1,7 @@
 package main.databases.tables;
 
-import main.models.TableModel;
-import main.models.Location;
+import main.model.modeldata.ModelData;
+import main.model.modeldata.Location;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -33,7 +33,7 @@ public class LocationTable extends Table implements Searchable, TopLevelTable {
     }
 
     @Override
-    public void insertData(TableModel locationData) throws SQLException {
+    public void insertData(ModelData locationData) throws SQLException {
         connect();
         String sql = "INSERT OR IGNORE INTO Locations(name, locType, flavour, songLink, description, culture, " +
                 "government, crime, demographic, religion, history, parentID) \n" +
@@ -68,7 +68,7 @@ public class LocationTable extends Table implements Searchable, TopLevelTable {
     }
 
     @Override
-    public void deleteData(TableModel locationData) throws SQLException {
+    public void deleteData(ModelData locationData) throws SQLException {
         connect();
         String sql = "DELETE \n" +
                 "FROM Locations \n" +
@@ -86,7 +86,7 @@ public class LocationTable extends Table implements Searchable, TopLevelTable {
     }
 
     @Override
-    public void updateData(TableModel locationData) throws SQLException {
+    public void updateData(ModelData locationData) throws SQLException {
         connect();
         String sql = "UPDATE Locations \n" +
                 "SET name = ?, locType = ?, flavour = ?, songLink = ?, description = ?, culture = ?, " +
@@ -221,8 +221,8 @@ public class LocationTable extends Table implements Searchable, TopLevelTable {
             }
 
             /*
-             * For each row in the ResultSet, it loops through the models.models.models.Location list created previously. If an ID match
-             * occurs between the current ResultSet row and any models.models.models.Location in the list, the check changes to false.
+             * For each row in the ResultSet, it loops through the model.model.model.Location list created previously. If an ID match
+             * occurs between the current ResultSet row and any model.model.model.Location in the list, the check changes to false.
              *
              * This ensure that only rows with unique IDs are added to the list, preventing duplicate objects.
              */

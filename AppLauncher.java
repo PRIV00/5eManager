@@ -7,6 +7,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import main.model.MasterDataModel;
 
 public class AppLauncher extends Application {
 
@@ -18,7 +19,9 @@ public class AppLauncher extends Application {
         root = loader.load();
 
         MasterController controller = loader.getController();
-        controller.initialize(new Database("datav2"));
+
+        MasterDataModel model = new MasterDataModel(new Database("test"));
+        controller.initialize(model);
         controller.setDatabaseView();
 
         primaryStage.setTitle("5e Manager");
