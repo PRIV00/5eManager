@@ -1,8 +1,8 @@
 package main.databases.tables;
 
-import main.models.characterfields.Attack;
-import main.models.TableModel;
-import main.models.Character;
+import main.model.modeldata.ModelData;
+import main.model.characterfields.Attack;
+import main.model.modeldata.Character;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -44,7 +44,7 @@ public class AttackTable extends Table implements CharacterSubTable{
     }
 
     @Override
-    public void insertData(TableModel attackData) {
+    public void insertData(ModelData attackData) {
         connect();
         String sql = "INSERT OR IGNORE INTO Attacks(name, category, ability, attackBonus, range, numDice, damageDice, damageType," +
                 "characterID) VALUES (?,?,?,?,?,?,?,?,?)";
@@ -79,10 +79,10 @@ public class AttackTable extends Table implements CharacterSubTable{
     }
 
     @Override
-    public void deleteData(TableModel tableModel){
+    public void deleteData(ModelData modelData){
         connect();
         String sql = "DELETE FROM Attacks WHERE attackID = ?";
-        Attack attack = (Attack) tableModel;
+        Attack attack = (Attack) modelData;
 
         try (PreparedStatement pstmt = conn.prepareStatement(sql)){
             pstmt.setInt(1, attack.getId());
@@ -98,12 +98,12 @@ public class AttackTable extends Table implements CharacterSubTable{
 
 
     @Override
-    public void updateData(TableModel tableModel) {
+    public void updateData(ModelData modelData) {
         connect();
         String sql = "UPDATE Attacks SET name = ?, category = ?, ability = ?, attackBonus = ?, range = ?, numDice = ?, damageDice = ?," +
                 " damageType = ?, characterID = ? \n" +
                 "WHERE attackID = ?";
-        Attack attack = (Attack) tableModel;
+        Attack attack = (Attack) modelData;
 
         try (PreparedStatement pstmt = conn.prepareStatement(sql)){
             pstmt.setString(1, attack.getName());

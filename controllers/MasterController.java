@@ -4,10 +4,10 @@ import javafx.scene.control.TabPane;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.GridPane;
 import main.AppLauncher;
-import main.databases.Database;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.layout.VBox;
+import main.model.MasterDataModel;
 
 import java.io.IOException;
 
@@ -24,16 +24,16 @@ public class MasterController {
     /**
      * Sets up the different views, controllers, and initializes them.
      *
-     * @param db The database to be used in the program.
+     * @param model The model to be used in the program.
      * @throws IOException .
      */
-    public void initialize(Database db) throws IOException {
+    public void initialize(MasterDataModel model) throws IOException {
         topBox.getChildren().add(toolBar);
 
         FXMLLoader databaseLoader = new FXMLLoader(getClass().getResource("../views/DatabaseView.fxml"));
         databaseView = databaseLoader.load();
         DatabaseController databaseController = databaseLoader.getController();
-        databaseController.initialize(db);
+        databaseController.initialize(model);
 
         FXMLLoader calendarLoader = new FXMLLoader(getClass().getResource("../views/CalendarView.fxml"));
         calendarView = calendarLoader.load();

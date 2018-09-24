@@ -1,6 +1,6 @@
 package main.databases.tables;
 
-import main.models.TableModel;
+import main.model.modeldata.ModelData;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -52,8 +52,8 @@ abstract class Table {
         }
     }
 
-    public abstract void insertData(TableModel data) throws SQLException;
-    public abstract void deleteData(TableModel data) throws SQLException;
-    public abstract void updateData(TableModel data) throws SQLException;
+    public abstract void insertData(ModelData data) throws SQLException;
+    public abstract void deleteData(ModelData data) throws SQLException;
+    public abstract void updateData(ModelData data) throws SQLException;
     public abstract int getNextID();
 }

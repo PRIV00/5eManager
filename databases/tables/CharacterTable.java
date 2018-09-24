@@ -1,7 +1,7 @@
 package main.databases.tables;
 
-import main.models.TableModel;
-import main.models.Character;
+import main.model.modeldata.ModelData;
+import main.model.modeldata.Character;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -78,14 +78,14 @@ public class CharacterTable extends Table implements Searchable, TopLevelTable {
 
 
     /**
-     * Overrides Modifiable's method. Takes a models.Character object and uses its data to insert a new row into the Characters
+     * Overrides Modifiable's method. Takes a model.Character object and uses its data to insert a new row into the Characters
      * table.
      *
      * @param characterData Character object to retrieve the data from for the row entry.
      * @throws SQLException sql throw.
      */
     @Override
-    public void insertData(TableModel characterData) throws SQLException {
+    public void insertData(ModelData characterData) throws SQLException {
         connect();
         String sql = "INSERT OR IGNORE INTO Characters(name, look, title, race, voice, personality, desires, fears, background, " +
                 "knowledge, opinion, descriptor, armorClass, armor, hitPointMax, hitPointCurrent, speed, proficiency, strength, dexterity, constitution, " +
@@ -147,15 +147,15 @@ public class CharacterTable extends Table implements Searchable, TopLevelTable {
     }
 
     /**
-     * Overrides Modifiable's method. Takes a models.Character object, finds the match in the database and deletes it. Chose
-     * to use a models.Character object as the param to keep it consistent with the other Modifiable methods based around
+     * Overrides Modifiable's method. Takes a model.Character object, finds the match in the database and deletes it. Chose
+     * to use a model.Character object as the param to keep it consistent with the other Modifiable methods based around
      * inserting and deleting data.
      *
-     * @param characterData models.models.Character object to retrieve the ID from.
+     * @param characterData model.model.Character object to retrieve the ID from.
      * @throws SQLException sql.
      */
     @Override
-    public void deleteData(TableModel characterData) throws SQLException {
+    public void deleteData(ModelData characterData) throws SQLException {
         connect();
         String sql = "DELETE FROM Characters WHERE characterID = ?";
         Character character = (Character) characterData;
@@ -171,7 +171,7 @@ public class CharacterTable extends Table implements Searchable, TopLevelTable {
     }
 
     @Override
-    public void updateData(TableModel characterData) throws SQLException {
+    public void updateData(ModelData characterData) throws SQLException {
         connect();
         String sql = "UPDATE Characters SET name = ?, look = ?, title = ?, race = ?, voice = ?, personality = ?, desires = ?, " +
                 "fears = ?, background = ?, knowledge = ?, opinion = ?, descriptor = ?, armorClass = ?, armor = ?, " +

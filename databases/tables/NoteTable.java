@@ -1,6 +1,6 @@
 package main.databases.tables;
 
-import main.models.TableModel;
+import main.model.modeldata.ModelData;
 
 
 public class NoteTable extends Table {
@@ -18,17 +18,17 @@ public class NoteTable extends Table {
     }
 
     @Override
-    public void insertData(TableModel note) {
+    public void insertData(ModelData note) {
 
     }
 
     @Override
-    public void deleteData(TableModel note) {
+    public void deleteData(ModelData note) {
 
     }
 
     @Override
-    public void updateData(TableModel note) {
+    public void updateData(ModelData note) {
 
     }
 

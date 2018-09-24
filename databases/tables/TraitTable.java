@@ -1,8 +1,8 @@
 package main.databases.tables;
 
-import main.models.Character;
-import main.models.TableModel;
-import main.models.characterfields.Trait;
+import main.model.modeldata.Character;
+import main.model.modeldata.ModelData;
+import main.model.characterfields.Trait;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -38,7 +38,7 @@ public class TraitTable extends Table implements CharacterSubTable {
     }
 
     @Override
-    public void insertData(TableModel traitData) {
+    public void insertData(ModelData traitData) {
         connect();
         String sql = "INSERT OR IGNORE INTO Traits (name, description, characterID) VALUES (?,?,?)";
         Trait trait = (Trait) traitData;
@@ -66,7 +66,7 @@ public class TraitTable extends Table implements CharacterSubTable {
     }
 
     @Override
-    public void deleteData(TableModel traitData) {
+    public void deleteData(ModelData traitData) {
         connect();
         String sql = "DELETE FROM Traits WHERE traitID = ?";
         Trait trait = (Trait) traitData;
@@ -82,7 +82,7 @@ public class TraitTable extends Table implements CharacterSubTable {
     }
 
     @Override
-    public void updateData(TableModel traitData) {
+    public void updateData(ModelData traitData) {
         connect();
         String sql = "UPDATE Traits SET name = ?, description = ?, characterID = ? \n" +
                 "WHERE traitID = ?";

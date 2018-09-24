@@ -1,7 +1,7 @@
 package main.databases.tables;
 
-import main.models.CalendarDate;
-import main.models.TableModel;
+import main.model.modeldata.CalendarDate;
+import main.model.modeldata.ModelData;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -28,7 +28,7 @@ public class CalendarTable extends Table {
     }
 
     @Override
-    public void insertData(TableModel calendarDate) {
+    public void insertData(ModelData calendarDate) {
         connect();
         String sql = "INSERT OR IGNORE INTO FantasyCalendar \n" +
                 "(dayNum, dayName, monthNum, monthName, year) \n" +
@@ -62,12 +62,12 @@ public class CalendarTable extends Table {
     }
 
     @Override
-    public void deleteData(TableModel calendarDate) {
+    public void deleteData(ModelData calendarDate) {
 
     }
 
     @Override
-    public void updateData(TableModel tableModel) {
+    public void updateData(ModelData modelData) {
 
     }
 
