@@ -33,7 +33,7 @@ public class LocationTable extends Table implements Searchable, TopLevelTable {
     }
 
     @Override
-    public void insertData(ModelData locationData) throws SQLException {
+    public void insertData(ModelData locationData) {
         connect();
         String sql = "INSERT OR IGNORE INTO Locations(name, locType, flavour, songLink, description, culture, " +
                 "government, crime, demographic, religion, history, parentID) \n" +
@@ -62,13 +62,16 @@ public class LocationTable extends Table implements Searchable, TopLevelTable {
                     throw new SQLException("Creating location failed, no ID obtained.");
                 }
             }
-        } finally {
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        finally {
             closeConnection();
         }
     }
 
     @Override
-    public void deleteData(ModelData locationData) throws SQLException {
+    public void deleteData(ModelData locationData) {
         connect();
         String sql = "DELETE \n" +
                 "FROM Locations \n" +
@@ -80,7 +83,10 @@ public class LocationTable extends Table implements Searchable, TopLevelTable {
             pstmt.setInt(1, location.getId());
             pstmt.executeUpdate();
             System.out.println("Entry deleted.");
-        } finally {
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        finally {
             closeConnection();
         }
     }

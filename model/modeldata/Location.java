@@ -9,6 +9,7 @@ import java.util.List;
 
 public class Location implements ModelData {
 
+    public static final int NO_PARENT = -1;
     private boolean edited = false;
 
     private int id;
@@ -45,7 +46,7 @@ public class Location implements ModelData {
         demographic = "";
         religion = "";
         history = "";
-        parentID = 0;
+        parentID = NO_PARENT;
 
         childLocations = FXCollections.observableArrayList(new ArrayList<>());
         characters = FXCollections.observableArrayList(new ArrayList<>());
@@ -189,7 +190,13 @@ public class Location implements ModelData {
     }
 
     public void setParent(Location parent) {
-        this.parent = parent;
+        if (parent == null) {
+            this.parent = null;
+            this.parentID = NO_PARENT;
+        } else {
+            this.parent = parent;
+            this.parentID = parent.getId();
+        }
     }
 
     public String getParentName() {
@@ -204,10 +211,6 @@ public class Location implements ModelData {
         return parentID;
     }
 
-    public void setParentID(int parentID) {
-        this.parentID = parentID;
-    }
-
     public ObservableList<Location> getChildLocations() {
         return childLocations;
     }
@@ -218,9 +221,5 @@ public class Location implements ModelData {
 
     public List<Integer> getInvalidParentIDs() {
         return invalidParentIDs;
-    }
-
-    public void setInvalidParentIDs(List<Integer> invalidParentIDs) {
-        this.invalidParentIDs = invalidParentIDs;
     }
 }

@@ -85,7 +85,7 @@ public class CharacterTable extends Table implements Searchable, TopLevelTable {
      * @throws SQLException sql throw.
      */
     @Override
-    public void insertData(ModelData characterData) throws SQLException {
+    public void insertData(ModelData characterData) {
         connect();
         String sql = "INSERT OR IGNORE INTO Characters(name, look, title, race, voice, personality, desires, fears, background, " +
                 "knowledge, opinion, descriptor, armorClass, armor, hitPointMax, hitPointCurrent, speed, proficiency, strength, dexterity, constitution, " +
@@ -141,7 +141,10 @@ public class CharacterTable extends Table implements Searchable, TopLevelTable {
                     throw new SQLException("Creating character failed, no ID obtained.");
                 }
             }
-        } finally {
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        finally {
             closeConnection();
         }
     }
@@ -152,10 +155,9 @@ public class CharacterTable extends Table implements Searchable, TopLevelTable {
      * inserting and deleting data.
      *
      * @param characterData model.model.Character object to retrieve the ID from.
-     * @throws SQLException sql.
      */
     @Override
-    public void deleteData(ModelData characterData) throws SQLException {
+    public void deleteData(ModelData characterData) {
         connect();
         String sql = "DELETE FROM Characters WHERE characterID = ?";
         Character character = (Character) characterData;
@@ -165,7 +167,10 @@ public class CharacterTable extends Table implements Searchable, TopLevelTable {
             pstmt.setInt(1, character.getId());
             pstmt.executeUpdate();
             System.out.println("Entry deleted.");
-        } finally {
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        finally {
             closeConnection();
         }
     }

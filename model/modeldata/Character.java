@@ -10,6 +10,8 @@ import java.util.List;
 
 public class Character implements ModelData {
 
+    public static final int NO_LOCATION = -2;
+
     private boolean edited = false;
 
     private int id;
@@ -73,9 +75,12 @@ public class Character implements ModelData {
         this.inventory = "";
         this.locationID = 0;
 
-        attackList = FXCollections.observableArrayList(new ArrayList<>());
-        skillList = FXCollections.observableArrayList(new ArrayList<>());
-        traitList = FXCollections.observableArrayList(new ArrayList<>());
+        attackList = new ArrayList<>();
+        activeAttackList = FXCollections.observableArrayList(attackList);
+        skillList = new ArrayList<>();
+        activeSkillList = FXCollections.observableArrayList(skillList);
+        traitList = new ArrayList<>();
+        activeTraitList = FXCollections.observableArrayList(traitList);
     }
 
     public Character(int id, String name, String look, String title, String race, String voice, String personality, String desires,
@@ -317,12 +322,18 @@ public class Character implements ModelData {
         return locationID;
     }
 
-    public void setLocationID(int locationID) {
-        this.locationID = locationID;
-    }
-
     public Location getLocation() {
         return location;
+    }
+
+    public void setLocation(Location location) {
+        if (location == null) {
+            this.location = null;
+            this.locationID = NO_LOCATION;
+        } else {
+            this.location = location;
+            this.locationID = location.getId();
+        }
     }
 
     public void setLocName(String locName) {
@@ -335,10 +346,6 @@ public class Character implements ModelData {
         } catch (NullPointerException e) {
             return "";
         }
-    }
-
-    public void setLocation(Location location) {
-        this.location = location;
     }
 
     public List<Attack> getAttackList() {

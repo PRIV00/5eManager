@@ -25,6 +25,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+//TODO: Fix skill adding, trait and attack
+
 public class DatabaseController {
 
     /* ------------------------------ MODEL FIELDS ------------------------------ */
@@ -218,12 +220,9 @@ public class DatabaseController {
 
         /* ------------------------------ LOCATION TAB SETUP ------------------------------ */
 
-
         // Prep controls for the Location Tab
         locationTableViewSetup(model.getFilteredLocations());
         updateLocationComboBoxes(new Location());
-        //childLocListView.setItems(model.getSelectedLocation().getChildLocations());
-        //locCharListView.setItems(model.getSelectedLocation().getCharacters());
 
         // Set Location listeners and select the first row of the table view - ready to go!
         setLocationTabListeners();
@@ -282,36 +281,16 @@ public class DatabaseController {
     private void setLocationTabListeners() {
 
         /* Left side display and tableview listeners */
-        locationFilterTextField.setOnKeyReleased(event -> {
-            model.filterLocations(locationFilterTextField.getText());
-        });
+        locationFilterTextField.setOnKeyReleased(event -> model.filterLocations(locationFilterTextField.getText()));
 
         locationAddButton.setOnAction(event -> {
-            Location loc = new Location();
-            loc.setId(model.getLocationTable().getNextID());
-
-            try {
-                model.getLocationTable().insertData(loc);
-                model.addLocationToLists(loc);
-                locationTableView.getSelectionModel().select(loc);
-                // Status update here
-            } catch (SQLException e) {
-                e.printStackTrace();
-                // Status update here
-            }
+            locationTableView.getSelectionModel().select(model.addNewLocation());
+            saveAllButton.setDisable(false);
         });
 
         locationRemoveButton.setOnAction(event -> {
-            try {
-                model.getLocationTable().deleteData(model.getSelectedLocation());
-                model.getMasterLocations().remove(model.getSelectedLocation());
-                model.getFilteredLocations().remove(model.getSelectedLocation());
-            } catch (SQLException e) {
-                e.printStackTrace();
-                // Status update here
-            }
-
-
+            model.removeLocation(model.getSelectedLocation());
+            saveAllButton.setDisable(false);
         });
 
         locationTableView.getSelectionModel().selectedItemProperty().addListener(event -> {
@@ -346,11 +325,9 @@ public class DatabaseController {
                 locReligionTextArea.setText(model.getSelectedLocation().getReligion());
                 locHistoryTextArea.setText(model.getSelectedLocation().getHistory());
 
-
                 childLocListView.setItems(model.getSelectedLocation().getChildLocations());
                 locCharListView.setItems(model.getSelectedLocation().getCharacters());
                 setLocationDisplayTab();
-
             } catch (NullPointerException e) {
                 childLocListView.setDisable(true);
                 locCharListView.setDisable(true);
@@ -372,15 +349,9 @@ public class DatabaseController {
         });
 
         locParentChoiceComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
-
             try {
                 if (model.getSelectedLocation().getParentID() != newValue.getId()) {
-                    model.getSelectedLocation().setParent(locParentChoiceComboBox.getValue()); //TODO: CHANGE THIS
-                    try {
-                        model.getSelectedLocation().setParentID(model.getSelectedLocation().getParent().getId());
-                    } catch (NullPointerException e) {
-                        model.getSelectedLocation().setParentID(0);
-                    }
+                    model.getSelectedLocation().setParent(locParentChoiceComboBox.getValue());
                     locationEditDisplay(model.getSelectedLocation());
                     locParentNameLabel.setText(String.format("(%s)", model.getSelectedLocation().getParent().getName()));
                 }
@@ -452,7 +423,7 @@ public class DatabaseController {
      *
      * @param location : model.Location object to avoid adding to the combo box.
      */
-    private void updateLocationComboBoxes(Location location) {
+    private void updateLocationComboBoxes(Location location) { //TODO: Have this update all controls that will change output based on parent change. I.e. also childLocationListView and childCharactersListView
         locParentChoiceComboBox.getItems().clear();
         charLocationComboBox.getItems().clear();
 
@@ -466,9 +437,10 @@ public class DatabaseController {
         locParentChoiceComboBox.getItems().add(blank);
         charLocationComboBox.getItems().add(blank);
 
-        for (Location loc : model.getMasterLocations()) {
+        model.updateLocationHierarchies();
 
-            if (location != null && loc.getId() != location.getId() && !(location.getInvalidParentIDs().contains(loc.getId()))) {
+        for (Location loc : model.getMasterLocations()) {
+            if (location != null && !(location.getInvalidParentIDs().contains(loc.getId()))) {
                 locParentChoiceComboBox.getItems().add(loc);
             }
             charLocationComboBox.getItems().add(loc);
@@ -487,7 +459,7 @@ public class DatabaseController {
         int rowCount = 0;
         if (!model.getSelectedLocation().getDescription().equals("")) {
             Label descriptionTitleLabel = new Label("Description");
-            descriptionTitleLabel.setFont(Font.font("Georgia", FontWeight.BOLD, 16));
+            descriptionTitleLabel.setFont(Font.font("Georgia", FontWeight.BOLD, 16)); //TODO: CSSify
             descriptionTitleLabel.setPadding(new Insets(10, 0, 0, 0));
             locationDisplayGridPane.add(descriptionTitleLabel, 0, rowCount);
             rowCount += 1;
@@ -610,9 +582,7 @@ public class DatabaseController {
     private void setCharacterTabListeners() {
 
         /* Left side tableView, add/remove and filter field listeners */
-        characterFilterTextField.setOnKeyReleased(event -> {
-            model.filterCharacters(characterFilterTextField.getText());
-        });
+        characterFilterTextField.setOnKeyReleased(event -> model.filterCharacters(characterFilterTextField.getText()));
 
         characterTableView.getSelectionModel().selectedItemProperty().addListener(
                 (observable, oldValue, newValue) -> {
@@ -705,6 +675,13 @@ public class DatabaseController {
                     for (Character c2 : model.getFilteredCharacters()) {
                         if (c2.isEdited()) {
                             editPending = true;
+                            break;
+                        }
+                    }
+                    for (Location loc : model.getFilteredLocations()) {
+                        if (loc.isEdited()) {
+                            editPending = true;
+                            break;
                         }
                     }
                     if (!editPending) {
@@ -713,29 +690,14 @@ public class DatabaseController {
                 });
 
         characterAddButton.setOnAction(event -> {
-            Character c = new Character();
-            c.setId(model.getCharacterTable().getNextID());
-
-            try {
-                model.getCharacterTable().insertData(c);
-                model.addCharacterToLists(c);
-                characterTableView.getSelectionModel().select(c);
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            model.addNewCharacter();
+            characterTableView.getSelectionModel().select(model.getSelectedCharacter());
+            saveAllButton.setDisable(false);
         });
 
         characterRemoveButton.setOnAction(event -> {
-            try {
-                model.getCharacterTable().deleteData(model.getSelectedCharacter());
-                // The following 3 lines are to ensure there are no orphaned entries of the sub tables.
-                model.getSkillTable().deleteDataByCharacter(model.getSelectedCharacter());
-                model.getAttackTable().deleteDataByCharacter(model.getSelectedCharacter());
-                model.getTraitTable().deleteDataByCharacter(model.getSelectedCharacter());
-            } catch (SQLException e) {
-                // Status update here
-            }
-            model.removeCharacterFromLists(model.getSelectedCharacter());
+            model.removeCharacter(model.getSelectedCharacter());
+            saveAllButton.setDisable(false);
         });
 
         /* Listeners for statblock */
@@ -768,11 +730,6 @@ public class DatabaseController {
             try {
                 if (model.getSelectedCharacter().getLocationID() != newValue.getId()) {
                     model.getSelectedCharacter().setLocation(charLocationComboBox.getValue());
-                    try {
-                        model.getSelectedCharacter().setLocationID(model.getSelectedCharacter().getLocation().getId());
-                    } catch (NullPointerException e) {
-                        model.getSelectedCharacter().setLocationID(0);
-                    }
                     characterEditDisplay(model.getSelectedCharacter());
                 }
             } catch (NullPointerException e) {

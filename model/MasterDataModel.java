@@ -34,6 +34,9 @@ public class MasterDataModel {
     private ObservableList<Location> filteredLocations;
     private ObservableList<Character> filteredCharacters;
 
+    private List<Location> deletedLocationsCollector;
+    private List<Character> deletedCharactersCollector;
+
     private Location selectedLocation;
     private Character selectedCharacter;
 
@@ -51,6 +54,9 @@ public class MasterDataModel {
 
         filteredLocations = FXCollections.observableArrayList(masterLocations);
         filteredCharacters = FXCollections.observableArrayList(masterCharacters);
+
+        deletedLocationsCollector = new ArrayList<>();
+        deletedCharactersCollector = new ArrayList<>();
 
         try {
             selectedLocation = filteredLocations.get(0);
@@ -79,30 +85,27 @@ public class MasterDataModel {
             }
         }
 
-        // Second pass to set child locations and characters
-        for (Location x : masterLocations) {
-            setChildLocations(x.getChildLocations(), x);
-            getCharacterHierarchy(x.getCharacters(), x);
-            x.setInvalidParentIDs(invalidParents(x));
-        }
+        updateLocationHierarchies();
     }
 
-    /**
-     * Used by updateLocationComboBoxes to fill the combobox in the Locations tab with locations that won't cause
-     * an infinite loop. This essentially means any sub locations can't be assigned as the top location's parent.
-     *
-     * @param topLocation The location to check for invalid parents
-     * @return return the list of invalid IDs
-     */
-    private List<Integer> invalidParents(Location topLocation) {
-        List<Integer> invalidIDs = new ArrayList<>();
+    public void updateLocationHierarchies() {
 
-        for (Location loc : topLocation.getChildLocations()) {
-            invalidIDs.add(loc.getId());
+        for (Location location : masterLocations) {
+            location.getChildLocations().clear();
+            location.getCharacters().clear();
+
+            setLocationHierarchy(location.getChildLocations(), location);
+            setCharacterHierarchy(location.getCharacters(), location);
+
+            // Set invalid parents list
+            List<Integer> invalidParentIDs = location.getInvalidParentIDs();
+            invalidParentIDs.clear();
+            invalidParentIDs.add(location.getId());
+            for (Location childLocation : location.getChildLocations()) {
+                invalidParentIDs.add(childLocation.getId());
+            }
         }
-
-        return invalidIDs;
-    } //TODO: fix. need to call it each time you update parent combo box
+    }
 
     /**
      * Recursive method to fetch the hierarchy of models.Location objects allowing to add all sub locations to a
@@ -120,12 +123,12 @@ public class MasterDataModel {
      * @param recursiveList : ArrayList to add to
      * @param anchorLocation : Base location to start the recursion. This variable is set each time it calls itself.
      */
-    private void setChildLocations(List<Location> recursiveList, Location anchorLocation) {
+    private void setLocationHierarchy(List<Location> recursiveList, Location anchorLocation) {
         try {
             for (Location loc : masterLocations) {
                 if (loc.getParentID() == anchorLocation.getId()) {
                     recursiveList.add(loc);
-                    setChildLocations(recursiveList, loc);
+                    setLocationHierarchy(recursiveList, loc);
                 }
             }
         } catch (NullPointerException e) {
@@ -133,7 +136,7 @@ public class MasterDataModel {
         }
     }
 
-    private void getCharacterHierarchy(List<Character> recursiveList, Location anchorLocation) {
+    private void setCharacterHierarchy(List<Character> recursiveList, Location anchorLocation) {
         for (Character c : masterCharacters) {
             if (c.getLocationID() == anchorLocation.getId()) {
                 recursiveList.add(c);
@@ -141,7 +144,7 @@ public class MasterDataModel {
         }
         for (Location loc : masterLocations) {
             if (loc.getParentID() == anchorLocation.getId()) {
-                getCharacterHierarchy(recursiveList, loc);
+                setCharacterHierarchy(recursiveList, loc);
             }
         }
     }
@@ -162,7 +165,41 @@ public class MasterDataModel {
         }
     }
 
+    /**
+     * Saves the data from the model to the actual persistent sqlite tables. Otherwise, all changes are reset if
+     * the application is closed.
+     *
+     */
     public void saveAll() {
+        // Commit deletes for locations and characters
+        for (Location deletedLocation : deletedLocationsCollector) {
+            locationTable.deleteData(deletedLocation);
+        }
+        deletedLocationsCollector.clear();
+
+        for (Character deletedCharacter : deletedCharactersCollector) {
+            characterTable.deleteData(deletedCharacter);
+            skillTable.deleteDataByCharacter(deletedCharacter); // Ensures no orphaned entries
+            traitTable.deleteDataByCharacter(deletedCharacter);
+            attackTable.deleteDataByCharacter(deletedCharacter);
+        }
+        deletedCharactersCollector.clear();
+
+        // Commit additions
+        for (Location location : filteredLocations) {
+            if (location.getId() == 0) {
+                location.setId(locationTable.getNextID());
+                locationTable.insertData(location);
+            }
+        }
+
+        for (Character character : filteredCharacters) {
+            if (character.getId() == 0) {
+                character.setId(characterTable.getNextID());
+                characterTable.insertData(character);
+            }
+        }
+
         //Locations
         for (Location loc : filteredLocations) {
             if (loc.isEdited()) {
@@ -180,17 +217,11 @@ public class MasterDataModel {
         for (Character c : filteredCharacters) {
 
             if (c.isEdited()) {
-                try {
-                    c.setLocationID(c.getLocation().getId());
-                } catch (NullPointerException e) {
-                    c.setLocationID(0);
-                } finally {
-                    c.setName(GuiTools.trim(c.getName()));  // The name currently has asterisks, saving trims them off.
-                }
+                c.setName(GuiTools.trim(c.getName()));  // The name currently has asterisks, saving trims them off.
 
                 // Save Skills
                 ObservableList<Skill> activeSkills = FXCollections.observableArrayList(new ArrayList<>()); // Not a huge fan of this way of doing it. Want to look into writing something cleaner.
-                System.out.println("skill size: " + c.getActiveSkillList().size());
+                System.out.println("skill size: " + c.getActiveSkillList().size()); //TODO: Wondering if it's better to just have a 'deletedSkillCollector' and so forth.
                 for (Skill skill : c.getSkillList()) {
                     System.out.println(skill.isSetToDelete());
                     if (skill.isSetToDelete()) {
@@ -255,26 +286,6 @@ public class MasterDataModel {
         }
     }
 
-    public LocationTable getLocationTable() {
-        return locationTable;
-    }
-
-    public CharacterTable getCharacterTable() {
-        return characterTable;
-    }
-
-    public SkillTable getSkillTable() {
-        return skillTable;
-    }
-
-    public AttackTable getAttackTable() {
-        return attackTable;
-    }
-
-    public TraitTable getTraitTable() {
-        return traitTable;
-    }
-
     public List<Location> getMasterLocations() {
         return masterLocations;
     }
@@ -308,6 +319,14 @@ public class MasterDataModel {
     }
 
     public void filterLocations(String filter) {
+        List<Location> unsavedLocations = new ArrayList<>();
+        for (Location location : masterLocations) {
+            if (location.getId() == 0) {
+                unsavedLocations.add(location);
+            }
+        }
+        masterLocations.removeAll(unsavedLocations);
+
         filteredLocations.clear();
         filteredLocations.addAll(locationTable.query(filter));
 
@@ -321,9 +340,23 @@ public class MasterDataModel {
         }
     }
 
+    /**
+     * First block deletes unsaved characters when the filter is used so that objects don't stack up.
+     *
+     * @param filter
+     */
     public void filterCharacters(String filter) {
+        List<Character> unsavedCharacters = new ArrayList<>();
+        for (Character character : masterCharacters) {
+            if (character.getId() == 0) {
+                unsavedCharacters.add(character);
+            }
+        }
+        masterCharacters.removeAll(unsavedCharacters);
+
         filteredCharacters.clear();
         filteredCharacters.addAll(characterTable.query(filter));
+
         for (Character c : filteredCharacters) {
             for (Location i : masterLocations) {
                 if (c.getLocationID() == i.getId()) {
@@ -334,23 +367,41 @@ public class MasterDataModel {
         }
     }
 
-    public void addLocationToLists(Location location) { //TODO: use this as a way to easily add and remove from both lists and not yet effect the database until user hits save.
+    public Location addNewLocation() {
+        Location location = new Location();
+        location.setName("****");
+
         masterLocations.add(location);
         filteredLocations.add(location);
+
+        return location;
     }
 
-    public void removeLocationFromLists(Location location) {
+    public void removeLocation(Location location) {
         masterLocations.remove(location);
         filteredLocations.remove(location);
+        deletedLocationsCollector.add(location);
+
+        for (Character character : masterCharacters) {
+            if (character.getLocationID() == location.getId()) {
+                character.setLocation(null);
+            }
+        }
     }
 
-    public void addCharacterToLists(Character character) {
+    public void addNewCharacter() {
+        Character character = new Character();
+        character.setName("****");
+
         masterCharacters.add(character);
         filteredCharacters.add(character);
+
+        selectedCharacter = character;
     }
 
-    public void removeCharacterFromLists(Character character) {
+    public void removeCharacter(Character character) {
         masterCharacters.remove(character);
         filteredCharacters.remove(character);
+        deletedCharactersCollector.add(character);
     }
 }
